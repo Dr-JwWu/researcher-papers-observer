@@ -521,17 +521,13 @@
   }
 
   /**
-   * research_scope 里唯一会被页面使用的信息：哪些来源本轮不可用。
+   * 来源状态列表（research_scope 里唯一会被页面使用的信息）。
    * 兼容两种形状：["arxiv", "pubmed"] 或 [{source: "arxiv", reason: "..."}]；
-   * 只保留已知来源 id（arxiv/pubmed），页面按来源标签给一句“本期 X 来源暂缺”；
-   * policy/计数/UTC 窗口/失败原因等流程诊断一律不解析、不展示。
-   * 也接受顶层 sources_unavailable 作为兼容回退。
+   * 只保留已知来源 id（arxiv/pubmed），非法值与原因文本一律丢弃；
+   * policy/计数/UTC 窗口/失败原因等流程诊断不解析、不展示。
    */
-  function normalizeUnavailableSources(scopeValue, topLevelValue) {
-    const scope = scopeValue && typeof scopeValue === 'object' ? scopeValue : null;
-    const raw = scope && Array.isArray(scope.sources_unavailable)
-      ? scope.sources_unavailable
-      : (Array.isArray(topLevelValue) ? topLevelValue : []);
+  function normalizeScopeSourceList(listValue) {
+    const raw = Array.isArray(listValue) ? listValue : [];
     const out = [];
     for (let i = 0; i < raw.length; i += 1) {
       const item = raw[i];
@@ -541,6 +537,27 @@
       if (SOURCES.indexOf(candidate) !== -1 && out.indexOf(candidate) === -1) out.push(candidate);
     }
     return out;
+  }
+
+  function scopeSourceList(scopeValue, key, topLevelValue) {
+    const scope = scopeValue && typeof scopeValue === 'object' ? scopeValue : null;
+    if (scope && Array.isArray(scope[key])) return normalizeScopeSourceList(scope[key]);
+    return normalizeScopeSourceList(topLevelValue);
+  }
+
+  /** 本轮真的拿不到数据的来源（源内 facts=0 或整段采集缺失）→“本期 X 来源暂缺”。 */
+  function normalizeUnavailableSources(scopeValue, topLevelValue) {
+    return scopeSourceList(scopeValue, 'sources_unavailable', topLevelValue);
+  }
+
+  /**
+   * 本轮有数据但覆盖不完整（如 max_items 预算上限）→“本期 X 覆盖不完整”。
+   * 与 unavailable 并列时 unavailable 优先，已在 unavailable 里的来源不再重复。
+   */
+  function normalizeIncompleteSources(scopeValue, topLevelValue) {
+    const incomplete = scopeSourceList(scopeValue, 'sources_incomplete', topLevelValue);
+    const unavailable = normalizeUnavailableSources(scopeValue, null);
+    return incomplete.filter(function (source) { return unavailable.indexOf(source) === -1; });
   }
 
   /** revision（同日修订）：只展示数量与说明，不展示 private journal 原因。 */
@@ -598,6 +615,7 @@
       generatedAt: '',
       coverage: normalizeCoverage(null),
       unavailableSources: [],
+      incompleteSources: [],
       revision: normalizeRevision(null),
       digest: normalizeDigestBody(null),
       pendingCount: null,
@@ -612,6 +630,7 @@
     out.generatedAt = isNonEmptyString(raw.generated_at) ? raw.generated_at.trim() : '';
     out.coverage = normalizeCoverage(raw.coverage);
     out.unavailableSources = normalizeUnavailableSources(raw.research_scope, raw.sources_unavailable);
+    out.incompleteSources = normalizeIncompleteSources(raw.research_scope, raw.sources_incomplete);
     out.revision = normalizeRevision(raw.revision);
     out.digest = normalizeDigestBody(raw.digest);
     if (typeof raw.pending_count === 'number' && raw.pending_count >= 0) out.pendingCount = raw.pending_count;
@@ -712,7 +731,7 @@
 
   /**
    * 来源覆盖是否不完整（partial / 未知 / 无来源记录）。
-   * 页面只有这一种情况才提示“部分来源暂不可用”，其余流程计数不外露。
+   * 页面只在没有更具体来源状态时用它给一句“部分来源覆盖不完整”，其余流程计数不外露。
    */
   function coverageIsPartial(coverage) {
     const cov = coverage && coverage.coverage ? coverage.coverage : coverage;
@@ -1079,6 +1098,7 @@
     parseJsonl: parseJsonl,
     normalizeCoverage: normalizeCoverage,
     normalizeUnavailableSources: normalizeUnavailableSources,
+    normalizeIncompleteSources: normalizeIncompleteSources,
     normalizeRevision: normalizeRevision,
     normalizeDigest: normalizeDigest,
     crossCheckDigest: crossCheckDigest,

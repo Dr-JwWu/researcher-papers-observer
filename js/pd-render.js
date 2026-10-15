@@ -523,24 +523,33 @@
     return wrap;
   }
 
+  /** 来源状态的纯文本（同一时刻最多一条，供面板与区间视图共用）。 */
+  function coverageBriefText(coverage, digest) {
+    const scope = digest || {};
+    const unavailable = Array.isArray(scope.unavailableSources) ? scope.unavailableSources : [];
+    const unavailableLabels = unavailable.map(function (source) { return i18n.sourceLabel(source); });
+    if (unavailableLabels.length > 0) {
+      // 真的没拿到数据的来源优先，且只给这一条（不再叠加“覆盖不完整”）。
+      return i18n.formatTemplate(T.sourceUnavailable, { sources: unavailableLabels.join('、') });
+    }
+    const incomplete = Array.isArray(scope.incompleteSources) ? scope.incompleteSources : [];
+    const incompleteLabels = incomplete.map(function (source) { return i18n.sourceLabel(source); });
+    if (incompleteLabels.length > 0) {
+      // 有数据但覆盖不完整（如预算上限）：说“覆盖不完整”，不说“暂不可用”。
+      return i18n.formatTemplate(T.sourceIncomplete, { sources: incompleteLabels.join('、') });
+    }
+    if (!PD.coverageIsPartial(coverage)) return '';
+    return T.digestCoveragePartial;
+  }
+
   /**
-   * 来源状态：同一时刻最多一条短句。
-   *   1. 数据标明某来源本轮不可用（如 arXiv 429 限流）→“本期 arXiv 来源暂缺”，
-   *      用固定来源名，不显示错误文本或计数；
-   *   2. 其他 partial/缺失 →“部分来源暂不可用”。
+   * 来源状态一行：unavailable > incomplete > 通用 partial。
    * 候选数、取回数、缺元数据数、错误数属于流程诊断，不在研究者页面上出现。
    */
   function coverageBrief(coverage, digest) {
-    const unavailable = digest && Array.isArray(digest.unavailableSources) ? digest.unavailableSources : [];
-    const labels = unavailable.map(function (source) { return i18n.sourceLabel(source); });
-    if (labels.length > 0) {
-      return dom.el('p', {
-        class: 'coverage-brief coverage-unavailable',
-        text: i18n.formatTemplate(T.sourceUnavailable, { sources: labels.join('、') })
-      });
-    }
-    if (!PD.coverageIsPartial(coverage)) return null;
-    return dom.el('p', { class: 'coverage-brief', text: T.digestCoveragePartial });
+    const text = coverageBriefText(coverage, digest);
+    if (text === '') return null;
+    return dom.el('p', { class: 'coverage-brief', text: text });
   }
 
   /** 同日修订：只展示真实发生的数量与说明（0 不写出来）。 */
@@ -590,7 +599,7 @@
   /**
    * 当日总结面板（简短版）：
    *   收录 N 篇 · N 篇待审核 · 更新于 …；同一时刻最多一条来源状态
-   *   （“本期 arXiv 来源暂缺”或“部分来源暂不可用”）；
+   *   （“本期 arXiv 来源暂缺”＞“本期 arXiv 覆盖不完整”＞“部分来源覆盖不完整”）；
    *   分节正文按当前主题筛选（选具身智能时不再满屏手术总结）；
    *   digest.status=partial 时保留已完成分节并给一行“总结尚不完整”；
    *   日报缺失/生成失败只显示“暂无日报/暂无总结”，不外露内部 error、状态或计数。
@@ -676,6 +685,7 @@
     renderPaperList: renderPaperList,
     renderPaperModal: renderPaperModal,
     renderDigest: renderDigest,
+    coverageBriefText: coverageBriefText,
     renderRevision: renderRevision,
     topicTags: topicTags,
     discoveryTag: discoveryTag,

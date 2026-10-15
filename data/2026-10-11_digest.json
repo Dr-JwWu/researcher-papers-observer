@@ -1,6 +1,6 @@
 {
   "date": "2026-10-11",
-  "generated_at": "2026-10-15T07:50:01.969239+00:00",
+  "generated_at": "2026-10-15T08:57:09.933554+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -8,12 +8,12 @@
         "source": "arxiv",
         "status": "partial",
         "candidate_count": 8061,
-        "metadata_fetched": 400,
-        "missing_metadata": 2600,
+        "metadata_fetched": 3000,
+        "missing_metadata": 0,
         "date_from": "2026-10-08",
         "date_to": "2026-10-14",
-        "error_count": 1,
-        "limit_count": 6
+        "error_count": 0,
+        "limit_count": 4
       },
       {
         "source": "pubmed",
@@ -33,9 +33,17 @@
     "status": "completed",
     "sections": [
       {
+        "topic": "embodied",
+        "heading": "谱对齐显式塑造潜在世界模型的表示几何",
+        "text": "SpecWM 将谱表示学习引入 JEPA 式潜在世界模型：用目标相似度核显式规定观测间应保留的关系，训练编码器在嵌入几何中复现这些关系，核的监督可从物理状态信息一路弱化到只需轨迹内观测顺序的自监督时序核。作者刻画了目标的全局最优，给出线性可恢复性与干扰不变性的条件，并在理想设定下把时序核相似度与行为后继度量联系起来，说明表示几何可以被有意操控。实证显示核的选择强烈决定哪些物理量可从表示中恢复，时序谱对齐还把 CEM 规划成功率从 52% 提升到 68%（OGBench Cube）、49% 到 77%（OGBench Scene）、29% 到 51%（CALVIN）。局限在于可恢复性与后继度量的理论结论依赖理想化假设，效果验证集中于上述控制基准，核的设计仍依赖人工先验，其普适性尚缺少跨论文证据。",
+        "paper_ids": [
+          "arxiv:2610.15429"
+        ]
+      },
+      {
         "topic": "surgical",
-        "heading": "神经外科可操控针路径规划的深度强化学习框架",
-        "text": "AutoPlan 将深度强化学习用于神经外科可操控针的轨迹规划，在 55 例 MRI 数据上对比 PPO、SAC、DDPG 与 RRT，并引入变曲率定插入（VCFI）与变插入定曲率（VIFC）两种运动学控制策略及不同起点初始化方式。摘要报告 PPO（VIFC、选择性起点）成功率 90.9%、路径长 45.96±14.76 mm、计算时间 0.02±0.02 s，明显优于 RRT 的 65.5%，显示学习式规划在计算速度与运动学可行性上的潜力。局限在于证据仅来自摘要：样本量有限、缺少外部验证与临床有效性证据，且 RRT 基线路径长度方差极大，两类方法差异的稳健性仍需全文细节与独立复现确认。",
+        "heading": "可操控针神经外科路径规划：强化学习在非完整运动学约束下的进展",
+        "text": "AutoPlan 将深度强化学习用于神经外科可操控针的穿刺路径规划，在 55 例 MRI 患者数据上比较 PPO、SAC、DDPG 与 RRT，并组合变曲率定插入（VCFI）、变插入定曲率（VIFC）及随机/选择性起点等策略；其中 PPO（VIFC、选择性起点）报告成功率 90.9%、路径长 45.96±14.76 mm、计算时间 0.02±0.02 s，明显优于 RRT 的 65.5% 成功率与约 9.72±20.29 s 计算时间。其意义在于把运动学可行性与避障同时纳入学习式规划，并以计算效率作为相对传统采样式规划器的主要优势。需要注意的局限是：结果均为规划阶段的仿真指标，摘要未提供术中或临床有效性证据，样本量有限（55 例），且成功率、路径长与耗时高度依赖所选控制策略与起点初始化方式，跨中心与真实解剖变异下的泛化能力仍待验证。",
         "paper_ids": [
           "pubmed:42859874"
         ]
@@ -44,19 +52,20 @@
     "analysis_basis": "abstract"
   },
   "pending_count": 0,
-  "paper_count": 1,
+  "paper_count": 2,
   "research_scope": {
     "policy": "weekly_capture_partitioned_by_known_date",
     "window_start": "2026-10-08",
     "window_end": "2026-10-14",
     "date_basis": "UTC",
     "date_basis_policy": "只按来源声明的日粒度日期分配日报：published 在窗口内记 window_match(day_basis=published)；否则使用窗口内的 PubMed 入库日 indexed_at，并公开 discovery_kind=backfill（补录，非当日首发）；日粒度日期可确认在窗口外且无窗口内入库日的记录本轮不公开；日期过粗或缺失者保留为 uncertain_date 待后续显式补录，不补造精确日期。",
-    "out_of_window_count": 169,
-    "undated_count": 2600,
+    "out_of_window_count": 705,
+    "undated_count": 0,
     "pending_count_by_source": {
       "pubmed": 4
     },
-    "sources_unavailable": [
+    "sources_unavailable": [],
+    "sources_incomplete": [
       "arxiv"
     ],
     "note": "计数只描述本轮已配置来源与检索窗口，不代表领域没有新论文；pending 为预算不足或失败的待审条目，不是相关性配额。"

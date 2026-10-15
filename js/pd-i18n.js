@@ -9,8 +9,8 @@
  *   新增日期精度、来源、主题、AI 依据（abstract）等必须如实说明的文案。
  *   2026-10 精简：删除“无访问控制/不可信数据”安全横幅、research_scope 工程口径、
  *   候选/取回/缺元数据/错误计数、结构自洽诊断与重复免责声明；正文改为
- *   “收录 N 篇 / N 篇待审核 / 部分来源暂不可用 / 本期 arXiv 来源暂缺 /
- *   总结尚不完整 / 暂无总结”这类短句（同一时刻最多一条来源状态）。
+ *   “收录 N 篇 / N 篇待审核 / 本期 arXiv 来源暂缺 / 本期 arXiv 覆盖不完整 /
+ *   部分来源覆盖不完整 / 总结尚不完整 / 暂无总结”这类短句（同一时刻最多一条来源状态）。
  *   本文件不重新授权上游代码，许可仍以 docs/licenses 为准。
  */
 (function (root) {
@@ -19,7 +19,7 @@
   const SOURCE_LABELS = { arxiv: 'arXiv', pubmed: 'PubMed', unknown: '来源未标注' };
   const TOPIC_LABELS = { embodied: '具身智能', surgical: '手术机器人/手术AI' };
   const PRECISION_LABELS = { year: '仅年份', month: '精确到月', day: '精确到日', unknown: '精度未标注' };
-  const COVERAGE_LABELS = { complete: '来源正常', partial: '部分来源暂不可用', unknown: '来源状态未知' };
+  const COVERAGE_LABELS = { complete: '来源正常', partial: '部分来源覆盖不完整', unknown: '来源状态未知' };
   const DIGEST_STATUS_LABELS = {
     completed: '已生成',
     partial: '总结尚不完整',
@@ -109,9 +109,10 @@
     digestPending: '待审核',
     digestUnit: '篇',
     digestUpdated: '更新于',
-    digestCoveragePartial: '部分来源暂不可用',
+    digestCoveragePartial: '部分来源覆盖不完整',
     digestIncomplete: '总结尚不完整',
     sourceUnavailable: '本期 {sources} 来源暂缺',
+    sourceIncomplete: '本期 {sources} 覆盖不完整',
     digestNoSummary: '暂无总结',
     digestNoIncluded: '本日暂无入选论文',
     digestNoPapers: '暂无日报',

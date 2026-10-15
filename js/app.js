@@ -398,8 +398,9 @@
       item.appendChild(dom.el('span', {
         text: i18n.formatTemplate(T.rangeDayCount, { n: day.coverage.publishedCount })
       }));
-      if (PD.coverageIsPartial(day.coverage)) {
-        item.appendChild(dom.el('span', { class: 'range-day-gap', text: T.digestCoveragePartial }));
+      const coverageText = PD.render.coverageBriefText(day.coverage, day.digest);
+      if (coverageText !== '') {
+        item.appendChild(dom.el('span', { class: 'range-day-gap', text: coverageText }));
       }
       if (!day.digest.available || day.digest.digest.status !== 'completed') {
         item.appendChild(dom.el('span', { class: 'range-day-digest', text: T.digestNoSummary }));

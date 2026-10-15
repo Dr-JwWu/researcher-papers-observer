@@ -12,7 +12,7 @@
   "files": [
     {
       "path": "NOTICE.html",
-      "sha256": "1cc3e60f495f1c6fd726db15f52a366374fa40c9a1fd65cd06b751642684338b"
+      "sha256": "8cb5c126a313dc5df8d61eb5f5a9ffaeba22c3536e29237d7319d2e6ef5c6d81"
     },
     {
       "path": "assets/file-list.txt",
@@ -44,35 +44,35 @@
     },
     {
       "path": "data/2026-10-08_AI_enhanced_Chinese.jsonl",
-      "sha256": "f7378b1b9374fba0a512d2624955fc9b287acc3335ee8e7c30f65f42b2b55a59"
+      "sha256": "61d2448a20dceacdfcc2855a85dd5b15fe74fc91e8c78ab131fcb0d4e3f5890a"
     },
     {
       "path": "data/2026-10-08_digest.json",
-      "sha256": "c5a2d3031c076d40cff3fd3f34c1c8448114a6beac49df6f593bbadb182f5ff9"
+      "sha256": "feed9b74a6567fc14a9f793cc15e621f9742189f27ff98bb5e636a6b225fbd72"
     },
     {
       "path": "data/2026-10-09_AI_enhanced_Chinese.jsonl",
-      "sha256": "265a03a715fedf5dde7e58a40ebcd79a9bdf52fd79ba2cc0c2d6394b71f61a1b"
+      "sha256": "2d76d0874e2cfb0f7137ea83f07fdec701dbbfb751d24f574e1e30cf1d828ed6"
     },
     {
       "path": "data/2026-10-09_digest.json",
-      "sha256": "d247fd90c2766ef0e986790351b5549c7be55a41ae2d640a095d7536b495acde"
+      "sha256": "d219efa01430bbc83da5be476fa893542ff5b7689575693d2d7000bc2472eb1c"
     },
     {
       "path": "data/2026-10-10_AI_enhanced_Chinese.jsonl",
-      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      "sha256": "ff03afac469730b19130bc2d00fba54b3ad188c9f7973bcbecf10e49d6542ba2"
     },
     {
       "path": "data/2026-10-10_digest.json",
-      "sha256": "d10898f47d331e4b8db9ca98b2001804430042421a58b12f30065388102af7d0"
+      "sha256": "cd43b70f2538576b0a1f8401574ac9ff786a1bfffcecd833a45751957c3ff7e6"
     },
     {
       "path": "data/2026-10-11_AI_enhanced_Chinese.jsonl",
-      "sha256": "f6414c5f44b201533c8bbc887566cb53473bb5250ceba612c98cda9ae471870c"
+      "sha256": "0bff273d99a72c1f72ae9b9b8dd0aad172cbe5513770fddd67dc11e4f32495e6"
     },
     {
       "path": "data/2026-10-11_digest.json",
-      "sha256": "4fdf571982b870a242b1dc0b0eb9df229c8cd95e1861f41a29f8ebc7ff49f189"
+      "sha256": "e2095413407475a942fbcc33a750c10030b0c2066b1b17fef56a2558e69e7768"
     },
     {
       "path": "data/2026-10-12_AI_enhanced_Chinese.jsonl",
@@ -80,23 +80,23 @@
     },
     {
       "path": "data/2026-10-12_digest.json",
-      "sha256": "9e313253bf762b366608dd617c45274fbf03b86861a6c802cbdf4ef80df534db"
+      "sha256": "153c81dd8500fdde9dc7fe14786dbb2e816002d47ec1af226bd13128ff40940a"
     },
     {
       "path": "data/2026-10-13_AI_enhanced_Chinese.jsonl",
-      "sha256": "da1e33da15b7b379d2221cee45be86d4f7a8c2201dd08dc4f529432f1871147b"
+      "sha256": "048e3c7487b806aaf8ac8189ccecafa782cbe2e82ab53ac8f0351ea626fcca5e"
     },
     {
       "path": "data/2026-10-13_digest.json",
-      "sha256": "d140d63deff932be7bbf1ebf2ffd5daab1b4b023de80519547f2415af1d147c0"
+      "sha256": "83144892ac373c1ef66f373562ff56e29bab4c24e8a3c5871c4cc8e42666e71d"
     },
     {
       "path": "data/2026-10-14_AI_enhanced_Chinese.jsonl",
-      "sha256": "8d2e81d4a8a81f07e9128ffe1e397485ebb204440d5140d759683f034ca130db"
+      "sha256": "02aea13b24ebafe55d5d9da9785417c159275e610c89379c6fd4d32a78ff96ac"
     },
     {
       "path": "data/2026-10-14_digest.json",
-      "sha256": "1b05523f41a5f8d8b0f7e88bbf9f6938d30ba87e5939bfc604025c5b4ae1e10f"
+      "sha256": "66a4d225596c5220bc460c3d05c026a4cd6e56cf59035ca8dd9c63357dde7c81"
     },
     {
       "path": "docs/licenses/daily-arxiv-LICENSE",
@@ -108,7 +108,7 @@
     },
     {
       "path": "js/app.js",
-      "sha256": "ba8ef0f43b20d96f15b74378c9b67c64bacac8904f04d31d7740ed2618acd25c"
+      "sha256": "f6b751def9d3e750a73b97efed89b331b39f7e5f234f4599a3a4716f100c31ad"
     },
     {
       "path": "js/data-config.js",
@@ -116,7 +116,7 @@
     },
     {
       "path": "js/pd-core.js",
-      "sha256": "fd2e78cecf511a7202e6a8f1fea1e12f2eefb113cc91cfab8ce6b56eb6c646fd"
+      "sha256": "3311559006b5734aec3fc39066c97ffe680e78e35f917172fde02744721db1cf"
     },
     {
       "path": "js/pd-dom.js",
@@ -124,7 +124,7 @@
     },
     {
       "path": "js/pd-i18n.js",
-      "sha256": "7af6f17d65b5652cc5292d57dba36fdbcf0d78e5171d3f438023f1bb1e898215"
+      "sha256": "1178442a78d0731b1344ae53f4eeea7769e11ca564fd6990b2aa13d8498e087e"
     },
     {
       "path": "js/pd-prefs.js",
@@ -132,7 +132,7 @@
     },
     {
       "path": "js/pd-render.js",
-      "sha256": "2b726a3cb946e6589edfc4c3ac5c8d814f9ea066ef1882e41dfc7cc6f59d26a3"
+      "sha256": "b80650f1f4762f801d141996d4e3803a8188bf6192f990b006d2f721137f8d80"
     },
     {
       "path": "js/pd-settings.js",
