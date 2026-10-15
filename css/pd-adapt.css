@@ -1,0 +1,890 @@
+/*
+ * ResearcherPapers 适配样式：主题标签、日期精度、日报面板、原生日期选择、安全提示。
+ *
+ * 来源与变更声明 / Provenance notice:
+ *   新建文件，不含上游代码。上游 daily-arXiv-ai-enhanced
+ *   （main 01fdad3b0aec2d2f7977b686253a7b0c1c8273dc，Modified Apache License，
+ *   参考 .upstream/daily-arxiv/css，许可证副本见 docs/licenses/daily-arxiv-LICENSE）
+ *   的 styles.css / settings.css / statistic.css 继续承担原有版式；
+ *   本文件只补充本项目新增元素的样式（主题标签、日期精度、日报面板、
+ *   原生日期输入、安全提示、runtime 错误条），不改动上游既有类名语义。
+ *   引用的上游视觉变量（--primary-color 等）来自 styles.css。
+ */
+
+/* ---------- 首发验证样本（非正式每日研究） ---------- */
+.validation-banner {
+    margin: 16px 24px 0;
+    padding: 16px 20px;
+    border: 2px solid #d97706;
+    border-radius: 10px;
+    background: #fff7ed;
+    color: #78350f;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+.validation-banner strong { font-size: 1.05rem; }
+.validation-banner p { margin: 6px 0; }
+.validation-banner a { color: #92400e; text-decoration: underline; }
+@media (max-width: 420px) {
+    .validation-banner { margin: 12px 10px 0; padding: 12px; }
+}
+
+/* ---------- 安全提示 ---------- */
+.safety-notice {
+    max-width: var(--max-width, 1400px);
+    margin: 12px auto 0;
+    padding: 0 20px;
+}
+
+.notice-item {
+    background: rgba(59, 130, 246, 0.08);
+    border: 1px solid rgba(59, 130, 246, 0.35);
+    border-radius: var(--radius-sm, 6px);
+    padding: 8px 12px;
+    margin-bottom: 8px;
+    font-size: 0.86rem;
+    color: var(--text-secondary, #4b5563);
+}
+
+.notice-item summary {
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text-primary, #111827);
+}
+
+.notice-item p {
+    margin: 8px 0 0;
+    line-height: 1.6;
+}
+
+.runtime-error {
+    position: fixed;
+    bottom: 10px;
+    left: 10px;
+    max-width: 80%;
+    background: rgba(255, 0, 0, 0.85);
+    color: #fff;
+    padding: 10px 14px;
+    border-radius: 6px;
+    z-index: 10000;
+    font-size: 0.85rem;
+}
+
+.noscript-notice {
+    max-width: 1400px;
+    margin: 12px auto;
+    padding: 10px 20px;
+    color: #b45309;
+}
+
+/* ---------- 主题标签与来源标签 ---------- */
+.paper-card-tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 6px 0;
+}
+
+.topic-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 0.72rem;
+    border: 1px solid transparent;
+    white-space: nowrap;
+}
+
+.topic-embodied {
+    background: rgba(16, 185, 129, 0.12);
+    border-color: rgba(16, 185, 129, 0.45);
+    color: #047857;
+}
+
+.topic-surgical {
+    background: rgba(139, 92, 246, 0.12);
+    border-color: rgba(139, 92, 246, 0.45);
+    color: #6d28d9;
+}
+
+.topic-unknown {
+    background: rgba(107, 114, 128, 0.12);
+    border-color: rgba(107, 114, 128, 0.4);
+    color: #4b5563;
+}
+
+.topic-both-hint {
+    background: rgba(2, 132, 199, 0.12);
+    border-color: rgba(2, 132, 199, 0.45);
+    color: #0369a1;
+}
+
+.source-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 0.72rem;
+    background: rgba(31, 41, 55, 0.08);
+    border: 1px solid rgba(31, 41, 55, 0.25);
+    color: #1f2937;
+}
+
+.topic-group-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin: 18px 0 6px;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-color, #e5e7eb);
+    font-weight: 700;
+    font-size: 1.05rem;
+}
+
+.topic-group-title {
+    color: var(--text-primary, #111827);
+}
+
+/* ---------- 日期精度 ---------- */
+.date-precision,
+.date-extra,
+.date-unknown,
+.authors-unknown {
+    font-size: 0.72rem;
+    color: var(--text-secondary, #6b7280);
+    margin-left: 4px;
+}
+
+.date-discovered {
+    border-bottom: 1px dotted currentColor;
+    cursor: help;
+}
+
+/* ---------- 卡片补充 ---------- */
+.paper-card-ai-note {
+    font-size: 0.72rem;
+    color: var(--text-secondary, #6b7280);
+    margin: 4px 0 0;
+    font-style: italic;
+}
+
+.author-count-hint {
+    font-size: 0.72rem;
+    color: var(--text-secondary, #6b7280);
+    margin-left: 4px;
+}
+
+/* ---------- 模态框补充 ---------- */
+.paper-meta {
+    margin-bottom: 12px;
+}
+
+.paper-meta-row {
+    margin: 4px 0;
+    line-height: 1.6;
+}
+
+.paper-meta-row strong {
+    color: var(--text-primary, #111827);
+}
+
+.modal-topics {
+    display: inline-flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.paper-ai-section {
+    margin: 14px 0;
+    padding: 12px;
+    border: 1px dashed rgba(180, 83, 9, 0.5);
+    border-radius: var(--radius-sm, 6px);
+    background: rgba(245, 158, 11, 0.06);
+}
+
+.paper-ai-title {
+    margin: 0 0 4px;
+    font-size: 1rem;
+    color: #b45309;
+}
+
+.paper-ai-basis {
+    margin: 0 0 10px;
+    font-size: 0.78rem;
+    color: #92400e;
+}
+
+.paper-ai-missing {
+    margin: 0;
+    color: var(--text-secondary, #6b7280);
+}
+
+.paper-abstract-section {
+    margin: 14px 0;
+}
+
+.pdf-unavailable {
+    color: var(--text-secondary, #6b7280);
+    font-size: 0.85rem;
+    padding: 8px 0;
+}
+
+.paper-index-badge {
+    display: inline-block;
+    min-width: 24px;
+    margin-right: 8px;
+    padding: 0 6px;
+    border-radius: 10px;
+    background: var(--primary-color, #a42c25);
+    color: #fff;
+    font-size: 0.8rem;
+    text-align: center;
+}
+
+.digest-cited-badge {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: 10px;
+    background: rgba(2, 132, 199, 0.12);
+    border: 1px solid rgba(2, 132, 199, 0.45);
+    color: #0369a1;
+    font-size: 0.72rem;
+}
+
+.copy-link-label {
+    font-size: 0.78rem;
+}
+
+.copy-toast {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    background: #111827;
+    color: #fff;
+    padding: 10px 16px;
+    border-radius: 6px;
+    z-index: 1000;
+    font-size: 0.85rem;
+}
+
+/* ---------- 日报面板 ---------- */
+.digest-panel {
+    max-width: var(--max-width, 1400px);
+    margin: 16px auto 8px;
+    padding: 16px 20px;
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: var(--radius-md, 8px);
+    background: var(--bg-secondary, #fafafa);
+}
+
+.digest-heading {
+    margin: 0 0 10px;
+    font-size: 1.1rem;
+}
+
+.digest-status-row,
+.digest-coverage-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 8px;
+    font-size: 0.82rem;
+    color: var(--text-secondary, #4b5563);
+}
+
+.digest-status,
+.coverage-status {
+    font-weight: 600;
+}
+
+.digest-status-partial,
+.coverage-partial,
+.digest-gap,
+.range-day-gap {
+    color: #b45309;
+}
+
+.coverage-complete,
+.digest-status-completed {
+    color: #047857;
+}
+
+.coverage-source {
+    padding: 0 8px;
+    border-left: 1px solid var(--border-color, #e5e7eb);
+}
+
+.digest-notice,
+.digest-note,
+.coverage-scope-note,
+.digest-unreferenced,
+.range-total {
+    font-size: 0.82rem;
+    color: var(--text-secondary, #4b5563);
+    margin: 6px 0;
+}
+
+.digest-gap-list {
+    margin: 6px 0 10px;
+    padding-left: 20px;
+    font-size: 0.82rem;
+    color: var(--text-secondary, #4b5563);
+}
+
+.digest-section {
+    margin: 12px 0;
+    padding: 10px 12px;
+    background: var(--bg-primary, #fff);
+    border: 1px solid var(--border-color, #e5e7eb);
+    border-radius: var(--radius-sm, 6px);
+}
+
+.digest-section-heading {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0 0 6px;
+    font-size: 0.95rem;
+}
+
+.digest-text {
+    margin: 0 0 8px;
+    line-height: 1.7;
+    white-space: pre-wrap;
+}
+
+.digest-cites {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.75rem;
+}
+
+.cite-chip {
+    border: 1px solid rgba(2, 132, 199, 0.45);
+    background: rgba(2, 132, 199, 0.1);
+    color: #0369a1;
+    border-radius: 10px;
+    padding: 1px 8px;
+    cursor: pointer;
+    font-size: 0.72rem;
+}
+
+.cite-missing {
+    border-color: rgba(180, 83, 9, 0.6);
+    background: rgba(180, 83, 9, 0.12);
+    color: #b45309;
+}
+
+.range-day-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-size: 0.82rem;
+}
+
+.range-day-item {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 6px 4px;
+    border-bottom: 1px dashed var(--border-color, #e5e7eb);
+    cursor: pointer;
+}
+
+.range-day-date {
+    font-weight: 600;
+}
+
+/* ---------- 原生日期选择（替代 flatpickr CDN） ---------- */
+/*
+ * 上游遗留规则 `.flatpickr-container input { display: none }`（styles.css:989）
+ * 会隐藏容器内所有 input。上游隐藏的是 flatpickr 的隐藏输入框，本项目改用原生
+ * date input 后，单日与区间输入都落在同一容器里，因此必须显式恢复显示，
+ * 否则 toggle 到区间模式后 #dateRangeStart/#dateRangeEnd 仍不可见（真实浏览器已复现）。
+ */
+.flatpickr-container input.native-date-input,
+.flatpickr-container #datepicker input {
+    display: block;
+}
+
+.native-datepicker {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: center;
+}
+
+.native-date-input {
+    width: 100%;
+    max-width: 260px;
+    padding: 8px 10px;
+    border: 1px solid var(--border-color, #d1d5db);
+    border-radius: var(--radius-sm, 6px);
+    font-size: 0.9rem;
+    background: var(--bg-primary, #fff);
+    color: var(--text-primary, #111827);
+}
+
+.native-range-inputs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.native-range-inputs .native-date-input {
+    display: block;
+}
+
+.date-empty {
+    color: var(--text-secondary, #6b7280);
+    font-size: 0.85rem;
+}
+
+/* ---------- 统计页补充（零依赖 SVG） ---------- */
+.stat-chart-wrapper {
+    width: 100%;
+    overflow-x: auto;
+}
+
+.stat-svg {
+    width: 100%;
+    height: auto;
+    min-width: 480px;
+}
+
+.stat-svg .axis-line {
+    stroke: #9ca3af;
+    stroke-width: 1;
+}
+
+.stat-svg .axis-label {
+    fill: #6b7280;
+    font-size: 11px;
+}
+
+.stat-svg .series-line {
+    fill: none;
+    stroke-width: 2;
+}
+
+.cloud-word {
+    cursor: pointer;
+}
+
+.cloud-word text {
+    fill: #374151;
+}
+
+/* ---------- 页脚归属说明 ---------- */
+.footer-attribution,
+.footer-notes {
+    font-size: 0.78rem;
+    color: var(--text-secondary, #6b7280);
+    margin: 4px 0 0;
+}
+
+.footer-attribution a {
+    color: var(--primary-color, #a42c25);
+}
+
+/* ---------- 加载状态（上游类名，确保无 CDN 时仍可见） ---------- */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 40px 20px;
+    color: var(--text-secondary, #6b7280);
+}
+
+.loading-spinner {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(0, 0, 0, 0.12);
+    border-top-color: var(--primary-color, #a42c25);
+    border-radius: 50%;
+    animation: pd-spin 0.9s linear infinite;
+}
+
+@keyframes pd-spin {
+    to { transform: rotate(360deg); }
+}
+
+/* ---------- 统计页补充 ---------- */
+.stat-gap-note {
+    font-size: 0.8rem;
+    color: #b45309;
+    margin: 6px 0;
+}
+
+.paper-count-list {
+    margin: 8px 0;
+    padding-left: 20px;
+    font-size: 0.82rem;
+    color: var(--text-secondary, #4b5563);
+}
+
+.paper-count-list li {
+    cursor: pointer;
+}
+
+.paper-count-list li:hover {
+    color: var(--primary-color, #a42c25);
+}
+
+
+/* ---------- research_scope 与同日修订 ---------- */
+.scope-panel {
+    margin: 10px 0;
+    padding: 10px 12px;
+    border: 1px dashed var(--border-color, #d1d5db);
+    border-radius: var(--radius-sm, 6px);
+    background: rgba(15, 118, 110, 0.05);
+}
+
+.scope-title {
+    margin: 0 0 6px;
+    font-size: 0.92rem;
+    color: #0f766e;
+}
+
+.scope-facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 0.8rem;
+    color: var(--text-secondary, #4b5563);
+}
+
+.scope-fact {
+    white-space: nowrap;
+}
+
+.scope-missing,
+.scope-hint {
+    margin: 4px 0 0;
+    font-size: 0.8rem;
+    color: #b45309;
+}
+
+.revision-row {
+    font-size: 0.8rem;
+    color: var(--text-secondary, #4b5563);
+    margin: 6px 0;
+}
+
+.revision-label {
+    font-weight: 600;
+}
+
+.revision-note {
+    color: var(--text-secondary, #6b7280);
+}
+
+/* 未知分类标签（categories 缺失时显示未知，不伪造来源分类） */
+.category-tag-unknown,
+.category-unknown {
+    background: rgba(107, 114, 128, 0.12);
+    border: 1px dashed rgba(107, 114, 128, 0.5);
+    color: #4b5563;
+    font-size: 0.72rem;
+    padding: 1px 8px;
+    border-radius: 10px;
+    display: inline-block;
+}
+
+/* ---------- 进入方式标签（补录候选 / 检索窗匹配） ---------- */
+.discovery-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 1px 8px;
+    border-radius: 10px;
+    font-size: 0.72rem;
+    white-space: nowrap;
+    cursor: help;
+}
+
+.discovery-backfill {
+    background: rgba(217, 119, 6, 0.14);
+    border: 1px dashed rgba(217, 119, 6, 0.65);
+    color: #b45309;
+    font-weight: 600;
+}
+
+.discovery-window_match {
+    background: rgba(107, 114, 128, 0.1);
+    border: 1px solid rgba(107, 114, 128, 0.35);
+    color: #4b5563;
+}
+
+.discovery-hint {
+    font-size: 0.78rem;
+    color: var(--text-secondary, #6b7280);
+}
+
+/* ==================================================================
+ * 窄屏（手机）适配：只做必要响应式，桌面布局不变。
+ * 目标：390px / 320px 视口下 body 不出现横向溢出（scrollWidth <= 视口宽），
+ *       页头品牌与控件分两行或收缩，日期不折行，主题导航仍可横向滚动使用。
+ * ================================================================== */
+html,
+body {
+    max-width: 100%;
+}
+
+/* 兜底：任何未预料的超宽装饰元素都不再顶出横向滚动条。
+   使用 clip（不是 hidden），因此不创建滚动容器、不影响 sticky 页头。 */
+html {
+    overflow-x: clip;
+}
+
+/* 长串（时间戳、DOI、URL、连续英文标题）必须能在窄屏换行，否则会顶宽容器 */
+.digest-generated,
+.coverage-source,
+.paper-meta-row,
+.paper-card-title,
+.paper-card-summary,
+.original-abstract,
+.digest-text,
+.scope-fact,
+.revision-row {
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+@media (max-width: 768px) {
+    /* 页头：品牌一行、控件一行，取消固定居中定位，消除互相挤占 */
+    .header-content {
+        flex-wrap: wrap;
+        row-gap: 8px;
+        align-items: center;
+    }
+
+    .header-center {
+        order: 1;
+        flex: 1 1 100%;
+        min-width: 0;
+        margin-bottom: 0;
+    }
+
+    .header-controls {
+        order: 2;
+        flex: 1 1 100%;
+        min-width: 0;
+        justify-content: flex-end;
+        gap: 12px;
+    }
+
+    .site-logo {
+        max-width: 100%;
+        min-width: 0;
+    }
+
+    .logo-image {
+        height: 30px;
+        flex-shrink: 0;
+    }
+
+    .site-title {
+        font-size: 15px;
+        line-height: 1.3;
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    /* 日期与图标不得折行，也不得撑破容器 */
+    .date-display {
+        white-space: nowrap;
+        min-width: 0;
+    }
+
+    .date-display #currentDate {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 40vw;
+    }
+
+    .date-selector {
+        min-width: 0;
+    }
+
+    /* 主题/筛选导航：整行占满并保持可横向滚动（第三项可滚到） */
+    .category-label-container,
+    .filter-label-container {
+        max-width: 100%;
+        padding-left: 12px;
+        padding-right: 12px;
+        min-width: 0;
+    }
+
+    .category-nav-label,
+    .filter-nav-label {
+        min-width: auto;
+        flex-shrink: 0;
+        font-size: 12px;
+        margin-right: 6px;
+    }
+
+    .category-scroll,
+    .filter-scroll {
+        min-width: 0;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+}
+
+@media (max-width: 420px) {
+    /*
+     * 320px 视口的真实缺陷：.paper-container 是
+     * grid-template-columns: repeat(auto-fill, minmax(350px, 1fr))（styles.css:599），
+     * 350px 的最小列宽无法被容器压缩，卡片被强制 350px 宽 → scrollWidth 360。
+     * 用 minmax(0, 1fr) + 子项 min-width:0 让列宽随容器收缩，而不是靠 overflow 裁剪掩盖。
+     */
+    .paper-container {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 16px;
+    }
+
+    .paper-container > * {
+        min-width: 0;
+    }
+
+    .paper-card {
+        min-width: 0;
+        padding: 12px 14px;
+    }
+
+    .paper-card-title,
+    .paper-card-authors,
+    .paper-card-summary,
+    .category-tag,
+    .topic-tag,
+    .source-tag,
+    .discovery-tag {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .category-tag,
+    .topic-tag,
+    .source-tag,
+    .discovery-tag {
+        white-space: normal;
+    }
+
+    .header-content {
+        padding: 10px 12px;
+    }
+
+    .header-controls {
+        gap: 8px;
+    }
+
+    .icon-button {
+        width: 36px;
+        height: 36px;
+    }
+
+    .logo-image {
+        height: 26px;
+    }
+
+    .site-title {
+        font-size: 14px;
+    }
+
+    .date-display #currentDate {
+        max-width: 34vw;
+        font-size: 13px;
+    }
+
+    .category-nav-label,
+    .filter-nav-label {
+        font-size: 11px;
+    }
+
+    .safety-notice,
+    .digest-panel {
+        padding-left: 12px;
+        padding-right: 12px;
+    }
+
+    .notice-item {
+        padding: 8px 10px;
+    }
+
+    .scope-facts {
+        gap: 8px;
+    }
+
+    .scope-fact {
+        white-space: normal;
+    }
+
+    .native-date-input {
+        max-width: 100%;
+    }
+
+    .digest-status-row,
+    .digest-coverage-row {
+        gap: 8px;
+    }
+}
+
+/* 窄屏下统计图保持可横向滚动，不把页面顶宽 */
+@media (max-width: 768px) {
+    .stat-chart-wrapper {
+        max-width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+    }
+}
+
+/* 缺口两个维度的标题与条目样式 */
+.digest-gap-heading {
+    margin: 10px 0 4px;
+    font-size: 0.86rem;
+    color: var(--text-primary, #111827);
+}
+
+.gap-item.gap-source,
+.gap-item.gap-data {
+    color: #b45309;
+}
+
+/* 区间视图：缺失日期缺口（显式列出，不补 0） */
+.range-missing {
+    margin: 10px 0;
+    padding: 10px 12px;
+    border: 1px dashed rgba(217, 119, 6, 0.55);
+    border-radius: var(--radius-sm, 6px);
+    background: rgba(245, 158, 11, 0.06);
+}
+
+.range-missing-title {
+    margin: 0 0 6px;
+    font-size: 0.84rem;
+    color: #b45309;
+    font-weight: 600;
+}
+
+.range-missing-list {
+    margin: 0;
+    padding-left: 20px;
+    font-size: 0.82rem;
+    color: #b45309;
+}
+
+.range-missing-none {
+    font-size: 0.82rem;
+    color: #047857;
+    margin: 8px 0 0;
+}

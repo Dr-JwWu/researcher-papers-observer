@@ -1,0 +1,105 @@
+{
+  "schema": "researcher-papers-site/1",
+  "days": [
+    "2026-10-14"
+  ],
+  "files": [
+    {
+      "path": "NOTICE.html",
+      "sha256": "6373a1ea794b5610da8a2f813e4108d3e8abb8e95534c2265a395222a91768af"
+    },
+    {
+      "path": "assets/file-list.txt",
+      "sha256": "6f5257f067284a2a0a082a80d13b458a61001c83ccaf6208b0c3c7d019b8ca19"
+    },
+    {
+      "path": "assets/logo2-removebg-preview.png",
+      "sha256": "08bf6f5bca8e2cc77f3bb1ef93fd1c620b3b3ac3baf814e6726a33a97b189693"
+    },
+    {
+      "path": "css/pd-adapt.css",
+      "sha256": "f511562832166b99b5f19b38f715b959d25983d5fa23adb808186db835b4e78b"
+    },
+    {
+      "path": "css/screenshot-placeholder.svg",
+      "sha256": "f3d22835bfd0e3361bfcb94a40ba16a6a53b135bb5a1af0fb5469cc93625a8ad"
+    },
+    {
+      "path": "css/settings.css",
+      "sha256": "d93401f5075fece2a574740d1de9bde0c53a3d300e9a055c6411b1c72b54b86b"
+    },
+    {
+      "path": "css/statistic.css",
+      "sha256": "06db0cf4d702a4793fc32fdecc541400ef7adea491ac09c6425ec121ce87d711"
+    },
+    {
+      "path": "css/styles.css",
+      "sha256": "60dda19d1b6a0810bafbfeefac5e58f92334d450a95daa99e5cbc85aea926e61"
+    },
+    {
+      "path": "data/2026-10-14_AI_enhanced_Chinese.jsonl",
+      "sha256": "e0a34e8a575f6e1f0b88e8501d11e1cfb5d51e2be8af4035bd35e5c59c12ff4a"
+    },
+    {
+      "path": "data/2026-10-14_digest.json",
+      "sha256": "1b4f7105f8be09905f7704fb54ded51f3173f785ddb03a130d959cc88550cc8e"
+    },
+    {
+      "path": "docs/licenses/daily-arxiv-LICENSE",
+      "sha256": "9d4874db4045e43a4a65b2899d2ec4a3fe1c55725adfc511a5ab3fa508d0b392"
+    },
+    {
+      "path": "index.html",
+      "sha256": "e301008d77463e25c1af262c000b4cb9ab9ba33c856815269b94edd9b760d40f"
+    },
+    {
+      "path": "js/app.js",
+      "sha256": "47fbc69b04f064d5935b215f75f884aec0eeb822cfcca9772948e70308638c3a"
+    },
+    {
+      "path": "js/data-config.js",
+      "sha256": "bbd0fde921b751425890fa180e5a20b39a11b517ada8daf22ef698d4456a5208"
+    },
+    {
+      "path": "js/pd-core.js",
+      "sha256": "53f597f59fb85ac8d6e04ddc29bb85786c45a80920a5adea93d27a09f86b3ca6"
+    },
+    {
+      "path": "js/pd-dom.js",
+      "sha256": "9e866cef45bd82898a57d5d641adac6509c57ca1367d23e503e9b4e9c5cbd05f"
+    },
+    {
+      "path": "js/pd-i18n.js",
+      "sha256": "23bbdaed4cb46c67027ac367d1172ad2eff3b14b09f07323d705bc96c6539f91"
+    },
+    {
+      "path": "js/pd-prefs.js",
+      "sha256": "8cdf39848a773e14d70588eedf5b7785401ca5cbb6642e8a2dc058b15897dec6"
+    },
+    {
+      "path": "js/pd-render.js",
+      "sha256": "f684dd0a543e8c6c0506b33c32f31f48e4e6079b0085df25b02b43f321a846e6"
+    },
+    {
+      "path": "js/pd-settings.js",
+      "sha256": "5b228a2890ea579356af402ae160934a3450728590dc38c829f06c3b2f2b5a18"
+    },
+    {
+      "path": "js/pd-stat.js",
+      "sha256": "af48a0cb35a8c686f0f4d4ddfbe9828d3ebde5a7c16d5fe11abec9233d130f39"
+    },
+    {
+      "path": "js/statistic.js",
+      "sha256": "2667466cefa3650f3d79ab07fea2483894915787e9548dd83f5748acf10986e1"
+    },
+    {
+      "path": "settings.html",
+      "sha256": "38ac5d1dc08f91fb3b7d726602b54afa270979fa51c9cc8bd4af33a794e6ed31"
+    },
+    {
+      "path": "statistic.html",
+      "sha256": "7fe4da55a315ee0e2b07945f068209b58669b0617f410d41be560261e8652c9b"
+    }
+  ],
+  "deployment": "not_deployed"
+}

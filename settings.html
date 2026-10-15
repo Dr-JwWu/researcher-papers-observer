@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<!--
+  ResearcherPapers 偏好设置页。
+
+  来源与变更声明 / Provenance notice:
+    本文件由上游 daily-arXiv-ai-enhanced settings.html
+    （main 01fdad3b0aec2d2f7977b686253a7b0c1c8273dc，Modified Apache License；
+     参考 .upstream/daily-arxiv，许可证副本见 docs/licenses/daily-arxiv-LICENSE）
+    改写而来。上游版权归其原作者，本项目不重新许可、不改标 MIT。
+    本文件为修改后的衍生文件，主要变更：
+      1. 删除 auth-config.js / auth.js、登录守卫与退出按钮（纯前端口令不是访问控制）；
+      2. 删除 Google Fonts 与 GitHub 星标/派生数外部 API 调用；
+      3. 新增“本机存储、不上传”说明与限额提示；
+      4. 偏好标签改由 pd-settings.js 用 DOM API 构建（原 innerHTML 注入面已消除）。
+-->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ResearcherPapers 偏好设置：本机关键词与作者筛选">
+    <title>偏好设置 - ResearcherPapers</title>
+    <link rel="icon" type="image/png" href="assets/logo2-removebg-preview.png">
+    <link rel="shortcut icon" type="image/png" href="assets/logo2-removebg-preview.png">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/settings.css">
+    <link rel="stylesheet" href="css/pd-adapt.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="header-content">
+                <div class="header-left">
+                    <a href="https://github.com/dw-dengwei/daily-arXiv-ai-enhanced" target="_blank" rel="noopener noreferrer" class="github-button" title="上游项目 daily-arXiv-ai-enhanced">
+                        <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                        </svg>
+                        <span class="github-text">上游项目</span>
+                    </a>
+                </div>
+
+                <div class="header-center">
+                    <a href="index.html" class="site-logo">
+                        <img src="assets/logo2-removebg-preview.png" alt="ResearcherPapers 论文日报" class="logo-image">
+                        <span class="site-title">ResearcherPapers 论文日报</span>
+                    </a>
+                </div>
+
+                <div class="header-controls">
+                    <a href="index.html" class="back-button" title="返回首页">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M20 11H7.83L13.42 5.41L12 4L4 12L12 20L13.41 18.59L7.83 13H20V11Z" fill="currentColor"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <main class="settings-page">
+            <div class="settings-container">
+                <div class="settings-header">
+                    <h1>偏好设置</h1>
+                    <p>关键词与作者用于在日报中优先排序与高亮，只保存在本机浏览器。</p>
+                </div>
+
+                <div class="safety-notice" id="settingsNotice">
+                    <details class="notice-item" open>
+                        <summary>本机存储说明</summary>
+                        <p>偏好仅存于本机 localStorage，用于筛选与排序；不会被上传、不涉及任何外部服务。</p>
+                    </details>
+                    <details class="notice-item">
+                        <summary>输入限制</summary>
+                        <p id="limitNote">单个关键词/作者最多 80 字符，最多 40 条；超长、重复或含标签的内容会被自动清理。</p>
+                    </details>
+                </div>
+
+                <div class="settings-content">
+                    <div class="settings-section">
+                        <div class="keyword-section-title">
+                            <div class="keyword-section-title-left">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path d="M17.63 5.84C17.27 5.33 16.67 5 16 5L5 5.01C3.9 5.01 3 5.9 3 7V17C3 18.1 3.9 18.99 5 18.99L16 19C16.67 19 17.27 18.67 17.63 18.16L22 12L17.63 5.84ZM16 17H5V7H16L19.55 12L16 17Z" fill="currentColor"/>
+                                </svg>
+                                感兴趣的关键词
+                            </div>
+                            <button id="copyKeywords" class="copy-button" title="复制关键词" type="button">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" fill="currentColor"/>
+                                </svg>
+                                复制
+                            </button>
+                        </div>
+                        <div class="settings-card">
+                            <div class="settings-item">
+                                <div class="tag-selector">
+                                    <div class="selected-tags" id="selectedKeywords"></div>
+                                    <div class="tag-input-container">
+                                        <input type="text" id="keywordInput" class="settings-input" placeholder="输入关键词后回车…">
+                                        <button id="addKeyword" class="add-tag-button" type="button">添加</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="settings-section">
+                        <div class="keyword-section-title">
+                            <div class="keyword-section-title-left">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="currentColor"/>
+                                </svg>
+                                感兴趣的作者
+                            </div>
+                            <button id="copyAuthors" class="copy-button" title="复制作者" type="button">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z" fill="currentColor"/>
+                                </svg>
+                                复制
+                            </button>
+                        </div>
+                        <div class="settings-card">
+                            <div class="settings-item">
+                                <div class="tag-selector">
+                                    <div class="selected-tags" id="selectedAuthors"></div>
+                                    <div class="tag-input-container">
+                                        <input type="text" id="authorInput" class="settings-input" placeholder="输入作者姓名后回车…">
+                                        <button id="addAuthor" class="add-tag-button" type="button">添加</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="settings-actions">
+                    <button id="resetSettings" class="button" type="button">重置</button>
+                    <button id="saveSettings" class="button primary" type="button">保存设置</button>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <p>ResearcherPapers 论文日报</p>
+                <p class="footer-attribution">
+                    页面布局基于
+                    <a href="https://github.com/dw-dengwei/daily-arXiv-ai-enhanced" target="_blank" rel="noopener noreferrer">daily-arXiv-ai-enhanced</a>
+                    （Modified Apache License，许可证副本见 docs/licenses/daily-arxiv-LICENSE）；本项目已按本站数据源与安全要求改造。
+                </p>
+                <p class="footer-notes">本页不收集、不上传任何使用数据。</p>
+            </div>
+        </footer>
+    </div>
+
+    <script src="js/pd-core.js"></script>
+    <script src="js/pd-i18n.js"></script>
+    <script src="js/pd-dom.js"></script>
+    <script src="js/pd-prefs.js"></script>
+    <script src="js/pd-settings.js"></script>
+</body>
+</html>

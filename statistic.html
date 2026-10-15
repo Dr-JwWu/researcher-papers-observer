@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<!--
+  ResearcherPapers 统计页（只统计已收录样本）。
+
+  来源与变更声明 / Provenance notice:
+    本文件由上游 daily-arXiv-ai-enhanced statistic.html
+    （main 01fdad3b0aec2d2f7977b686253a7b0c1c8273dc，Modified Apache License；
+     参考 .upstream/daily-arxiv，许可证副本见 docs/licenses/daily-arxiv-LICENSE）
+    改写而来。上游版权归其原作者，本项目不重新许可、不改标 MIT。
+    本文件为修改后的衍生文件，主要变更：
+      1. 删除 flatpickr / d3 / d3-cloud / compromise / chart.js 等 CDN 脚本
+         与 Google Fonts，统计图改为内置 SVG 渲染（无外部请求）；
+      2. 删除 auth-config.js / auth.js、登录守卫与退出按钮；
+      3. 删除 GitHub 星标/派生数外部 API 调用；
+      4. 日期选择改原生 input[type=date]；
+      5. 新增“只统计已收录样本、缺失日期不补 0”的显式说明。
+-->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ResearcherPapers 统计：仅统计已收录样本的关键词与趋势">
+    <title>统计 - ResearcherPapers</title>
+    <link rel="icon" type="image/png" href="assets/logo2-removebg-preview.png">
+    <link rel="shortcut icon" type="image/png" href="assets/logo2-removebg-preview.png">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/statistic.css">
+    <link rel="stylesheet" href="css/pd-adapt.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <div class="header-content">
+                <div class="header-left">
+                    <a href="https://github.com/dw-dengwei/daily-arXiv-ai-enhanced" target="_blank" rel="noopener noreferrer" class="github-button" title="上游项目 daily-arXiv-ai-enhanced">
+                        <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
+                        </svg>
+                        <span class="github-text">上游项目</span>
+                    </a>
+                </div>
+
+                <div class="header-center">
+                    <a href="index.html" class="site-logo">
+                        <img src="assets/logo2-removebg-preview.png" alt="ResearcherPapers 论文日报" class="logo-image">
+                        <span class="site-title">ResearcherPapers 论文日报</span>
+                    </a>
+                </div>
+
+                <div class="header-controls">
+                    <div class="date-selector">
+                        <div class="date-display">
+                            <span id="currentDate">Loading...</span>
+                            <button id="calendarButton" class="icon-button" title="选择日期" type="button">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path d="M19 4H18V2H16V4H8V2H6V4H5C3.89 4 3.01 4.9 3.01 6L3 20C3 21.1 3.89 22 5 22H19C20.1 22 21 21.1 21 20V6C21 4.9 20.1 4 19 4ZM19 20H5V9H19V20ZM7 11H12V16H7V11Z" fill="currentColor"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <a href="index.html" class="back-button" title="返回首页">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <path d="M20 11H7.83L13.42 5.41L12 4L4 12L12 20L13.41 18.59L7.83 13H20V11Z" fill="currentColor"/>
+                        </svg>
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <main class="statistics-page">
+            <div class="statistics-container">
+                <div class="statistics-header">
+                    <h1>统计</h1>
+                    <p>关键词频次与趋势：只统计本站已收录样本，缺失日期不补 0。</p>
+                </div>
+
+                <div class="safety-notice">
+                    <details class="notice-item" open>
+                        <summary>统计口径</summary>
+                        <p>统计只覆盖本站已发布的 data/ 文件；某日期没有数据时不会以 0 参与统计，缺口的日期会单独列出。关键词来自论文标题的字面抽取，不代表主题判定。</p>
+                    </details>
+                </div>
+
+                <div class="statistics-content">
+                    <div class="date-picker-modal" id="datePickerModal">
+                        <div class="date-picker-content">
+                            <div class="date-picker-body">
+                                <h3 class="date-picker-title">选择日期</h3>
+                                <div class="flatpickr-container">
+                                    <div id="datepicker" class="native-datepicker"></div>
+                                </div>
+                                <div class="date-range-selector">
+                                    <span class="toggle-label">区间</span>
+                                    <label class="toggle-switch">
+                                        <input type="checkbox" id="dateRangeMode">
+                                        <span class="toggle-slider"></span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="papersList">
+                        <!-- 统计数据由 statistic.js 渲染 -->
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <footer>
+            <div class="footer-content">
+                <p>ResearcherPapers 论文日报 · 统计</p>
+                <p class="footer-attribution">
+                    页面布局基于
+                    <a href="https://github.com/dw-dengwei/daily-arXiv-ai-enhanced" target="_blank" rel="noopener noreferrer">daily-arXiv-ai-enhanced</a>
+                    （Modified Apache License，许可证副本见 docs/licenses/daily-arxiv-LICENSE）；本项目已按本站数据源与安全要求改造。
+                </p>
+            </div>
+        </footer>
+    </div>
+
+    <div id="paperSidebar" class="paper-sidebar">
+        <div class="sidebar-header">
+            <div class="header-content">
+                <h3 id="selectedKeyword"></h3>
+            </div>
+            <button class="close-sidebar" type="button" title="关闭">&times;</button>
+        </div>
+        <div class="sidebar-content">
+            <div id="relatedPapers" class="related-papers">
+                <!-- 相关论文由 statistic.js 渲染 -->
+            </div>
+        </div>
+    </div>
+
+    <noscript>
+        <p class="noscript-notice">本页需要 JavaScript 才能读取本站 data/ 目录下的数据；未启用脚本时不会发送任何请求。</p>
+    </noscript>
+
+    <script src="js/pd-core.js"></script>
+    <script src="js/pd-i18n.js"></script>
+    <script src="js/pd-dom.js"></script>
+    <script src="js/pd-stat.js"></script>
+    <script src="js/statistic.js"></script>
+</body>
+</html>
