@@ -1,27 +1,27 @@
 {
   "date": "2026-10-14",
-  "generated_at": "2026-10-15T03:24:58.166003+00:00",
+  "generated_at": "2026-10-15T07:50:01.969860+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
       {
         "source": "arxiv",
         "status": "partial",
-        "candidate_count": 304,
-        "metadata_fetched": 0,
-        "missing_metadata": 3,
-        "date_from": "2026-10-13",
+        "candidate_count": 8061,
+        "metadata_fetched": 400,
+        "missing_metadata": 2600,
+        "date_from": "2026-10-08",
         "date_to": "2026-10-14",
-        "error_count": 2,
-        "limit_count": 0
+        "error_count": 1,
+        "limit_count": 6
       },
       {
         "source": "pubmed",
-        "status": "partial",
-        "candidate_count": 9,
-        "metadata_fetched": 3,
+        "status": "complete",
+        "candidate_count": 112,
+        "metadata_fetched": 112,
         "missing_metadata": 0,
-        "date_from": "2026-10-01",
+        "date_from": "2026-10-08",
         "date_to": "2026-10-14",
         "error_count": 0,
         "limit_count": 0
@@ -34,27 +34,32 @@
     "sections": [
       {
         "topic": "surgical",
-        "heading": "Real2Sim双臂遥操作框架用于手术机器人工具设计与评估",
-        "text": "本轮数据仅包含1篇论文（pubmed:42853000），主题为手术机器人。该研究针对手术机器人工具开发中遥操作可辅助评估工具性能并支持迭代设计的需求，提出一种可配置的real2sim双臂遥操作框架。方法上：搭建Omni-to-Unity系统，用两台便携式触觉设备实现对仿真机器人工具的双臂遥操作；另实现dVRK-to-Unity系统，以不同主手机器人检验框架适用性，并给出一个展示其在机器人工具设计中用途的应用场景。结果：两个系统均与模拟手术任务集成，在所报告实验中未观察到系统故障；实验表明框架适用于不同主手机器人以及具有不同运动学构型的仿真机器人工具。结论：该框架为构建双臂real2sim遥操作系统提供了紧凑途径，并可通过模拟手术任务促进对不同工具设计的评估。局限说明：以上信息仅基于所给摘要，未做全文精读；本轮仅1篇论文，不存在可依据的跨论文比较；摘要未报告临床有效性验证结果；数据覆盖为部分样本（bounded source sample，非穷尽全量），结论不宜外推。",
+        "heading": "机器人手术的鲁棒性短板与临床转化瓶颈",
+        "text": "两篇文献从不同扰动维度指向同一关切：机器人手术系统在真实场景下的可靠性仍不足以支撑临床转化。范围综述聚焦不停跳心脏手术的主动闭环运动补偿，显示感知、预测与控制已有可量化的性能上界（如180 ms预测时域下0.73–0.81 mm RMSE），但历经二十年研究仍未进入人体试验，首要障碍被归结为系统集成缺口而非单一算法短板。器械分割挑战赛则从视觉退化切入，在出血、烟雾、低亮度等非对抗损坏下，冠军方法于未公开测试集取得平均0.9394 DSC与0.9301 NSD，其提升多依赖先验知识、定制训练与架构选择等已知局限的传统手段。两者证据形态不同（叙述性综述综合与受控基准评测），数值不可直接互比；前者以猪模型验证为主且未做正式偏倚评估、未预注册，后者受限于特定损坏类型与二值分割任务，外推至更广临床场景需谨慎。",
         "paper_ids": [
-          "pubmed:42853000"
+          "pubmed:42870926",
+          "pubmed:42873631"
         ]
       }
     ],
-    "analysis_basis": "abstract",
-    "model": "opencode-go/deepseek-v4.1-flash",
-    "variant": "max"
+    "analysis_basis": "abstract"
   },
   "pending_count": 0,
-  "paper_count": 1,
+  "paper_count": 2,
   "research_scope": {
-    "policy": "bounded_real_validation_sample",
-    "collected_count": 6,
-    "analyzed_count": 1,
-    "excluded_count": 0,
-    "uncertain_count": 0,
+    "policy": "weekly_capture_partitioned_by_known_date",
+    "window_start": "2026-10-08",
+    "window_end": "2026-10-14",
     "date_basis": "UTC",
-    "window_start": "2026-10-01",
-    "window_end": "2026-10-14"
+    "date_basis_policy": "只按来源声明的日粒度日期分配日报：published 在窗口内记 window_match(day_basis=published)；否则使用窗口内的 PubMed 入库日 indexed_at，并公开 discovery_kind=backfill（补录，非当日首发）；日粒度日期可确认在窗口外且无窗口内入库日的记录本轮不公开；日期过粗或缺失者保留为 uncertain_date 待后续显式补录，不补造精确日期。",
+    "out_of_window_count": 169,
+    "undated_count": 2600,
+    "pending_count_by_source": {
+      "pubmed": 4
+    },
+    "sources_unavailable": [
+      "arxiv"
+    ],
+    "note": "计数只描述本轮已配置来源与检索窗口，不代表领域没有新论文；pending 为预算不足或失败的待审条目，不是相关性配额。"
   }
 }

@@ -17,7 +17,10 @@
  *     4. 日期选择改原生 input[type=date]（单日 + 区间），删除 flatpickr CDN 依赖；
  *     5. PDF 仅在有真实 pdf 字段时出现在按钮/iframe；删除 abs→pdf/html 字符串替换；
  *     6. 删除登录守卫与 KimiChat 第三方预填链接；
- *     7. 新增当日日报面板：计数、partial/缺口、pending、日报引用可点击定位。
+ *     7. 当日总结面板：收录/待审核/更新时间 + partial 一行短提示 + 主题筛选后的
+ *        分节正文，引用用“第 N 篇”，不显示 research_scope 与流程计数；
+ *     8. 删除“无访问控制/不可信数据”安全横幅与首发验证 banner；
+ *        缺日显示“暂无日报”，数据读取失败只给一句短提示，不外露内部错误文本。
  *   本文件为衍生代码，许可遵循 docs/licenses/daily-arxiv-LICENSE。
  */
 (function () {
@@ -31,7 +34,9 @@
   const state = {
     fileList: null,
     availableDates: [],
-    days: {},            // date -> {papers, invalidLines, dropped, digest, coverage, crossCheck}
+    days: {},            // date -> 完整加载完成的 {papers, invalidLines, dropped, digest, coverage, crossCheck}
+    dayLoads: {},        // date -> 正在进行的加载 Promise（避免把半加载对象当缓存复用）
+    loadToken: 0,        // 单调递增的请求令牌：旧请求不得覆盖新选择的日期
     range: null,         // {start, end, dates:[]}
     topics: 'all',
     keywords: [],
@@ -76,41 +81,69 @@
     });
   }
 
+  /** 只有 coverage/crossCheck 都算好的整日数据才进 state.days；否则一律等同一个 Promise。 */
+  function dayReady(day) {
+    return !!(day && day.coverage);
+  }
+
   function loadDay(date) {
     if (state.days[date]) return Promise.resolve(state.days[date]);
-    const dailyPath = PD.dailyFilePath(date, 'Chinese') || state.fileList.byDate[date].languages.map(function (lang) {
-      return PD.dailyFilePath(date, lang);
-    })[0];
-    const digestPath = state.fileList.byDate[date].digest || PD.digestFilePath(date);
-    const day = { date: date, papers: [], invalidLines: 0, dropped: 0, digest: PD.normalizeDigest(null, date), coverage: null, crossCheck: null, dailyMissing: false };
-    state.days[date] = day;
+    // 同一天在加载中：复用同一个 Promise。之前直接把半加载对象写进缓存，
+    // 快速连续切换/重复 change 会拿到 coverage=null 的 day 并在渲染时抛错。
+    if (state.dayLoads[date]) return state.dayLoads[date];
+    // 缺日（日期在清单里根本没有，例如区间中间的空白日）也必须能加载成“暂无日报”：
+    // 清单条目缺失时按常规路径请求并如实记为 missing，不能抛异常打断整页。
+    const entry = (state.fileList && state.fileList.byDate[date]) || null;
+    const languages = entry && entry.languages ? entry.languages : [];
+    const dailyPath = PD.dailyFilePath(date, 'Chinese') ||
+      (languages.length > 0 ? PD.dailyFilePath(date, languages[0]) : null);
+    const digestPath = (entry && entry.digest) || PD.digestFilePath(date);
+    const day = { date: date, papers: [], invalidLines: 0, dropped: 0, digest: PD.normalizeDigest(null, date), coverage: null, crossCheck: null, dailyMissing: false, dailyFailed: false, digestFailed: false };
 
-    const dailyRequest = fetchRelative(dailyPath).then(function (text) {
-      const parsed = PD.parseJsonl(text, { fileDate: date });
-      day.papers = parsed.papers;
-      day.invalidLines = parsed.invalidLines;
-      day.dropped = parsed.dropped;
-    }, function () {
-      day.dailyMissing = true;
-    });
+    const dailyRequest = dailyPath
+      ? fetchRelative(dailyPath).then(function (text) {
+        const parsed = PD.parseJsonl(text, { fileDate: date });
+        day.papers = parsed.papers;
+        day.invalidLines = parsed.invalidLines;
+        day.dropped = parsed.dropped;
+      }, function (error) {
+        // 404 = 这天真的没有日报；其他失败（断网/5xx）= 读取失败，必须与“缺日”区分开。
+        if (error && error.status === 404) day.dailyMissing = true;
+        else day.dailyFailed = true;
+      })
+      : Promise.resolve().then(function () { day.dailyMissing = true; });
 
-    const digestRequest = fetchRelative(digestPath).then(function (text) {
-      let raw = null;
-      try {
-        raw = JSON.parse(text);
-      } catch (error) {
-        raw = null;
-      }
-      day.digest = PD.normalizeDigest(raw, date);
-    }, function () {
-      day.digest = PD.normalizeDigest(null, date);
-    });
+    const digestRequest = digestPath
+      ? fetchRelative(digestPath).then(function (text) {
+        let raw = null;
+        try {
+          raw = JSON.parse(text);
+        } catch (error) {
+          raw = null;
+        }
+        day.digest = PD.normalizeDigest(raw, date);
+      }, function (error) {
+        day.digest = PD.normalizeDigest(null, date);
+        if (!error || error.status !== 404) {
+          day.digestFailed = true;
+          day.digest.problem = 'load-failed';
+        }
+      })
+      : Promise.resolve().then(function () { day.digest = PD.normalizeDigest(null, date); });
 
-    return Promise.all([dailyRequest, digestRequest]).then(function () {
+    const promise = Promise.all([dailyRequest, digestRequest]).then(function () {
       day.coverage = PD.computeCoverage(day.digest, day.papers, { invalidLines: day.invalidLines, dropped: day.dropped });
       day.crossCheck = PD.crossCheckDigest(day.digest, day.papers);
+      state.days[date] = day;
+      delete state.dayLoads[date];
       return day;
+    }, function (error) {
+      // 失败不缓存，允许之后再试；否则错误状态会被当成“已加载”永久复用。
+      delete state.dayLoads[date];
+      throw error;
     });
+    state.dayLoads[date] = promise;
+    return promise;
   }
 
   function loadRange(start, end) {
@@ -119,21 +152,6 @@
   }
 
   /* ------------------------------ 顶栏与筛选 UI ------------------------------ */
-
-  function renderNotice() {
-    if (!refs.notice) return;
-    dom.clear(refs.notice);
-    const box = dom.el('div', { class: 'safety-notice' });
-    const auth = dom.el('details', { class: 'notice-item' });
-    auth.appendChild(dom.el('summary', { text: T.noticeNoAuthTitle }));
-    auth.appendChild(dom.el('p', { text: T.noticeNoAuthBody }));
-    box.appendChild(auth);
-    const untrusted = dom.el('details', { class: 'notice-item' });
-    untrusted.appendChild(dom.el('summary', { text: T.noticeUntrustedTitle }));
-    untrusted.appendChild(dom.el('p', { text: T.noticeUntrustedBody }));
-    box.appendChild(untrusted);
-    refs.notice.appendChild(box);
-  }
 
   function renderTopicNav() {
     if (!refs.categoryScroll) return;
@@ -243,10 +261,10 @@
       type: 'date', id: 'dateSingle', class: 'native-date-input', min: min, max: max, value: max
     });
     single.addEventListener('change', function () {
-      if (single.value && PD.isIsoDate(single.value)) {
-        loadAndRenderSingle(single.value);
-        closeDatePicker();
-      }
+      if (!single.value || !PD.isIsoDate(single.value)) return;
+      // 先关弹窗再加载：加载路径即使出错或与重复 change 竞争，也不会把弹窗留在页面背景上。
+      closeDatePicker();
+      loadAndRenderSingle(single.value);
     });
     refs.datepicker.appendChild(single);
 
@@ -261,8 +279,8 @@
       if (!PD.isIsoDate(a) || !PD.isIsoDate(b)) return;
       const from = a <= b ? a : b;
       const to = a <= b ? b : a;
-      loadAndRenderRange(from, to);
       closeDatePicker();
+      loadAndRenderRange(from, to);
     });
     rangeBox.appendChild(start);
     rangeBox.appendChild(end);
@@ -307,6 +325,11 @@
 
   function renderPapers() {
     const day = state.days[state.currentDate];
+    // 该日期还在加载（或加载失败）：保持加载提示，绝不拿半加载数据渲染。
+    if (!dayReady(day)) {
+      showLoading();
+      return;
+    }
     const papers = currentDayPapers();
     const filtered = PD.filterPapersByTopic(papers, state.topics);
     const ranked = PD.rankPapers(filtered, {
@@ -328,39 +351,58 @@
         openModal(paper, state.currentIndex);
       }
     });
+    renderDaySummary();
     renderTopicNav();
   }
 
-  function renderDaySummary(days) {
+  /** 引用定位用：paper id → 当天列表里的序号（显示“第 N 篇”，不显示原始 id）。 */
+  function paperIndexMap(papers) {
+    const map = {};
+    (papers || []).forEach(function (paper, index) {
+      if (map[paper.id] === undefined) map[paper.id] = index + 1;
+    });
+    return map;
+  }
+
+  /** 当日总结：只显示收录/待审核/更新时间、partial 短提示与分节正文（按主题筛选）。 */
+  function renderDaySummary() {
     if (!refs.digestContainer) return;
-    if (days.length === 0) {
+    if (state.range) {
+      renderRangeSummary();
+      return;
+    }
+    const day = state.days[state.currentDate];
+    if (!dayReady(day)) {
       dom.clear(refs.digestContainer);
       return;
     }
-    if (days.length === 1) {
-      const day = days[0];
-      PD.render.renderDigest({ container: refs.digestContainer }, day.digest, day.coverage, day.crossCheck, function (id) {
-        openByPaperId(id);
-      });
-      return;
-    }
-    // 区间视图：逐日列出计数与缺口，不把多天合并成一个伪造的“日报”。
+    PD.render.renderDigest({ container: refs.digestContainer }, day.digest, day.coverage, {
+      topic: state.topics,
+      paperIndex: paperIndexMap(day.papers),
+      onCite: function (id) { openByPaperId(id); }
+    });
+  }
+
+  /** 区间视图：逐日列出收录数，不把多天合并成一个伪造的“日报”。 */
+  function renderRangeSummary() {
+    const days = state.range.dates.map(function (date) { return state.days[date]; }).filter(dayReady);
     dom.clear(refs.digestContainer);
     const panel = dom.el('section', { class: 'digest-panel' });
-    panel.appendChild(dom.el('h2', { class: 'digest-heading', text: '区间内逐日汇总（不含跨日合并总结）' }));
+    panel.appendChild(dom.el('h2', { class: 'digest-heading', text: T.rangeSummaryTitle }));
     const list = dom.el('ul', { class: 'range-day-list' });
     let total = 0;
     days.forEach(function (day) {
       total += day.coverage.publishedCount;
       const item = dom.el('li', { class: 'range-day-item' });
       item.appendChild(dom.el('span', { class: 'range-day-date', text: day.date }));
-      item.appendChild(dom.el('span', { text: '已发布 ' + day.coverage.publishedCount + ' 篇' }));
       item.appendChild(dom.el('span', {
-        class: 'range-day-digest',
-        text: '日报：' + i18n.digestStatusLabel(day.digest.available ? day.digest.digest.status : 'unavailable')
+        text: i18n.formatTemplate(T.rangeDayCount, { n: day.coverage.publishedCount })
       }));
-      if (PD.hasAnyGap(day.coverage.gapReasons)) {
-        item.appendChild(dom.el('span', { class: 'range-day-gap', text: '存在缺口' }));
+      if (PD.coverageIsPartial(day.coverage)) {
+        item.appendChild(dom.el('span', { class: 'range-day-gap', text: T.digestCoveragePartial }));
+      }
+      if (!day.digest.available || day.digest.digest.status !== 'completed') {
+        item.appendChild(dom.el('span', { class: 'range-day-digest', text: T.digestNoSummary }));
       }
       item.addEventListener('click', function () { loadAndRenderSingle(day.date); });
       list.appendChild(item);
@@ -379,7 +421,10 @@
     } else {
       panel.appendChild(dom.el('p', { class: 'range-missing-none', text: T.rangeMissingNone }));
     }
-    panel.appendChild(dom.el('p', { class: 'range-total', text: '区间合计（仅已发布样本）：' + total + ' 篇' }));
+    panel.appendChild(dom.el('p', {
+      class: 'range-total',
+      text: i18n.formatTemplate(T.rangeTotal, { n: total })
+    }));
     refs.digestContainer.appendChild(panel);
   }
 
@@ -387,30 +432,52 @@
     if (refs.currentDate) refs.currentDate.textContent = text;
   }
 
+  function showLoading() {
+    if (!refs.paperContainer) return;
+    dom.clear(refs.paperContainer);
+    refs.paperContainer.appendChild(dom.el('div', { class: 'loading-container' }, [
+      dom.el('div', { class: 'loading-spinner' }),
+      dom.el('p', { text: T.loadingPapers })
+    ]));
+  }
+
+  /** 新请求令牌：只有最后一次选择的加载结果才允许渲染（旧请求不得覆盖新日期）。 */
+  function nextLoadToken() {
+    state.loadToken += 1;
+    return state.loadToken;
+  }
+
+  function isCurrentLoad(token) {
+    return token === state.loadToken;
+  }
+
   function loadAndRenderSingle(date) {
+    const token = nextLoadToken();
+    // 立刻切到单日模式并显示加载态：重复 change / 快速连续切换时，
+    // 不会再用旧的 range 状态或半加载数据渲染。
+    state.range = null;
+    state.currentDate = date;
     setCurrentDateLabel(date);
-    if (refs.paperContainer) {
-      dom.clear(refs.paperContainer);
-      refs.paperContainer.appendChild(dom.el('div', { class: 'loading-container' }, [
-        dom.el('div', { class: 'loading-spinner' }),
-        dom.el('p', { text: T.loadingPapers })
-      ]));
-    }
+    if (refs.dateSingle) refs.dateSingle.value = date;
+    showLoading();
     return loadDay(date).then(function (day) {
-      state.range = null;
-      state.currentDate = date;
-      if (refs.dateSingle) refs.dateSingle.value = date;
-      renderDaySummary([day]);
+      if (!isCurrentLoad(token)) return;
+      renderDaySummary();
       if (day.papers.length === 0) {
         dom.clear(refs.paperContainer);
         refs.paperContainer.appendChild(dom.el('div', { class: 'loading-container' }, [
-          dom.el('p', { text: day.dailyMissing ? T.dataFileFailed + day.date : T.noPapersForDate })
+          dom.el('p', {
+            text: day.dailyFailed ? T.loadFailedTitle
+              : (day.dailyMissing ? T.noDigestForDate : T.noPapersForDate)
+          })
         ]));
+        state.currentPapers = [];
         renderTopicNav();
         return;
       }
       renderPapers();
     }, function (error) {
+      if (!isCurrentLoad(token)) return;
       showLoadError(error);
     });
   }
@@ -421,10 +488,14 @@
       setCurrentDateLabel('');
       return Promise.resolve();
     }
+    const token = nextLoadToken();
+    state.range = null;
     setCurrentDateLabel(range.display);
+    showLoading();
     // 区间内没有数据的日期必须显式列为缺口（不能跳过或当 0 篇）。
     state.rangeMissingDates = PD.expandDateRange(start, end, state.availableDates).missing;
     return loadRange(start, end).then(function (dates) {
+      if (!isCurrentLoad(token)) return;
       if (dates.length === 0) {
         if (refs.paperContainer) {
           dom.clear(refs.paperContainer);
@@ -432,24 +503,25 @@
             dom.el('p', { text: T.noPapersForRange })
           ]));
         }
+        renderDaySummary();
         return;
       }
       state.range = { start: start, end: end, dates: dates, missing: state.rangeMissingDates || [] };
       state.currentDate = dates[0];
-      renderDaySummary(dates.map(function (date) { return state.days[date]; }));
       renderPapers();
     }, function (error) {
+      if (!isCurrentLoad(token)) return;
       showLoadError(error);
     });
   }
 
+  /** 读取失败只给一句短提示，不把 HTTP 状态等内部错误文本摆到页面上。 */
   function showLoadError(error) {
     if (!refs.paperContainer) return;
     dom.clear(refs.paperContainer);
-    const box = dom.el('div', { class: 'loading-container' });
-    box.appendChild(dom.el('p', { text: T.loadFailedTitle }));
-    box.appendChild(dom.el('p', { text: T.loadFailedDetail + (error && error.message ? error.message : '') }));
-    refs.paperContainer.appendChild(box);
+    refs.paperContainer.appendChild(dom.el('div', { class: 'loading-container' }, [
+      dom.el('p', { text: T.loadFailedTitle })
+    ]));
   }
 
   /* ------------------------------ 模态框 ------------------------------ */
@@ -589,7 +661,6 @@
     refs.dateRangeToggle = document.getElementById('dateRangeMode');
     refs.paperContainer = document.getElementById('paperContainer');
     refs.digestContainer = document.getElementById('digestPanel');
-    refs.notice = document.getElementById('safetyNotice');
     refs.categoryScroll = document.querySelector('.category-scroll');
     refs.filterTags = document.getElementById('filterTags');
     refs.searchToggle = document.getElementById('textSearchToggle');
@@ -651,7 +722,6 @@
 
   function bootstrap() {
     collectRefs();
-    renderNotice();
     mountCopyButton();
     bindEvents();
 

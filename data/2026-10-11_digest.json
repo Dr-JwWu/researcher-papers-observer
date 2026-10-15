@@ -1,0 +1,64 @@
+{
+  "date": "2026-10-11",
+  "generated_at": "2026-10-15T07:50:01.969239+00:00",
+  "coverage": {
+    "status": "partial",
+    "sources": [
+      {
+        "source": "arxiv",
+        "status": "partial",
+        "candidate_count": 8061,
+        "metadata_fetched": 400,
+        "missing_metadata": 2600,
+        "date_from": "2026-10-08",
+        "date_to": "2026-10-14",
+        "error_count": 1,
+        "limit_count": 6
+      },
+      {
+        "source": "pubmed",
+        "status": "complete",
+        "candidate_count": 112,
+        "metadata_fetched": 112,
+        "missing_metadata": 0,
+        "date_from": "2026-10-08",
+        "date_to": "2026-10-14",
+        "error_count": 0,
+        "limit_count": 0
+      }
+    ],
+    "scope_note": "仅对已配置来源与检索窗口留痕，不代表全网穷尽。"
+  },
+  "digest": {
+    "status": "completed",
+    "sections": [
+      {
+        "topic": "surgical",
+        "heading": "神经外科可操控针路径规划的深度强化学习框架",
+        "text": "AutoPlan 将深度强化学习用于神经外科可操控针的轨迹规划，在 55 例 MRI 数据上对比 PPO、SAC、DDPG 与 RRT，并引入变曲率定插入（VCFI）与变插入定曲率（VIFC）两种运动学控制策略及不同起点初始化方式。摘要报告 PPO（VIFC、选择性起点）成功率 90.9%、路径长 45.96±14.76 mm、计算时间 0.02±0.02 s，明显优于 RRT 的 65.5%，显示学习式规划在计算速度与运动学可行性上的潜力。局限在于证据仅来自摘要：样本量有限、缺少外部验证与临床有效性证据，且 RRT 基线路径长度方差极大，两类方法差异的稳健性仍需全文细节与独立复现确认。",
+        "paper_ids": [
+          "pubmed:42859874"
+        ]
+      }
+    ],
+    "analysis_basis": "abstract"
+  },
+  "pending_count": 0,
+  "paper_count": 1,
+  "research_scope": {
+    "policy": "weekly_capture_partitioned_by_known_date",
+    "window_start": "2026-10-08",
+    "window_end": "2026-10-14",
+    "date_basis": "UTC",
+    "date_basis_policy": "只按来源声明的日粒度日期分配日报：published 在窗口内记 window_match(day_basis=published)；否则使用窗口内的 PubMed 入库日 indexed_at，并公开 discovery_kind=backfill（补录，非当日首发）；日粒度日期可确认在窗口外且无窗口内入库日的记录本轮不公开；日期过粗或缺失者保留为 uncertain_date 待后续显式补录，不补造精确日期。",
+    "out_of_window_count": 169,
+    "undated_count": 2600,
+    "pending_count_by_source": {
+      "pubmed": 4
+    },
+    "sources_unavailable": [
+      "arxiv"
+    ],
+    "note": "计数只描述本轮已配置来源与检索窗口，不代表领域没有新论文；pending 为预算不足或失败的待审条目，不是相关性配额。"
+  }
+}

@@ -12,7 +12,8 @@
  *     2. showNotification 原用 innerHTML 拼图标与消息，改为 DOM 构建；
  *     3. 删除 fetchGitHubStats（外部 GitHub API 星数）；
  *     4. 删除 Auth.logout 与登录守卫（客户端口令不是访问控制）；
- *     5. 保存/读取走 pd-prefs 净化与限额。
+ *     5. 保存/读取走 pd-prefs 净化与限额；
+ *     6. 本机存储说明只保留一句话（删除输入限制工程说明）。
  *   本文件为衍生代码，许可遵循 docs/licenses/daily-arxiv-LICENSE。
  */
 (function (root) {
@@ -256,13 +257,6 @@
   }
 
   function bootstrap() {
-    const limitNote = document.getElementById('limitNote');
-    if (limitNote) {
-      limitNote.textContent = PD.i18n.formatTemplate(T.settingsLimitNote, {
-        len: PD.PREF_LIMITS.itemLength,
-        items: PD.PREF_LIMITS.items
-      });
-    }
     SettingsPage.init();
   }
 

@@ -1,0 +1,55 @@
+{
+  "date": "2026-10-10",
+  "generated_at": "2026-10-15T07:50:01.969120+00:00",
+  "coverage": {
+    "status": "partial",
+    "sources": [
+      {
+        "source": "arxiv",
+        "status": "partial",
+        "candidate_count": 8061,
+        "metadata_fetched": 400,
+        "missing_metadata": 2600,
+        "date_from": "2026-10-08",
+        "date_to": "2026-10-14",
+        "error_count": 1,
+        "limit_count": 6
+      },
+      {
+        "source": "pubmed",
+        "status": "complete",
+        "candidate_count": 112,
+        "metadata_fetched": 112,
+        "missing_metadata": 0,
+        "date_from": "2026-10-08",
+        "date_to": "2026-10-14",
+        "error_count": 0,
+        "limit_count": 0
+      }
+    ],
+    "scope_note": "仅对已配置来源与检索窗口留痕，不代表全网穷尽。"
+  },
+  "digest": {
+    "status": "no_included_papers",
+    "sections": [],
+    "note": "本轮无已完成审核的入选论文；不等于相关领域无新论文。"
+  },
+  "pending_count": 0,
+  "paper_count": 0,
+  "research_scope": {
+    "policy": "weekly_capture_partitioned_by_known_date",
+    "window_start": "2026-10-08",
+    "window_end": "2026-10-14",
+    "date_basis": "UTC",
+    "date_basis_policy": "只按来源声明的日粒度日期分配日报：published 在窗口内记 window_match(day_basis=published)；否则使用窗口内的 PubMed 入库日 indexed_at，并公开 discovery_kind=backfill（补录，非当日首发）；日粒度日期可确认在窗口外且无窗口内入库日的记录本轮不公开；日期过粗或缺失者保留为 uncertain_date 待后续显式补录，不补造精确日期。",
+    "out_of_window_count": 169,
+    "undated_count": 2600,
+    "pending_count_by_source": {
+      "pubmed": 4
+    },
+    "sources_unavailable": [
+      "arxiv"
+    ],
+    "note": "计数只描述本轮已配置来源与检索窗口，不代表领域没有新论文；pending 为预算不足或失败的待审条目，不是相关性配额。"
+  }
+}

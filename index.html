@@ -14,15 +14,18 @@
       3. 删除 GitHub 星标/派生数（外部 API）与 GitHub 头部按钮，保留页脚归属说明；
       4. data-config.js 不再注入 GitHub 仓库信息，数据源为本站相对 data/ 目录；
       5. 顶栏“分类筛选”改为“主题筛选”（topics：embodied/surgical，允许双命中）；
-      6. 新增当日综合总结面板（data/YYYY-MM-DD_digest.json）与安全提示区；
-      7. 模态框底部链接改为：摘要页 / 真实 PDF（缺失即隐藏）/ 代码仓库 / 复制链接，
-         删除 KimiChat 第三方预填链接与 abs→pdf/html 字符串替换。
+      6. 当日总结面板（data/YYYY-MM-DD_digest.json）；
+      7. 模态框底部链接改为：摘要页 / 真实 PDF（缺失即隐藏）/ 复制链接，
+         删除 KimiChat 第三方预填链接与 abs→pdf/html 字符串替换；
+      8. 精简为研究者阅读页面：删除首发验证 banner、“无访问控制/不可信数据”
+         安全横幅、research_scope 与流程计数、重复免责声明与原始 paper id；
+         来源与许可集中到 NOTICE.html，页脚只留署名与关于链接。
 -->
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="具身智能与手术机器人/手术AI 中文论文日报（本站数据源，AI 分析仅依据摘要）">
+    <meta name="description" content="具身智能与手术机器人/手术AI 中文论文日报（本站数据源，AI 摘要仅依据摘要）">
     <title>论文日报 - ResearcherPapers</title>
     <link rel="icon" type="image/png" href="assets/logo2-removebg-preview.png">
     <link rel="shortcut icon" type="image/png" href="assets/logo2-removebg-preview.png">
@@ -32,12 +35,11 @@
     <!-- 数据源配置：本站相对目录（无外部主机、无 CI 注入） -->
     <script src="js/data-config.js"></script>
     <script>
-        // 纯静态页面：没有访问控制。任何前端口令都无法保护数据，
-        // 真正的访问控制必须由服务端/托管层实现（见页面安全提示）。
-        window.addEventListener('error', function (event) {
+        // 纯静态页面：出错时只给一句提示，不向页面倾倒内部错误信息。
+        window.addEventListener('error', function () {
             var box = document.createElement('div');
             box.className = 'runtime-error';
-            box.textContent = '错误: ' + event.message;
+            box.textContent = '页面出错了，请刷新重试。';
             document.body.appendChild(box);
             setTimeout(function () { box.remove(); }, 6000);
         });
@@ -48,12 +50,7 @@
         <header>
             <div class="header-content">
                 <div class="header-left">
-                    <a href="https://github.com/dw-dengwei/daily-arXiv-ai-enhanced" target="_blank" rel="noopener noreferrer" class="github-button" title="上游项目 daily-arXiv-ai-enhanced">
-                        <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
-                        </svg>
-                        <span class="github-text">上游项目</span>
-                    </a>
+                    <a href="NOTICE.html" class="about-link" title="来源、许可与免责说明">来源与许可</a>
                 </div>
 
                 <div class="header-center">
@@ -114,13 +111,6 @@
         </header>
 
         <main>
-            <section class="validation-banner" aria-label="验证样本说明">
-                <strong>验证样本 · 尚非正式每日研究</strong>
-                <p>本页仅展示 1 篇真实 PubMed 论文的中文摘要级分析，用于验证阅读流程。arXiv 元数据采集遇到 429 限流，来源覆盖不完整；不代表当天全量论文，不代表已启用自动日更，也不构成医疗建议。</p>
-                <a href="NOTICE.html">来源、许可与样本范围</a>
-            </section>
-            <div id="safetyNotice"></div>
-
             <div class="date-picker-modal" id="datePickerModal">
                 <div class="date-picker-content">
                     <div class="date-picker-body">
@@ -190,14 +180,8 @@
 
     <footer>
         <div class="footer-content">
-            <p>ResearcherPapers 论文日报 · 具身智能 / 手术机器人</p>
-            <p class="footer-attribution">
-                页面布局与数据形状基于
-                <a href="https://github.com/dw-dengwei/daily-arXiv-ai-enhanced" target="_blank" rel="noopener noreferrer">daily-arXiv-ai-enhanced</a>
-                （Modified Apache License，许可证副本见 docs/licenses/daily-arxiv-LICENSE）；
-                本项目已按本站数据源与安全要求改造，未改标许可。
-            </p>
-            <p class="footer-notes">AI 文本仅基于摘要生成，请谨慎甄别；本页不收集、不上传任何使用数据。</p>
+            <p>ResearcherPapers 论文日报</p>
+            <p class="footer-attribution"><a href="NOTICE.html">来源、许可与免责说明</a></p>
         </div>
     </footer>
 

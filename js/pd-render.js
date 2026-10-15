@@ -14,8 +14,12 @@
  *        categories 仅作为来源分类标签展示，不再当主题；
  *     3. 发表日期按 published_precision 显示，修订/发现时间单独标注，不补造日期；
  *     4. PDF 区域只在数据含真实 pdf 时创建 iframe/按钮，删除 url.replace('abs','pdf'|'html')；
- *     5. 模态框新增“AI 摘要级分析（仅依据摘要）”标识与日报引用标记；
- *     6. 删除 KimiChat 第三方预填链接，改为复制摘要页链接（仅本地剪贴板）。
+ *     5. 模态框新增“AI 摘要（仅依据摘要）”单行依据说明与日报引用标记；
+ *     6. 删除 KimiChat 第三方预填链接，改为复制摘要页链接（仅本地剪贴板）；
+ *     7. 精简：删除 research_scope 工程口径、候选取回/缺元数据/错误计数、
+ *        结构自洽诊断、原始 paper id（引用改“第 N 篇”）与卡片逐条免责声明；
+ *        公开导出不转载原摘要时只给短句＋来源页按钮；
+ *        当日总结按当前主题筛选分节。
  *   本文件为衍生代码（derivative work），许可遵循 docs/licenses/daily-arxiv-LICENSE。
  */
 (function (root) {
@@ -54,18 +58,15 @@
   }
 
   /**
-   * 进入方式标签：backfill=补录候选（扩大日期窗回填），window_match=检索窗匹配。
-   * 缺省（旧 16 字段数据）不显示标签、不推断，避免冒称当日首发。
+   * 卡片进入方式标签：只有补录论文需要一个短标签“补录”（不是当日首发）。
+   * 检索窗匹配属于正常检索结果，不在卡片上出现；详情里仍保留进入方式一行。
    */
   function discoveryTag(paper) {
-    const kind = paper.discoveryKind;
-    if (!kind) return null;
-    const label = i18n.discoveryLabel(kind);
-    if (!label) return null;
+    if (paper.discoveryKind !== 'backfill') return null;
     return dom.el('span', {
-      class: 'discovery-tag discovery-' + kind,
-      title: i18n.discoveryHint(kind),
-      text: label
+      class: 'discovery-tag discovery-backfill',
+      title: i18n.discoveryHint('backfill'),
+      text: T.discoveryBackfillCard
     });
   }
 
@@ -73,16 +74,19 @@
     return dom.el('span', { class: 'source-tag source-' + paper.sourceLabel, text: i18n.sourceLabel(paper.sourceLabel) });
   }
 
+  /** 卡片日期：日精度是常态，不再写“（精确到日）”；只有月/年这类不完整精度才提示。 */
   function publishedLine(paper) {
     const published = PD.describePublished(paper.published, paper.publishedPrecision);
     const wrap = dom.el('span', { class: 'paper-card-date' });
     if (published.display === '') {
       dom.append(wrap, [dom.el('span', { class: 'date-unknown', text: '发表日期未标注' })]);
     } else {
-      dom.append(wrap, [
-        dom.el('time', { datetime: published.iso, text: published.display }),
-        dom.el('span', { class: 'date-precision', text: '（' + i18n.precisionLabel(published.precision) + '）' })
-      ]);
+      dom.append(wrap, [dom.el('time', { datetime: published.iso, text: published.display })]);
+      if (published.precision === 'month' || published.precision === 'year') {
+        dom.append(wrap, [
+          dom.el('span', { class: 'date-precision', text: '（' + i18n.precisionLabel(published.precision) + '）' })
+        ]);
+      }
     }
     return wrap;
   }
@@ -150,6 +154,7 @@
     header.appendChild(titleNode);
     header.appendChild(authorNodes(paper, opts.authorTerms || []));
     const tagRow = dom.el('div', { class: 'paper-card-tag-row' });
+    // 卡片只保留两件事：来源 + 主题（补录论文再多一个短标签）。
     tagRow.appendChild(sourceTag(paper));
     const discovery = discoveryTag(paper);
     if (discovery) tagRow.appendChild(discovery);
@@ -160,20 +165,17 @@
       tagRow.appendChild(dom.el('span', { class: 'topic-tag topic-unknown', text: '主题未标注' }));
     }
     header.appendChild(tagRow);
-    header.appendChild(categoryTags(paper, 'paper-card-categories'));
     card.appendChild(header);
 
     const body = dom.el('div', { class: 'paper-card-body' });
     const summary = dom.el('p', { class: 'paper-card-summary' });
-    const summaryText = paper.ai.tldr && paper.ai.tldr.trim() !== '' ? paper.ai.tldr : paper.abstract;
-    dom.highlighted(summary, summaryText, opts.titleTerms || [], 'keyword-highlight');
+    // 卡片正文优先 AI 概括；没有 AI 概括时只有真实原摘要才展示，
+    // 公开导出的占位句不当摘要显示。
+    const summaryText = paper.ai.tldr && paper.ai.tldr.trim() !== ''
+      ? paper.ai.tldr
+      : (PD.hasPublicAbstract(paper) ? paper.abstract : '');
+    dom.highlighted(summary, summaryText === '' ? T.abstractLinkNote : summaryText, opts.titleTerms || [], 'keyword-highlight');
     body.appendChild(summary);
-    if (paper.ai.tldr && paper.ai.tldr.trim() !== '' && paper.abstract) {
-      body.appendChild(dom.el('p', {
-        class: 'paper-card-ai-note',
-        text: '以上为 AI 摘要级概括，原文摘要见详情。'
-      }));
-    }
     const footer = dom.el('div', { class: 'paper-card-footer' });
     const left = dom.el('div', { class: 'footer-left' });
     left.appendChild(publishedLine(paper));
@@ -309,11 +311,14 @@
     return wrap;
   }
 
-  /** AI 五字段：显式声明仅依据摘要，且字段为空时写“摘要未提供”，不伪造。 */
+  /**
+   * AI 五字段。依据说明在详情里只出现一次（短句），卡片上不重复免责声明；
+   * 字段为空时写“摘要未提供”，不伪造。
+   */
   function aiSection(paper) {
     const section = dom.el('section', { class: 'paper-ai-section' });
     section.appendChild(dom.el('h3', { class: 'paper-ai-title', text: T.modalAi }));
-    section.appendChild(dom.el('p', { class: 'paper-ai-basis', text: T.modalAiBasisWarn }));
+    section.appendChild(dom.el('p', { class: 'paper-ai-basis', text: T.modalAiBasis }));
     if (!paper.aiAvailable) {
       section.appendChild(dom.el('p', { class: 'paper-ai-missing', text: T.modalAiMissing }));
       return section;
@@ -440,17 +445,24 @@
     })));
     meta.appendChild(metaRow(T.cardPublished + ': ', dateDetail(paper)));
     if (paper.discoveryKind) {
+      // 详情保留完整进入方式（卡片只留“补录”短标签）。
       const discoveryWrap = dom.el('span', { class: 'modal-discovery' });
-      const tag = discoveryTag(paper);
-      if (tag) discoveryWrap.appendChild(tag);
+      const kind = paper.discoveryKind;
+      const label = i18n.discoveryLabel(kind);
+      if (label) {
+        discoveryWrap.appendChild(dom.el('span', {
+          class: 'discovery-tag discovery-' + kind,
+          title: i18n.discoveryHint(kind),
+          text: label
+        }));
+      }
       discoveryWrap.appendChild(dom.el('span', {
         class: 'discovery-hint',
-        text: ' ' + i18n.discoveryHint(paper.discoveryKind)
+        text: ' ' + i18n.discoveryHint(kind)
       }));
       meta.appendChild(metaRow('进入方式: ', discoveryWrap));
     }
     if (paper.doi) meta.appendChild(detailRow(T.modalDoi + ': ', paper.doi));
-    meta.appendChild(detailRow(T.modalId + ': ', paper.id));
     if (ctx.cited) {
       meta.appendChild(metaRow('', dom.el('span', { class: 'digest-cited-badge', text: T2.modalCiteInDigest })));
     }
@@ -459,11 +471,18 @@
     wrap.appendChild(aiSection(paper));
 
     const abstractSection = dom.el('section', { class: 'paper-abstract-section' });
-    abstractSection.appendChild(dom.el('h3', { text: T2.modalAbstract }));
-    const abstractText = paper.abstract && paper.abstract.trim() !== '' ? paper.abstract : '数据里没有摘要，未生成分析。';
-    const abstractNode = dom.el('p', { class: 'original-abstract' });
-    dom.highlighted(abstractNode, abstractText, ctx.titleTerms || [], 'keyword-highlight');
-    abstractSection.appendChild(abstractNode);
+    if (PD.hasPublicAbstract(paper)) {
+      abstractSection.appendChild(dom.el('h3', { text: T2.modalAbstract }));
+      const abstractNode = dom.el('p', { class: 'original-abstract' });
+      dom.highlighted(abstractNode, paper.abstract, ctx.titleTerms || [], 'keyword-highlight');
+      abstractSection.appendChild(abstractNode);
+    } else {
+      // 公开导出不转载原摘要（未逐篇核准许可）：只给一句短提示与来源页按钮，
+      // 不在“原摘要”标题下摆占位句假装有摘要。
+      abstractSection.appendChild(dom.el('p', { class: 'abstract-link-note', text: T2.abstractLinkNote }));
+      const sourceLink = dom.externalLink(paper.links.abs, T2.modalOpenAbs, 'abstract-source-link');
+      if (sourceLink) abstractSection.appendChild(sourceLink);
+    }
     wrap.appendChild(abstractSection);
 
     wrap.appendChild(pdfSection(paper));
@@ -504,53 +523,33 @@
     return wrap;
   }
 
-  function scopeFact(label, value) {
-    if (value === null || value === undefined) return null;
-    return label + ' ' + value + ' ' + T.revisionUnit;
-  }
-
   /**
-   * research_scope 面板：检索 UTC 窗口 + 分析与排除计数。
-   * 目的：把“本轮没有入选论文”和“审核把论文排除了”区分开
-   * （private journal 的具体原因不公开，这里只展示计数）。
+   * 来源状态：同一时刻最多一条短句。
+   *   1. 数据标明某来源本轮不可用（如 arXiv 429 限流）→“本期 arXiv 来源暂缺”，
+   *      用固定来源名，不显示错误文本或计数；
+   *   2. 其他 partial/缺失 →“部分来源暂不可用”。
+   * 候选数、取回数、缺元数据数、错误数属于流程诊断，不在研究者页面上出现。
    */
-  function renderResearchScope(digest) {
-    const scope = digest.researchScope;
-    const block = dom.el('section', { class: 'scope-panel' });
-    block.appendChild(dom.el('h3', { class: 'scope-title', text: T.scopeTitle }));
-    if (!scope || !scope.present) {
-      block.appendChild(dom.el('p', { class: 'scope-missing', text: T.scopeMissing }));
-      return block;
+  function coverageBrief(coverage, digest) {
+    const unavailable = digest && Array.isArray(digest.unavailableSources) ? digest.unavailableSources : [];
+    const labels = unavailable.map(function (source) { return i18n.sourceLabel(source); });
+    if (labels.length > 0) {
+      return dom.el('p', {
+        class: 'coverage-brief coverage-unavailable',
+        text: i18n.formatTemplate(T.sourceUnavailable, { sources: labels.join('、') })
+      });
     }
-    const windowText = scope.windowStart && scope.windowEnd
-      ? scope.windowStart + ' ~ ' + scope.windowEnd + (scope.dateBasis ? '（' + scope.dateBasis + '）' : '')
-      : T.scopeWindowMissing;
-    const facts = [
-      T.scopeWindow + ': ' + windowText,
-      scope.policy ? T.scopePolicy + ': ' + scope.policy : null,
-      scopeFact(T.scopeCollected, scope.collectedCount),
-      scopeFact(T.scopeAnalyzed, scope.analyzedCount),
-      scopeFact(T.scopeExcluded, scope.excludedCount),
-      scopeFact(T.scopeUncertain, scope.uncertainCount)
-    ].filter(function (item) { return item !== null; });
-    const row = dom.el('div', { class: 'scope-facts' });
-    facts.forEach(function (fact) {
-      row.appendChild(dom.el('span', { class: 'scope-fact', text: fact }));
-    });
-    block.appendChild(row);
-    if (digest.digest.status === 'no_included_papers') {
-      block.appendChild(dom.el('p', { class: 'scope-hint', text: T.scopeNoIncludedHint }));
-    }
-    return block;
+    if (!PD.coverageIsPartial(coverage)) return null;
+    return dom.el('p', { class: 'coverage-brief', text: T.digestCoveragePartial });
   }
 
-  /** 同日修订：只展示数量与说明。 */
+  /** 同日修订：只展示真实发生的数量与说明（0 不写出来）。 */
   function renderRevision(digest) {
     const revision = digest.revision;
     if (!revision || !revision.present) return null;
     const parts = [];
-    if (revision.addedCount !== null) parts.push(T.revisionAdded + ' ' + revision.addedCount + ' ' + T.revisionUnit);
-    if (revision.removedCount !== null) parts.push(T.revisionRemoved + ' ' + revision.removedCount + ' ' + T.revisionUnit);
+    if (revision.addedCount !== null && revision.addedCount > 0) parts.push(T.revisionAdded + ' ' + revision.addedCount + ' ' + T.revisionUnit);
+    if (revision.removedCount !== null && revision.removedCount > 0) parts.push(T.revisionRemoved + ' ' + revision.removedCount + ' ' + T.revisionUnit);
     if (parts.length === 0 && !revision.note) return null;
     const row = dom.el('p', { class: 'revision-row' });
     row.appendChild(dom.el('span', { class: 'revision-label', text: T.revisionTitle + ': ' }));
@@ -561,164 +560,111 @@
     return row;
   }
 
-  /** 当日汇总面板：计数、partial 缺口、pending、日报分节与引用。 */
-  function renderDigest(refs, digest, coverage, crossCheck, onCite) {
+  /** 分节是否属于当前主题筛选：未标注主题的分节不隐藏，避免漏掉内容。 */
+  function sectionMatchesTopic(section, topic) {
+    if (!topic || topic === 'all') return true;
+    if (!section.topic) return true;
+    return section.topic === topic;
+  }
+
+  /**
+   * 引用按钮：只对已发布论文给“第 N 篇”，不显示原始 paper id；
+   * 引用不到论文时不给按钮，也不输出内部一致性诊断。
+   */
+  function citeChip(id, options) {
+    const opts = options || {};
+    const index = opts.paperIndex && opts.paperIndex[id];
+    if (!index) return null;
+    const button = dom.el('button', {
+      class: 'cite-chip',
+      type: 'button',
+      'data-paper-id': id,
+      text: i18n.formatTemplate(T.digestCiteOrdinal, { n: index })
+    });
+    if (opts.onCite) {
+      button.addEventListener('click', function () { opts.onCite(id); });
+    }
+    return button;
+  }
+
+  /**
+   * 当日总结面板（简短版）：
+   *   收录 N 篇 · N 篇待审核 · 更新于 …；同一时刻最多一条来源状态
+   *   （“本期 arXiv 来源暂缺”或“部分来源暂不可用”）；
+   *   分节正文按当前主题筛选（选具身智能时不再满屏手术总结）；
+   *   digest.status=partial 时保留已完成分节并给一行“总结尚不完整”；
+   *   日报缺失/生成失败只显示“暂无日报/暂无总结”，不外露内部 error、状态或计数。
+   *
+   * options: {topic, onCite, paperIndex}
+   */
+  function renderDigest(refs, digest, coverage, options) {
+    const opts = options || {};
     dom.clear(refs.container);
     const panel = dom.el('section', { class: 'digest-panel' });
     panel.appendChild(dom.el('h2', { class: 'digest-heading', text: T.digestTitle }));
 
     const statusRow = dom.el('div', { class: 'digest-status-row' });
     statusRow.appendChild(dom.el('span', {
-      class: 'digest-status digest-status-' + (digest.available ? digest.digest.status : 'unavailable'),
-      text: T.digestStatus + ': ' + i18n.digestStatusLabel(digest.available ? digest.digest.status : 'unavailable')
-    }));
-    statusRow.appendChild(dom.el('span', {
       class: 'digest-count',
-      text: T.statPublishedCount + ': ' + coverage.publishedCount
+      text: T.digestPublished + ' ' + coverage.publishedCount + ' ' + T.digestUnit
     }));
-    if (digest.generatedAt) {
-      statusRow.appendChild(dom.el('span', {
-        class: 'digest-generated',
-        text: T.digestGeneratedAt + ': ' + digest.generatedAt
-      }));
-    }
-    if (coverage.pendingCount !== null) {
+    if (coverage.pendingCount !== null && coverage.pendingCount > 0) {
       statusRow.appendChild(dom.el('span', {
         class: 'digest-pending',
-        text: T.digestPending + ': ' + coverage.pendingCount + ' ' + T.digestPendingUnit
+        text: coverage.pendingCount + ' ' + T.digestUnit + T.digestPending
       }));
+    }
+    const updated = PD.describeTimestamp(digest.generatedAt);
+    if (updated.display) {
+      statusRow.appendChild(dom.el('span', { class: 'digest-generated' }, [
+        dom.el('time', { datetime: updated.iso, text: T.digestUpdated + ' ' + updated.display })
+      ]));
     }
     panel.appendChild(statusRow);
 
-    const coverageRow = dom.el('div', { class: 'digest-coverage-row' });
-    coverageRow.appendChild(dom.el('span', {
-      class: 'coverage-status coverage-' + coverage.coverage.status,
-      text: T.digestCoverage + ': ' + i18n.coverageLabel(coverage.coverage.status)
-    }));
-    coverage.coverage.sources.forEach(function (source) {
-      coverageRow.appendChild(dom.el('span', {
-        class: 'coverage-source',
-        text: i18n.sourceLabel(source.source) + ' · ' + i18n.coverageLabel(source.status) +
-          (source.candidateCount === null ? '' : ' · 候选 ' + source.candidateCount) +
-          (source.metadataFetched === null ? '' : ' · 取回 ' + source.metadataFetched) +
-          (source.missingMetadata === null ? '' : ' · 缺元数据 ' + source.missingMetadata) +
-          (source.errorCount ? ' · 错误 ' + source.errorCount : '')
-      }));
-    });
-    panel.appendChild(coverageRow);
+    const brief = coverageBrief(coverage, digest);
+    if (brief) panel.appendChild(brief);
 
-    if (coverage.coverage.scopeNote) {
-      panel.appendChild(dom.el('p', { class: 'coverage-scope-note', text: T.digestScopeNote + ': ' + coverage.coverage.scopeNote }));
-    }
-
-    panel.appendChild(renderResearchScope(digest));
     const revisionRow = renderRevision(digest);
     if (revisionRow) panel.appendChild(revisionRow);
 
-    if (!digest.available) {
-      panel.appendChild(dom.el('p', { class: 'digest-notice', text: T.digestMissingNotice }));
-    }
-    if (coverage.countMismatch) {
-      panel.appendChild(dom.el('p', {
-        class: 'digest-notice',
-        text: i18n.formatTemplate(T.digestCountMismatch, { declared: coverage.declaredCount, actual: coverage.publishedCount })
-      }));
-    }
-    if (coverage.gapReasons.invalidLines || coverage.gapReasons.dropped) {
-      panel.appendChild(dom.el('p', {
-        class: 'digest-notice',
-        text: i18n.formatTemplate(T.digestParseGap, { invalid: coverage.gapReasons.invalidLines ? '若干' : '0', dropped: coverage.gapReasons.dropped ? '若干' : '0' })
-      }));
-    }
-    if (crossCheck && crossCheck.missingIds.length > 0) {
-      panel.appendChild(dom.el('p', {
-        class: 'digest-gap',
-        text: i18n.formatTemplate(T.digestCiteMissing, { ids: crossCheck.missingIds.join(', ') })
-      }));
-    }
-    if (crossCheck && crossCheck.topicMismatchIds.length > 0) {
-      panel.appendChild(dom.el('p', {
-        class: 'digest-gap',
-        text: i18n.formatTemplate(T.digestTopicMismatch, { ids: crossCheck.topicMismatchIds.join(', ') })
-      }));
-    }
-
-    // 两个维度分开标注：来源覆盖（检索域是否完整尝试）与数据结构校验（已发布数据是否自洽）。
-    // 这样 partial 覆盖下不会同时出现“未发现缺口”这种自相对撞的表述。
-    panel.appendChild(dom.el('h4', { class: 'digest-gap-heading', text: T.gapSourceLabel }));
-    const sourceGapList = dom.el('ul', { class: 'digest-gap-list' });
-    if (coverage.gapReasons.coverageIncomplete) {
-      sourceGapList.appendChild(dom.el('li', { class: 'gap-item gap-source', text: T.gapSourcePartial }));
+    // digest.status：
+    //   completed → 分节正文；
+    //   partial   → 分节正文照常显示 + 一行“总结尚不完整”（后半段分析未完成）；
+    //   no_included_papers / failed / 缺失 → 只给一句短话，不外露 note/status/error。
+    const status = digest.available ? digest.digest.status : 'unavailable';
+    if (!digest.available && digest.problem === 'missing') {
+      panel.appendChild(dom.el('p', { class: 'digest-notice', text: T.digestNoPapers }));
+    } else if (status === 'no_included_papers') {
+      panel.appendChild(dom.el('p', { class: 'digest-notice', text: T.digestNoIncluded }));
+    } else if (status !== 'completed' && status !== 'partial') {
+      panel.appendChild(dom.el('p', { class: 'digest-notice', text: T.digestNoSummary }));
     } else {
-      sourceGapList.appendChild(dom.el('li', { class: 'gap-item', text: T.gapSourceNone }));
-    }
-    panel.appendChild(sourceGapList);
-
-    panel.appendChild(dom.el('h4', { class: 'digest-gap-heading', text: T.gapDataLabel }));
-    const dataGapList = dom.el('ul', { class: 'digest-gap-list' });
-    const dataGapItems = [];
-    if (coverage.gapReasons.digestMissing) dataGapItems.push(T.gapDigestMissing);
-    if (coverage.gapReasons.digestIncomplete) dataGapItems.push(T.gapDigestIncomplete);
-    if (coverage.gapReasons.digestNoIncluded) dataGapItems.push(T.gapDigestNoIncluded);
-    if (coverage.gapReasons.pending) dataGapItems.push(T.gapPending);
-    if (coverage.gapReasons.countMismatch) dataGapItems.push(T.gapCountMismatch);
-    if (coverage.gapReasons.invalidLines) dataGapItems.push(T.gapInvalidLines);
-    if (coverage.gapReasons.dropped) dataGapItems.push(T.gapDropped);
-    if (crossCheck && crossCheck.missingIds.length > 0) dataGapItems.push(T.gapCiteMissing);
-    if (dataGapItems.length === 0) {
-      dataGapList.appendChild(dom.el('li', { class: 'gap-item', text: T.gapDataNone }));
-    } else {
-      dataGapItems.forEach(function (item) {
-        dataGapList.appendChild(dom.el('li', { class: 'gap-item gap-data', text: item }));
+      const sections = digest.digest.sections.filter(function (section) {
+        return sectionMatchesTopic(section, opts.topic);
       });
-    }
-    panel.appendChild(dataGapList);
-
-    if (digest.digest.note) {
-      panel.appendChild(dom.el('p', { class: 'digest-note', text: digest.digest.note }));
-    }
-
-    if (digest.digest.sections.length === 0) {
-      panel.appendChild(dom.el('p', { class: 'digest-notice', text: T.digestNoSections }));
-    } else {
-      digest.digest.sections.forEach(function (section) {
+      if (sections.length === 0) {
+        panel.appendChild(dom.el('p', { class: 'digest-notice', text: T.digestNoSummary }));
+      }
+      sections.forEach(function (section) {
         const block = dom.el('article', { class: 'digest-section' });
+        // 分节标题只保留 heading：主题已由标题本身表达，不再重复一枚 topic 徽标。
         const heading = dom.el('h3', { class: 'digest-section-heading' });
-        if (section.topic) {
-          heading.appendChild(dom.el('span', {
-            class: 'topic-tag topic-' + section.topic,
-            text: i18n.topicLabel(section.topic)
-          }));
-        }
-        dom.append(heading, [dom.el('span', { class: 'digest-heading-text', text: section.heading || '（无标题）' })]);
+        heading.appendChild(dom.el('span', { class: 'digest-heading-text', text: section.heading || '（无标题）' }));
         block.appendChild(heading);
         block.appendChild(dom.el('p', { class: 'digest-text', text: section.text }));
-        if (section.paperIds.length > 0) {
+        const chips = section.paperIds.map(function (id) { return citeChip(id, opts); }).filter(Boolean);
+        if (chips.length > 0) {
           const cites = dom.el('div', { class: 'digest-cites' });
-          cites.appendChild(dom.el('span', { class: 'digest-cites-label', text: T.digestSectionCited + ': ' }));
-          section.paperIds.forEach(function (id) {
-            const button = dom.el('button', {
-              class: 'cite-chip' + (crossCheck && crossCheck.missingIds.indexOf(id) !== -1 ? ' cite-missing' : ''),
-              type: 'button',
-              'data-paper-id': id,
-              text: id
-            });
-            if (onCite) {
-              button.addEventListener('click', function () { onCite(id); });
-            }
-            cites.appendChild(button);
-          });
+          cites.appendChild(dom.el('span', { class: 'digest-cites-label', text: T.digestCiteLabel + '：' }));
+          chips.forEach(function (chip) { cites.appendChild(chip); });
           block.appendChild(cites);
         }
         panel.appendChild(block);
       });
-    }
-
-    if (crossCheck && crossCheck.unreferencedIds.length > 0) {
-      panel.appendChild(dom.el('p', {
-        class: 'digest-unreferenced',
-        text: i18n.formatTemplate(T.digestUnreferenced, { count: crossCheck.unreferencedIds.length })
-      }));
+      if (status === 'partial') {
+        panel.appendChild(dom.el('p', { class: 'digest-notice digest-incomplete', text: T.digestIncomplete }));
+      }
     }
 
     refs.container.appendChild(panel);
@@ -730,7 +676,6 @@
     renderPaperList: renderPaperList,
     renderPaperModal: renderPaperModal,
     renderDigest: renderDigest,
-    renderResearchScope: renderResearchScope,
     renderRevision: renderRevision,
     topicTags: topicTags,
     discoveryTag: discoveryTag,

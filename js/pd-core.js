@@ -265,6 +265,19 @@
     return { display: text.slice(0, 10), iso: text };
   }
 
+  /**
+   * 日报生成/更新时间：只接受真实 ISO 时间，显示到分钟（UTC 偏移不额外标注，
+   * 因为这里只表示“日报更新时间”，不参与发表日期或检索窗口推断）。
+   */
+  function describeTimestamp(value) {
+    if (!isNonEmptyString(value)) return { display: '', iso: null };
+    const text = value.trim();
+    if (!ISO_TIME_RE.test(text)) return { display: '', iso: null };
+    const date = text.slice(0, 10);
+    const timeMatch = /T(\d{2}):(\d{2})/.exec(text);
+    return { display: timeMatch ? date + ' ' + timeMatch[1] + ':' + timeMatch[2] : date, iso: text };
+  }
+
   /** 日报文件的日期键 → 显示用；只接受真实 YYYY-MM-DD。 */
   function describeFileDate(date) {
     if (!isIsoDate(date)) return { display: '', iso: null };
@@ -381,6 +394,25 @@
   const AI_EMPTY = '摘要未提供';
 
   /**
+   * 公开导出里的原摘要占位句：正式周未逐篇核准原文转载许可，
+   * 公共数据不转载原摘要（私有库仍保留完整摘要供 AI 分析，AI 只依据摘要）。
+   * 页面必须把它当“没有原摘要”，不能在“原摘要”标题下假装有摘要。
+   */
+  const ABSTRACT_PLACEHOLDER = '原摘要请见论文来源页面。';
+
+  function isAbstractPlaceholder(value) {
+    const text = typeof value === 'string' ? value.trim() : '';
+    if (text === '') return false; // 空串是“缺摘要”，不是占位
+    return text === ABSTRACT_PLACEHOLDER || (text.length <= 40 && text.indexOf('原摘要请见') !== -1);
+  }
+
+  /** 是否为可公开展示的真实原摘要（占位句与空串都算没有）。 */
+  function hasPublicAbstract(paper) {
+    const text = paper && typeof paper.abstract === 'string' ? paper.abstract.trim() : '';
+    return text !== '' && !isAbstractPlaceholder(text);
+  }
+
+  /**
    * 单条 JSONL 行 → 公开视图字段。返回 null 表示该行不可展示（缺 id 或缺标题）。
    * 注意：不读取 extra；不把 AI 文本混进事实字段。
    */
@@ -489,34 +521,25 @@
   }
 
   /**
-   * research_scope（后端综述新增）：说明本轮"检索窗口"与"审核结果"。
-   * 用于区分"没有入选论文"和"审核把论文排除了"，也说明窗口是 UTC。
-   * 任何缺失字段一律 null / ''，不推断、不补默认值。
+   * research_scope 里唯一会被页面使用的信息：哪些来源本轮不可用。
+   * 兼容两种形状：["arxiv", "pubmed"] 或 [{source: "arxiv", reason: "..."}]；
+   * 只保留已知来源 id（arxiv/pubmed），页面按来源标签给一句“本期 X 来源暂缺”；
+   * policy/计数/UTC 窗口/失败原因等流程诊断一律不解析、不展示。
+   * 也接受顶层 sources_unavailable 作为兼容回退。
    */
-  function normalizeResearchScope(value) {
-    const source = value && typeof value === 'object' ? value : null;
-    const out = {
-      present: false,
-      policy: '',
-      collectedCount: null,
-      analyzedCount: null,
-      excludedCount: null,
-      uncertainCount: null,
-      dateBasis: '',
-      windowStart: null,
-      windowEnd: null
-    };
-    if (!source) return out;
-    out.present = true;
-    if (isNonEmptyString(source.policy)) out.policy = source.policy.trim();
-    ['collected_count', 'analyzed_count', 'excluded_count', 'uncertain_count'].forEach(function (key) {
-      const field = key.replace(/_([a-z])/g, function (m, letter) { return letter.toUpperCase(); });
-      const raw = source[key];
-      if (typeof raw === 'number' && Number.isFinite(raw) && raw >= 0) out[field] = raw;
-    });
-    if (isNonEmptyString(source.date_basis)) out.dateBasis = source.date_basis.trim();
-    if (isIsoDate(source.window_start)) out.windowStart = source.window_start;
-    if (isIsoDate(source.window_end)) out.windowEnd = source.window_end;
+  function normalizeUnavailableSources(scopeValue, topLevelValue) {
+    const scope = scopeValue && typeof scopeValue === 'object' ? scopeValue : null;
+    const raw = scope && Array.isArray(scope.sources_unavailable)
+      ? scope.sources_unavailable
+      : (Array.isArray(topLevelValue) ? topLevelValue : []);
+    const out = [];
+    for (let i = 0; i < raw.length; i += 1) {
+      const item = raw[i];
+      const candidate = typeof item === 'string'
+        ? item.trim()
+        : (item && typeof item === 'object' && typeof item.source === 'string' ? item.source.trim() : '');
+      if (SOURCES.indexOf(candidate) !== -1 && out.indexOf(candidate) === -1) out.push(candidate);
+    }
     return out;
   }
 
@@ -564,7 +587,8 @@
   /**
    * data/YYYY-MM-DD_digest.json → 视图模型。
    * 结构固定为 {date, generated_at, coverage:{status,sources:[...]}, digest:{status,sections:[...]}, pending_count}。
-   * 任何缺失/畸形都降级为 available:false + problem，不假造摘要。
+   * 任何缺失/畸形都降级为 available:false + problem，不假造摘要；
+   * 页面只据此显示“暂无总结”，不向外暴露内部 problem/status 文本。
    */
   function normalizeDigest(raw, fallbackDate) {
     const out = {
@@ -573,7 +597,7 @@
       date: isIsoDate(fallbackDate) ? fallbackDate : null,
       generatedAt: '',
       coverage: normalizeCoverage(null),
-      researchScope: normalizeResearchScope(null),
+      unavailableSources: [],
       revision: normalizeRevision(null),
       digest: normalizeDigestBody(null),
       pendingCount: null,
@@ -587,7 +611,7 @@
     if (!out.date) { out.problem = 'bad-date'; return out; }
     out.generatedAt = isNonEmptyString(raw.generated_at) ? raw.generated_at.trim() : '';
     out.coverage = normalizeCoverage(raw.coverage);
-    out.researchScope = normalizeResearchScope(raw.research_scope);
+    out.unavailableSources = normalizeUnavailableSources(raw.research_scope, raw.sources_unavailable);
     out.revision = normalizeRevision(raw.revision);
     out.digest = normalizeDigestBody(raw.digest);
     if (typeof raw.pending_count === 'number' && raw.pending_count >= 0) out.pendingCount = raw.pending_count;
@@ -684,6 +708,18 @@
   function hasAnyGap(gapReasons) {
     const reasons = gapReasons || {};
     return Object.keys(reasons).some(function (key) { return reasons[key] === true; });
+  }
+
+  /**
+   * 来源覆盖是否不完整（partial / 未知 / 无来源记录）。
+   * 页面只有这一种情况才提示“部分来源暂不可用”，其余流程计数不外露。
+   */
+  function coverageIsPartial(coverage) {
+    const cov = coverage && coverage.coverage ? coverage.coverage : coverage;
+    if (!cov || !Array.isArray(cov.sources)) return true;
+    if (cov.status !== 'complete') return true;
+    if (cov.sources.length === 0) return true;
+    return cov.sources.some(function (item) { return item.status !== 'complete'; });
   }
 
   /* ------------------------------------------------------------------ *
@@ -993,6 +1029,7 @@
     DISCOVERY_KINDS: DISCOVERY_KINDS,
     AI_FIELDS: AI_FIELDS,
     AI_EMPTY: AI_EMPTY,
+    ABSTRACT_PLACEHOLDER: ABSTRACT_PLACEHOLDER,
     FILE_LIST_PATH: FILE_LIST_PATH,
     DATA_DIR: DATA_DIR,
     URL_REJECT: {
@@ -1016,12 +1053,15 @@
     paperLinks: paperLinks,
     sourceLabel: sourceLabel,
     normalizeDiscoveryKind: normalizeDiscoveryKind,
+    isAbstractPlaceholder: isAbstractPlaceholder,
+    hasPublicAbstract: hasPublicAbstract,
 
     isIsoDate: isIsoDate,
     normalizePrecision: normalizePrecision,
     describePublished: describePublished,
     describeUpdated: describeUpdated,
     describeDiscovered: describeDiscovered,
+    describeTimestamp: describeTimestamp,
     describeFileDate: describeFileDate,
     describeDateRange: describeDateRange,
     shiftIsoDate: shiftIsoDate,
@@ -1038,12 +1078,13 @@
     normalizePaper: normalizePaper,
     parseJsonl: parseJsonl,
     normalizeCoverage: normalizeCoverage,
-    normalizeResearchScope: normalizeResearchScope,
+    normalizeUnavailableSources: normalizeUnavailableSources,
     normalizeRevision: normalizeRevision,
     normalizeDigest: normalizeDigest,
     crossCheckDigest: crossCheckDigest,
     computeCoverage: computeCoverage,
     hasAnyGap: hasAnyGap,
+    coverageIsPartial: coverageIsPartial,
 
     matchesTopicFilter: matchesTopicFilter,
     filterPapersByTopic: filterPapersByTopic,

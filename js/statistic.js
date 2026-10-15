@@ -12,7 +12,8 @@
  *     2. 删除 d3 / d3-cloud / compromise / chart.js，改用内置 SVG 与 pd-stat 计算；
  *     3. 只统计已收录样本：缺失日期不补 0、不插值，缺口日期显式列出；
  *     4. 全部改用 DOM API 构建（原模板字符串 innerHTML 注入面已消除）；
- *     5. 删除登录守卫与屏幕尺寸警告的 innerHTML 写法。
+ *     5. 删除登录守卫与屏幕尺寸警告的 innerHTML 写法；
+ *     6. 精简：口径一句话，缺口提示改短句；公开导出不转载原摘要时侧栏显示来源提示。
  *   本文件为衍生代码，许可遵循 docs/licenses/daily-arxiv-LICENSE。
  */
 (function () {
@@ -141,11 +142,11 @@
     const container = refs.list;
     dom.clear(container);
     const section = dom.el('div', { class: 'statistics-section' });
-    section.appendChild(dom.el('h2', { text: '已收录样本统计' }));
+    section.appendChild(dom.el('h2', { text: T.statTitle }));
 
     const statsCard = dom.el('div', { class: 'statistics-card' });
     const summary = dom.el('div', { class: 'summary-stats' });
-    summary.appendChild(dom.el('h3', { text: T.statPublishedCount + ': ' + stats.counts.total + ' ' + T.statUnit }));
+    summary.appendChild(dom.el('h3', { text: T.statPublishedCount + ' ' + stats.counts.total + ' ' + T.statUnit }));
     const knownDates = Object.keys(stats.counts.byDate);
     if (knownDates.length > 0) {
       const list = dom.el('ul', { class: 'paper-count-list' });
@@ -161,13 +162,13 @@
     if (state.gaps.length > 0) {
       summary.appendChild(dom.el('p', {
         class: 'stat-gap-note',
-        text: '以下日期没有数据，未参与统计（不补 0）：' + state.gaps.join(', ')
+        text: T.statGapNote + state.gaps.join(', ')
       }));
     }
     if (stats.gaps.emptyDates.length > 0) {
       summary.appendChild(dom.el('p', {
         class: 'stat-gap-note',
-        text: '以下日期数据为空文件（计 0 篇，属于已收录但无内容）：' + stats.gaps.emptyDates.join(', ')
+        text: T.statEmptyNote + stats.gaps.emptyDates.join(', ')
       }));
     }
     statsCard.appendChild(summary);
@@ -215,8 +216,7 @@
         // 宁可少画几个词，也不让文字互相压住；完整关键词仍在上方列表里。
         cloudWrap.appendChild(dom.el('p', {
           class: 'cloud-skip-note',
-          text: '词云仅展示不重叠的 ' + layout.length + ' 个关键词（另有 ' +
-            layout.skipped.length + ' 个为避免文字重叠未绘制，完整列表见上方）。'
+          text: PD.i18n.formatTemplate(T.statCloudSkip, { n: layout.skipped.length })
         }));
       }
     }
@@ -349,15 +349,16 @@
           class: 'paper-authors',
           text: paper.authors.length ? paper.authors.join(', ') : '作者未标注'
         }));
+        // 侧栏卡片与首页一致：只留主题标签，来源分类移入详情。
         const tagWrap = dom.el('div', { class: 'paper-categories' });
         paper.topics.forEach(function (topic) {
           tagWrap.appendChild(dom.el('span', { class: 'topic-tag topic-' + topic, text: PD.i18n.topicLabel(topic) }));
         });
-        paper.categories.forEach(function (category) {
-          tagWrap.appendChild(dom.el('span', { class: 'category-tag', text: category }));
-        });
         card.appendChild(tagWrap);
-        card.appendChild(dom.el('div', { class: 'paper-summary', text: paper.ai.tldr || paper.abstract || '' }));
+        const summaryText = paper.ai.tldr && paper.ai.tldr.trim() !== ''
+          ? paper.ai.tldr
+          : (PD.hasPublicAbstract(paper) ? paper.abstract : '');
+        card.appendChild(dom.el('div', { class: 'paper-summary', text: summaryText || T.abstractLinkNote }));
         container.appendChild(card);
       });
     }
@@ -414,8 +415,7 @@
     }, function (error) {
       dom.clear(refs.list);
       refs.list.appendChild(dom.el('div', { class: 'loading-container' }, [
-        dom.el('p', { text: T.loadFailedTitle }),
-        dom.el('p', { text: T.loadFailedDetail + (error && error.message ? error.message : '') })
+        dom.el('p', { text: T.loadFailedTitle })
       ]));
     });
   }

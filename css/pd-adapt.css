@@ -1,60 +1,48 @@
 /*
- * ResearcherPapers 适配样式：主题标签、日期精度、日报面板、原生日期选择、安全提示。
+ * ResearcherPapers 适配样式：主题标签、日期精度、当日总结、原生日期选择、关于页。
  *
  * 来源与变更声明 / Provenance notice:
  *   新建文件，不含上游代码。上游 daily-arXiv-ai-enhanced
  *   （main 01fdad3b0aec2d2f7977b686253a7b0c1c8273dc，Modified Apache License，
  *   参考 .upstream/daily-arxiv/css，许可证副本见 docs/licenses/daily-arxiv-LICENSE）
  *   的 styles.css / settings.css / statistic.css 继续承担原有版式；
- *   本文件只补充本项目新增元素的样式（主题标签、日期精度、日报面板、
- *   原生日期输入、安全提示、runtime 错误条），不改动上游既有类名语义。
+ *   本文件只补充本项目新增元素的样式（主题标签、日期精度、当日总结面板、
+ *   原生日期输入、关于页、runtime 错误条），不改动上游既有类名语义。
  *   引用的上游视觉变量（--primary-color 等）来自 styles.css。
+ *   2026-10 精简：删除验证 banner、安全横幅、research_scope 与流程计数相关样式。
  */
 
-/* ---------- 首发验证样本（非正式每日研究） ---------- */
-.validation-banner {
-    margin: 16px 24px 0;
-    padding: 16px 20px;
-    border: 2px solid #d97706;
-    border-radius: 10px;
-    background: #fff7ed;
-    color: #78350f;
-    line-height: 1.7;
-    overflow-wrap: anywhere;
-}
-.validation-banner strong { font-size: 1.05rem; }
-.validation-banner p { margin: 6px 0; }
-.validation-banner a { color: #92400e; text-decoration: underline; }
-@media (max-width: 420px) {
-    .validation-banner { margin: 12px 10px 0; padding: 12px; }
-}
-
-/* ---------- 安全提示 ---------- */
-.safety-notice {
-    max-width: var(--max-width, 1400px);
-    margin: 12px auto 0;
-    padding: 0 20px;
-}
-
-.notice-item {
-    background: rgba(59, 130, 246, 0.08);
-    border: 1px solid rgba(59, 130, 246, 0.35);
-    border-radius: var(--radius-sm, 6px);
-    padding: 8px 12px;
-    margin-bottom: 8px;
-    font-size: 0.86rem;
+/* ---------- 页头“来源与许可”入口 ---------- */
+.about-link {
+    font-size: 0.85rem;
     color: var(--text-secondary, #4b5563);
+    text-decoration: none;
+    white-space: nowrap;
 }
 
-.notice-item summary {
-    cursor: pointer;
-    font-weight: 600;
+.about-link:hover {
+    color: var(--primary-color, #a42c25);
+    text-decoration: underline;
+}
+
+/* ---------- 来源、许可与免责说明页（NOTICE.html） ---------- */
+.notice-page {
+    max-width: 850px;
+    margin: 32px auto;
+    padding: 20px;
+    font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+    line-height: 1.8;
     color: var(--text-primary, #111827);
 }
 
-.notice-item p {
-    margin: 8px 0 0;
-    line-height: 1.6;
+.notice-page h1 {
+    font-size: 1.5rem;
+}
+
+.notice-page h2 {
+    font-size: 1.05rem;
+    margin-top: 22px;
+    color: var(--primary-color, #a42c25);
 }
 
 .runtime-error {
@@ -161,14 +149,6 @@
     cursor: help;
 }
 
-/* ---------- 卡片补充 ---------- */
-.paper-card-ai-note {
-    font-size: 0.72rem;
-    color: var(--text-secondary, #6b7280);
-    margin: 4px 0 0;
-    font-style: italic;
-}
-
 .author-count-hint {
     font-size: 0.72rem;
     color: var(--text-secondary, #6b7280);
@@ -222,6 +202,19 @@
 
 .paper-abstract-section {
     margin: 14px 0;
+}
+
+/* 公开导出不转载原摘要：只给一句提示与来源页按钮 */
+.abstract-link-note {
+    margin: 0 0 6px;
+    font-size: 0.85rem;
+    color: var(--text-secondary, #6b7280);
+}
+
+.abstract-source-link {
+    display: inline-block;
+    font-size: 0.85rem;
+    color: var(--primary-color, #a42c25);
 }
 
 .pdf-unavailable {
@@ -283,8 +276,7 @@
     font-size: 1.1rem;
 }
 
-.digest-status-row,
-.digest-coverage-row {
+.digest-status-row {
     display: flex;
     flex-wrap: wrap;
     gap: 12px;
@@ -293,43 +285,26 @@
     color: var(--text-secondary, #4b5563);
 }
 
-.digest-status,
-.coverage-status {
-    font-weight: 600;
-}
-
-.digest-status-partial,
-.coverage-partial,
-.digest-gap,
 .range-day-gap {
     color: #b45309;
 }
 
-.coverage-complete,
-.digest-status-completed {
-    color: #047857;
+/* 来源状态一行（不可用来源按固定来源名显示）与“总结尚不完整” */
+.coverage-brief {
+    margin: 4px 0 8px;
+    font-size: 0.82rem;
+    color: #b45309;
 }
 
-.coverage-source {
-    padding: 0 8px;
-    border-left: 1px solid var(--border-color, #e5e7eb);
+.digest-incomplete {
+    color: #b45309;
 }
 
 .digest-notice,
-.digest-note,
-.coverage-scope-note,
-.digest-unreferenced,
 .range-total {
     font-size: 0.82rem;
     color: var(--text-secondary, #4b5563);
     margin: 6px 0;
-}
-
-.digest-gap-list {
-    margin: 6px 0 10px;
-    padding-left: 20px;
-    font-size: 0.82rem;
-    color: var(--text-secondary, #4b5563);
 }
 
 .digest-section {
@@ -370,12 +345,6 @@
     padding: 1px 8px;
     cursor: pointer;
     font-size: 0.72rem;
-}
-
-.cite-missing {
-    border-color: rgba(180, 83, 9, 0.6);
-    background: rgba(180, 83, 9, 0.12);
-    color: #b45309;
 }
 
 .range-day-list {
@@ -538,40 +507,7 @@
 }
 
 
-/* ---------- research_scope 与同日修订 ---------- */
-.scope-panel {
-    margin: 10px 0;
-    padding: 10px 12px;
-    border: 1px dashed var(--border-color, #d1d5db);
-    border-radius: var(--radius-sm, 6px);
-    background: rgba(15, 118, 110, 0.05);
-}
-
-.scope-title {
-    margin: 0 0 6px;
-    font-size: 0.92rem;
-    color: #0f766e;
-}
-
-.scope-facts {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    font-size: 0.8rem;
-    color: var(--text-secondary, #4b5563);
-}
-
-.scope-fact {
-    white-space: nowrap;
-}
-
-.scope-missing,
-.scope-hint {
-    margin: 4px 0 0;
-    font-size: 0.8rem;
-    color: #b45309;
-}
-
+/* ---------- 同日修订 ---------- */
 .revision-row {
     font-size: 0.8rem;
     color: var(--text-secondary, #4b5563);
@@ -645,13 +581,11 @@ html {
 
 /* 长串（时间戳、DOI、URL、连续英文标题）必须能在窄屏换行，否则会顶宽容器 */
 .digest-generated,
-.coverage-source,
 .paper-meta-row,
 .paper-card-title,
 .paper-card-summary,
 .original-abstract,
 .digest-text,
-.scope-fact,
 .revision-row {
     overflow-wrap: anywhere;
     word-break: break-word;
@@ -811,30 +745,16 @@ html {
         font-size: 11px;
     }
 
-    .safety-notice,
     .digest-panel {
         padding-left: 12px;
         padding-right: 12px;
-    }
-
-    .notice-item {
-        padding: 8px 10px;
-    }
-
-    .scope-facts {
-        gap: 8px;
-    }
-
-    .scope-fact {
-        white-space: normal;
     }
 
     .native-date-input {
         max-width: 100%;
     }
 
-    .digest-status-row,
-    .digest-coverage-row {
+    .digest-status-row {
         gap: 8px;
     }
 }
@@ -846,18 +766,6 @@ html {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
     }
-}
-
-/* 缺口两个维度的标题与条目样式 */
-.digest-gap-heading {
-    margin: 10px 0 4px;
-    font-size: 0.86rem;
-    color: var(--text-primary, #111827);
-}
-
-.gap-item.gap-source,
-.gap-item.gap-data {
-    color: #b45309;
 }
 
 /* 区间视图：缺失日期缺口（显式列出，不补 0） */

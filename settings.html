@@ -10,7 +10,7 @@
     本文件为修改后的衍生文件，主要变更：
       1. 删除 auth-config.js / auth.js、登录守卫与退出按钮（纯前端口令不是访问控制）；
       2. 删除 Google Fonts 与 GitHub 星标/派生数外部 API 调用；
-      3. 新增“本机存储、不上传”说明与限额提示；
+      3. 本机存储说明压缩为一句话（删除输入限制工程说明）；
       4. 偏好标签改由 pd-settings.js 用 DOM API 构建（原 innerHTML 注入面已消除）。
 -->
 <html lang="zh-CN">
@@ -30,12 +30,7 @@
         <header>
             <div class="header-content">
                 <div class="header-left">
-                    <a href="https://github.com/dw-dengwei/daily-arXiv-ai-enhanced" target="_blank" rel="noopener noreferrer" class="github-button" title="上游项目 daily-arXiv-ai-enhanced">
-                        <svg height="20" width="20" viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <path fill-rule="evenodd" d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"></path>
-                        </svg>
-                        <span class="github-text">上游项目</span>
-                    </a>
+                    <a href="NOTICE.html" class="about-link" title="来源、许可与免责说明">来源与许可</a>
                 </div>
 
                 <div class="header-center">
@@ -59,18 +54,7 @@
             <div class="settings-container">
                 <div class="settings-header">
                     <h1>偏好设置</h1>
-                    <p>关键词与作者用于在日报中优先排序与高亮，只保存在本机浏览器。</p>
-                </div>
-
-                <div class="safety-notice" id="settingsNotice">
-                    <details class="notice-item" open>
-                        <summary>本机存储说明</summary>
-                        <p>偏好仅存于本机 localStorage，用于筛选与排序；不会被上传、不涉及任何外部服务。</p>
-                    </details>
-                    <details class="notice-item">
-                        <summary>输入限制</summary>
-                        <p id="limitNote">单个关键词/作者最多 80 字符，最多 40 条；超长、重复或含标签的内容会被自动清理。</p>
-                    </details>
+                    <p>按关键词与作者在日报中优先排序、高亮；偏好只保存在本机浏览器，不会上传。</p>
                 </div>
 
                 <div class="settings-content">
@@ -141,12 +125,7 @@
         <footer>
             <div class="footer-content">
                 <p>ResearcherPapers 论文日报</p>
-                <p class="footer-attribution">
-                    页面布局基于
-                    <a href="https://github.com/dw-dengwei/daily-arXiv-ai-enhanced" target="_blank" rel="noopener noreferrer">daily-arXiv-ai-enhanced</a>
-                    （Modified Apache License，许可证副本见 docs/licenses/daily-arxiv-LICENSE）；本项目已按本站数据源与安全要求改造。
-                </p>
-                <p class="footer-notes">本页不收集、不上传任何使用数据。</p>
+                <p class="footer-attribution"><a href="NOTICE.html">来源、许可与免责说明</a></p>
             </div>
         </footer>
     </div>

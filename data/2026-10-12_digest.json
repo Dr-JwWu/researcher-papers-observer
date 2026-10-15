@@ -1,0 +1,65 @@
+{
+  "date": "2026-10-12",
+  "generated_at": "2026-10-15T07:50:01.969435+00:00",
+  "coverage": {
+    "status": "partial",
+    "sources": [
+      {
+        "source": "arxiv",
+        "status": "partial",
+        "candidate_count": 8061,
+        "metadata_fetched": 400,
+        "missing_metadata": 2600,
+        "date_from": "2026-10-08",
+        "date_to": "2026-10-14",
+        "error_count": 1,
+        "limit_count": 6
+      },
+      {
+        "source": "pubmed",
+        "status": "complete",
+        "candidate_count": 112,
+        "metadata_fetched": 112,
+        "missing_metadata": 0,
+        "date_from": "2026-10-08",
+        "date_to": "2026-10-14",
+        "error_count": 0,
+        "limit_count": 0
+      }
+    ],
+    "scope_note": "仅对已配置来源与检索窗口留痕，不代表全网穷尽。"
+  },
+  "digest": {
+    "status": "completed",
+    "sections": [
+      {
+        "topic": "surgical",
+        "heading": "手术机器人与 AI 辅助：人因共享自主框架与单孔平台落地",
+        "text": "两篇综述共同指向手术技术演进的两条互补主线：一篇以结肠镜为场景，整合 CADe、CADx、质量监测与机器人/软体平台证据，提出按任务分层分配人机控制权的共享自主框架，并提示认知卸载与技能退化风险；另一篇由 SAGES 工作组结构化梳理单孔机器人平台在经肛手术、右半结肠切除与低位前切除中的器械、对接与操作流程，认为在选择性术式中可能改善人机工效并减少创伤。差异在于前者侧重人因与框架设计，后者侧重工程实施、培训路径与患者选择。共同局限是二者均为叙述性/专家综述，未提供量化临床结局，机器人相关临床证据仍有限，安全性与有效性尚待前瞻性评估。",
+        "paper_ids": [
+          "pubmed:42860445",
+          "pubmed:42864467"
+        ]
+      }
+    ],
+    "analysis_basis": "abstract"
+  },
+  "pending_count": 2,
+  "paper_count": 2,
+  "research_scope": {
+    "policy": "weekly_capture_partitioned_by_known_date",
+    "window_start": "2026-10-08",
+    "window_end": "2026-10-14",
+    "date_basis": "UTC",
+    "date_basis_policy": "只按来源声明的日粒度日期分配日报：published 在窗口内记 window_match(day_basis=published)；否则使用窗口内的 PubMed 入库日 indexed_at，并公开 discovery_kind=backfill（补录，非当日首发）；日粒度日期可确认在窗口外且无窗口内入库日的记录本轮不公开；日期过粗或缺失者保留为 uncertain_date 待后续显式补录，不补造精确日期。",
+    "out_of_window_count": 169,
+    "undated_count": 2600,
+    "pending_count_by_source": {
+      "pubmed": 4
+    },
+    "sources_unavailable": [
+      "arxiv"
+    ],
+    "note": "计数只描述本轮已配置来源与检索窗口，不代表领域没有新论文；pending 为预算不足或失败的待审条目，不是相关性配额。"
+  }
+}

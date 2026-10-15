@@ -1,0 +1,73 @@
+{
+  "date": "2026-10-13",
+  "generated_at": "2026-10-15T07:50:01.969658+00:00",
+  "coverage": {
+    "status": "partial",
+    "sources": [
+      {
+        "source": "arxiv",
+        "status": "partial",
+        "candidate_count": 8061,
+        "metadata_fetched": 400,
+        "missing_metadata": 2600,
+        "date_from": "2026-10-08",
+        "date_to": "2026-10-14",
+        "error_count": 1,
+        "limit_count": 6
+      },
+      {
+        "source": "pubmed",
+        "status": "complete",
+        "candidate_count": 112,
+        "metadata_fetched": 112,
+        "missing_metadata": 0,
+        "date_from": "2026-10-08",
+        "date_to": "2026-10-14",
+        "error_count": 0,
+        "limit_count": 0
+      }
+    ],
+    "scope_note": "仅对已配置来源与检索窗口留痕，不代表全网穷尽。"
+  },
+  "digest": {
+    "status": "completed",
+    "sections": [
+      {
+        "topic": "surgical",
+        "heading": "手术机器人：术中运动跟随控制与应用质量检测",
+        "text": "两篇研究从术中控制与应用质量评价两个方向推进手术机器人落地：一篇为全膝关节置换机器人提出实时运动跟随技术，使机械臂术中动态跟随骨结构微动，并兼容切割导板、悬臂锯和磨削设备等多类末端工具；另一篇为腹腔镜机器人建立覆盖设备外观功能、电气安全、图像质量、机械臂与器械的四维质控检测体系，明确泄漏电流、分辨率等21项核心指标的检测工具、步骤与限值。差异在于前者针对截骨稳定性与精度的技术缺口，后者针对验收与日常质控缺乏统一标准的问题，两者互补但尚不构成同一证据链。局限上，运动跟随研究停留在摘要级定性结论，未给出量化精度或临床结局；质控体系虽在3家机构7台不同品牌设备上验证、可操作性超过90%，但指标合格率仅略高于77%，且验证样本有限，指标科学性仍需更大范围检验。",
+        "paper_ids": [
+          "pubmed:42865046",
+          "pubmed:42865048"
+        ]
+      },
+      {
+        "topic": "surgical",
+        "heading": "视觉-语言模型在手术解说与关键安全视野评估中的表现",
+        "text": "该研究比较未训练与经手术训练的视觉-语言模型在腹腔镜胆囊切除视频解说及关键安全视野（CVoS）评估中的表现，意义在于提示术式专用提示虽能提高与主刀医生解说的语义相似度，却不能稳定改善程序内容覆盖，且两类模型在CVoS上呈现相反的错误权衡（敏感度0.33、特异度0.95对敏感度0.83、特异度0.19）。这说明解说流畅度不能等同于可靠的安全判断，此类模型当前更适合经外科医生审核的辅助记录而非独立承担安全关键决策。局限在于数据仅来自13段视频的48个10分钟片段，CVoS阳性样本仅6例，结论稳健性与跨术式泛化仍需更大规模及任务专用验证。",
+        "paper_ids": [
+          "pubmed:42868036"
+        ]
+      }
+    ],
+    "analysis_basis": "abstract"
+  },
+  "pending_count": 0,
+  "paper_count": 3,
+  "research_scope": {
+    "policy": "weekly_capture_partitioned_by_known_date",
+    "window_start": "2026-10-08",
+    "window_end": "2026-10-14",
+    "date_basis": "UTC",
+    "date_basis_policy": "只按来源声明的日粒度日期分配日报：published 在窗口内记 window_match(day_basis=published)；否则使用窗口内的 PubMed 入库日 indexed_at，并公开 discovery_kind=backfill（补录，非当日首发）；日粒度日期可确认在窗口外且无窗口内入库日的记录本轮不公开；日期过粗或缺失者保留为 uncertain_date 待后续显式补录，不补造精确日期。",
+    "out_of_window_count": 169,
+    "undated_count": 2600,
+    "pending_count_by_source": {
+      "pubmed": 4
+    },
+    "sources_unavailable": [
+      "arxiv"
+    ],
+    "note": "计数只描述本轮已配置来源与检索窗口，不代表领域没有新论文；pending 为预算不足或失败的待审条目，不是相关性配额。"
+  }
+}
