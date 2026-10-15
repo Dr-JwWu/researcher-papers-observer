@@ -8,9 +8,15 @@
  *   变更：固定中文文案；删除 English/Chinese 语言回退与 flatpickr 相关文案；
  *   新增日期精度、来源、主题、AI 依据（abstract）等必须如实说明的文案。
  *   2026-10 精简：删除“无访问控制/不可信数据”安全横幅、research_scope 工程口径、
- *   候选/取回/缺元数据/错误计数、结构自洽诊断与重复免责声明；正文改为
- *   “收录 N 篇 / N 篇待审核 / 本期 arXiv 来源暂缺 / 本期 arXiv 覆盖不完整 /
- *   部分来源覆盖不完整 / 总结尚不完整 / 暂无总结”这类短句（同一时刻最多一条来源状态）。
+ *   候选/取回/缺元数据/错误计数、结构自洽诊断与重复免责声明。
+ *   2026-10 阅读改版（用户最新的五点）：主题不再作为卡片/详情标签展示，
+ *   顶部只留两个主题过滤（**没有“全部”按钮**：初始都不选 = 两个主题都显示，
+ *   再点一次即取消）；删除当日总结正文、PDF 预览与按钮、旧版 “TL;DR” 字样
+ *   （改“一句话看懂”）；新增连续日期列表、中文大标题/英文副标题、可核单位、
+ *   配图来源与许可的短文案。同一时刻最多一条来源状态。
+ *   2026-10 二次精简：详情去掉“来源分类/抓取时间/进入方式长说明”，
+ *   “AI 摘要”改“论文要点”，依据只留一句“根据论文摘要整理”，
+ *   橙色警告块改普通 section 版式。
  *   本文件不重新授权上游代码，许可仍以 docs/licenses 为准。
  */
 (function (root) {
@@ -20,13 +26,6 @@
   const TOPIC_LABELS = { embodied: '具身智能', surgical: '手术机器人/手术AI' };
   const PRECISION_LABELS = { year: '仅年份', month: '精确到月', day: '精确到日', unknown: '精度未标注' };
   const COVERAGE_LABELS = { complete: '来源正常', partial: '部分来源覆盖不完整', unknown: '来源状态未知' };
-  const DIGEST_STATUS_LABELS = {
-    completed: '已生成',
-    partial: '总结尚不完整',
-    no_included_papers: '本日暂无入选论文',
-    unavailable: '暂无总结',
-    unknown: '状态未知'
-  };
 
   const TEXT = {
     siteTitle: 'ResearcherPapers 论文日报',
@@ -41,28 +40,39 @@
     navAbout: '来源与许可',
 
     loadingPapers: '正在加载论文…',
+    feedLoading: '正在加载日报…',
     loadingFiles: '正在读取数据文件列表…',
     noPapersForDate: '本日暂无收录论文。',
-    noPapersForRange: '所选日期区间内暂无收录论文。',
     noMatchingPapers: '当前筛选条件下没有论文。',
     loadFailedTitle: '数据暂时无法读取，请稍后重试。',
     fileListMissing: '暂无日报数据。',
-    noDigestForDate: '暂无日报。',
-    dateRangeEmpty: '所选区间没有可用日期。',
+
+    // 连续日期列表（按报告日期倒序，最新在顶部）
+    feedLatest: '最新',
+    feedDayCount: '收录 {n} 篇',
+    feedDayEmpty: '该筛选下暂无收录。',
+    feedDayMissing: '本日暂无日报。',
+    // 数据解析不完整：不说“没有论文”，也不外露原始坏行与计数
+    feedDayPartial: '部分内容无法读取。',
+    feedDayUnreadable: '本日数据无法读取。',
+    feedDayUnknown: '（日期不可用）',
 
     filterTopic: '主题',
-    filterAll: '全部',
+    // 明确写清交互：没有“全部”按钮，都不选即两个主题都看
+    filterTopicHint: '点击主题只看该主题，再点一次取消；两个都不选时两个主题都显示',
     filterKeywordAuthor: '关键词 / 作者',
     searchPlaceholder: '输入关键词搜索（标题、作者、摘要）',
     searchClear: '清除搜索',
     searchToggle: '搜索',
-    matchReasonKeyword: '关键词',
+    // 命中原因按可见字段区分：标题（中/英文）、作者、论文要点；
+    // 只有真实公开原摘要的命中才用“文本”。
+    matchReasonTitle: '标题',
     matchReasonAuthor: '作者',
+    matchReasonPoints: '论文要点',
     matchReasonText: '文本',
 
     cardDetails: '查看详情',
     cardAuthors: '作者',
-    cardTopics: '主题',
     cardCategories: '来源分类',
     cardCategoriesUnknown: '来源分类未知',
     discoveryBackfill: '补录候选',
@@ -78,57 +88,45 @@
     modalTitleFallback: '论文详情',
     modalAbstract: '原摘要',
     abstractLinkNote: '原摘要与全文请见来源链接。',
-    modalAi: 'AI 摘要',
-    modalAiBasis: '仅依据摘要生成，未读全文。',
-    modalAiMissing: '本篇暂无 AI 摘要（缺少摘要或分析未完成）。',
+    modalAi: '论文要点',
+    modalAiBasis: '根据论文摘要整理',
+    modalAiMissing: '本篇暂无可读要点（缺少摘要或分析未完成）。',
+    // 四项一律分条展示；空字段写“摘要未提供”，不编造内容。
+    modalAiEmpty: '摘要未提供',
     modalAiField: {
-      tldr: 'TL;DR',
-      motivation: 'Motivation',
-      method: 'Method',
-      result: 'Result',
-      conclusion: 'Conclusion'
+      tldr: '一句话看懂',
+      motivation: '研究动机',
+      method: '方法',
+      result: '结果',
+      conclusion: '结论'
     },
-    modalMeta: '元数据',
+    modalAuthors: '作者',
+    modalAffiliations: '作者单位',
+    // 数据里没有可核单位时如实说明，不按作者名猜单位
+    modalAffiliationsUnknown: '单位待核实',
+    modalAffiliationsSource: '来源',
     modalDoi: 'DOI',
     modalOpenAbs: '打开摘要页',
-    modalOpenPdf: '打开 PDF',
-    modalPdfPreview: 'PDF 预览',
-    modalNoPdf: '本篇没有真实 PDF（PMC 文章页不是 PDF），因此不提供预览或按钮。',
-    modalNoAbs: '数据里没有可用的摘要页链接，未做任何链接推测。',
     modalCopyLink: '复制摘要页链接',
     modalCopied: '已复制到剪贴板',
     modalCopyFailed: '复制失败，请手动复制',
     modalNoLinkToCopy: '没有可复制的链接。',
-    modalCiteInDigest: '日报引用',
-    modalTopicsBoth: '双主题命中',
     modalNavHint: '← → 切换 · 空格随机',
     modalClose: '关闭',
 
-    digestTitle: '当日总结',
-    digestPublished: '收录',
-    digestPending: '待审核',
-    digestUnit: '篇',
-    digestUpdated: '更新于',
+    // 配图：只在许可明确且图已复制到本站静态目录时显示
+    figureSource: '图源',
+    figureLicense: '许可',
+    figureAltFallback: '论文配图',
+
     digestCoveragePartial: '部分来源覆盖不完整',
-    digestIncomplete: '总结尚不完整',
     sourceUnavailable: '本期 {sources} 来源暂缺',
     sourceIncomplete: '本期 {sources} 覆盖不完整',
-    digestNoSummary: '暂无总结',
-    digestNoIncluded: '本日暂无入选论文',
-    digestNoPapers: '暂无日报',
-    digestCiteLabel: '相关论文',
-    digestCiteOrdinal: '第 {n} 篇',
+
     revisionTitle: '同日修订',
     revisionAdded: '新增',
     revisionRemoved: '移除',
     revisionUnit: '篇',
-
-    rangeSummaryTitle: '区间内逐日汇总',
-    rangeMissingDates: '区间内以下日期暂无日报：',
-    rangeMissingNone: '区间内每个日期都有日报。',
-    rangeDayMissing: '暂无日报',
-    rangeDayCount: '收录 {n} 篇',
-    rangeTotal: '区间合计：{n} 篇',
 
     statTitle: '已收录样本统计',
     statPublishedCount: '已收录',
@@ -163,8 +161,7 @@
     settingsLocalOnly: '偏好只保存在本机浏览器，用于排序与高亮，不会上传。',
 
     footerTagline: 'ResearcherPapers 论文日报 · 具身智能 / 手术机器人',
-    footerAbout: '来源、许可与免责说明',
-    footerAiNotice: 'AI 摘要仅依据摘要生成，不构成临床建议。'
+    footerAbout: '来源、许可与免责说明'
   };
 
   function formatTemplate(template, values) {
@@ -203,10 +200,6 @@
     return COVERAGE_LABELS[status] || COVERAGE_LABELS.unknown;
   }
 
-  function digestStatusLabel(status) {
-    return DIGEST_STATUS_LABELS[status] || DIGEST_STATUS_LABELS.unknown;
-  }
-
   function topicListLabel(topics) {
     const list = Array.isArray(topics) ? topics : [];
     if (list.length === 0) return '';
@@ -220,7 +213,6 @@
     TOPIC_LABELS: TOPIC_LABELS,
     PRECISION_LABELS: PRECISION_LABELS,
     COVERAGE_LABELS: COVERAGE_LABELS,
-    DIGEST_STATUS_LABELS: DIGEST_STATUS_LABELS,
     formatTemplate: formatTemplate,
     sourceLabel: sourceLabel,
     DISCOVERY_LABELS: DISCOVERY_LABELS,
@@ -229,7 +221,6 @@
     topicLabel: topicLabel,
     precisionLabel: precisionLabel,
     coverageLabel: coverageLabel,
-    digestStatusLabel: digestStatusLabel,
     topicListLabel: topicListLabel
   };
 })(typeof globalThis !== 'undefined' ? globalThis : this);

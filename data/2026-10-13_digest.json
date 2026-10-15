@@ -1,6 +1,6 @@
 {
   "date": "2026-10-13",
-  "generated_at": "2026-10-15T08:57:09.934164+00:00",
+  "generated_at": "2026-10-15T13:34:10.086509+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -8,18 +8,18 @@
         "source": "arxiv",
         "status": "partial",
         "candidate_count": 8061,
-        "metadata_fetched": 3000,
-        "missing_metadata": 0,
+        "metadata_fetched": 3400,
+        "missing_metadata": 4661,
         "date_from": "2026-10-08",
         "date_to": "2026-10-14",
-        "error_count": 0,
+        "error_count": 1,
         "limit_count": 4
       },
       {
         "source": "pubmed",
         "status": "complete",
-        "candidate_count": 112,
-        "metadata_fetched": 112,
+        "candidate_count": 348,
+        "metadata_fetched": 348,
         "missing_metadata": 0,
         "date_from": "2026-10-08",
         "date_to": "2026-10-14",
@@ -30,42 +30,23 @@
     "scope_note": "仅对已配置来源与检索窗口留痕，不代表全网穷尽。"
   },
   "digest": {
-    "status": "completed",
-    "sections": [
-      {
-        "topic": "embodied",
-        "heading": "动作条件世界模型：局部近似与不确定性解耦的两条路线",
-        "text": "Action Jet 针对短程规划中动作候选评估的计算瓶颈，用三阶泰勒多项式近似当前状态附近由低维动作可达帧构成的局部流形，并闭式给出有效半径，使单次推理即可为任意数量候选动作打分。摘要报告：单次提取为16个候选动作打分比源生成器快300倍以上，短程预测比提供切向量的生成器更准确、计算量低逾百倍。D3WM 则把随机变化（消隐区显现、动态纹理）的空间位置视为可学信号，联合回归确定性下一状态与异方差不确定性图，以该图门控条件扩散并在方差门控随机微分方程下解耦漂移与扩散；摘要称其在机器人桌面操作与相机运动两类动作空间上优于竞争基线。差异在于前者以局部近似换取候选评估的可扩展性、精度受有效半径内的短程约束，后者以不确定性建模提升生成一致性但摘要未给具体指标；共同局限是两者收益均限于摘要报告的基准结果，长时程规划与闭环控制下的有效性尚无依据。",
-        "paper_ids": [
-          "arxiv:2610.19007",
-          "arxiv:2610.19212"
-        ]
-      },
-      {
-        "topic": "surgical",
-        "heading": "手术机器人技术改进、质量评估与手术视频智能评估",
-        "text": "手术主题下，三项工作呈现两条主线。其一是机器人系统方向：一项工作面向全膝关节置换截骨提出实时运动跟随控制，让机械臂术中动态跟随骨结构微动以替代下肢固定器，旨在降低截骨误差风险并兼容切割导板、悬臂锯与磨削设备，但摘要未报告量化精度、手术时间或临床数据；另一项为腹腔镜机器人构建覆盖设备外观功能、电气安全、图像质量、机械臂与器械的四维质控检测体系，明确21项核心指标的检测工具、步骤与限值，并在三家机构对七台不同品牌设备完成多中心验证，报告可操作性超过90%、指标合格率超过77%，其定位偏医院验收与日常质控，而非临床有效性验证。其二是手术视频智能评估方向：通用与手术训练视觉-语言模型的对比表明，术式专用提示虽提升了解说与医生文本的语义相似度（校正p<0.001），却未使程序内容清单F1一致改善，两模型在安全视野（CVoS）判断上呈相反的敏感度/特异度权衡，提示解说流畅无法等同于安全判断可靠。共同值得关注的局限是证据成熟度有限：机器人方向缺少量化性能与结局数据，质控研究的可操作性与合格率亦不足以说明临床获益，VLM评估仅基于48段视频片段、6个CVoS阳性样本且限于胆囊切除，跨方向结论均不宜外推。",
-        "paper_ids": [
-          "pubmed:42865046",
-          "pubmed:42865048",
-          "pubmed:42868036"
-        ]
-      }
-    ],
-    "analysis_basis": "abstract"
+    "status": "not_generated",
+    "sections": [],
+    "note": "按阅读模式不生成每日综合总结。"
   },
-  "pending_count": 0,
-  "paper_count": 5,
+  "pending_count": 4,
+  "paper_count": 58,
   "research_scope": {
     "policy": "weekly_capture_partitioned_by_known_date",
     "window_start": "2026-10-08",
     "window_end": "2026-10-14",
     "date_basis": "UTC",
     "date_basis_policy": "只按来源声明的日粒度日期分配日报：published 在窗口内记 window_match(day_basis=published)；否则使用窗口内的 PubMed 入库日 indexed_at，并公开 discovery_kind=backfill（补录，非当日首发）；日粒度日期可确认在窗口外且无窗口内入库日的记录本轮不公开；日期过粗或缺失者保留为 uncertain_date 待后续显式补录，不补造精确日期。",
-    "out_of_window_count": 705,
-    "undated_count": 0,
+    "out_of_window_count": 1786,
+    "undated_count": 2970,
     "pending_count_by_source": {
-      "pubmed": 4
+      "arxiv": 20,
+      "pubmed": 7
     },
     "sources_unavailable": [],
     "sources_incomplete": [

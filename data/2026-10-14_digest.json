@@ -1,6 +1,6 @@
 {
   "date": "2026-10-14",
-  "generated_at": "2026-10-15T08:57:09.934497+00:00",
+  "generated_at": "2026-10-15T13:34:10.089641+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -8,18 +8,18 @@
         "source": "arxiv",
         "status": "partial",
         "candidate_count": 8061,
-        "metadata_fetched": 3000,
-        "missing_metadata": 0,
+        "metadata_fetched": 3400,
+        "missing_metadata": 4661,
         "date_from": "2026-10-08",
         "date_to": "2026-10-14",
-        "error_count": 0,
+        "error_count": 1,
         "limit_count": 4
       },
       {
         "source": "pubmed",
         "status": "complete",
-        "candidate_count": 112,
-        "metadata_fetched": 112,
+        "candidate_count": 348,
+        "metadata_fetched": 348,
         "missing_metadata": 0,
         "date_from": "2026-10-08",
         "date_to": "2026-10-14",
@@ -30,27 +30,9 @@
     "scope_note": "仅对已配置来源与检索窗口留痕，不代表全网穷尽。"
   },
   "digest": {
-    "status": "completed",
-    "sections": [
-      {
-        "topic": "embodied",
-        "heading": "跨域潜在动作学习与统一世界模型控制",
-        "text": "OneLA 以共享正交字典和统一预测目标从多领域视频预训练连续潜在动作，无需动作标注或跨域对齐损失，再用轻量适配器把各领域原生控制指令映射到同一空间，为世界模型提供统一控制接口。文中报告跨域动作读出改善、动作循环迁移旋转误差较其所评估的最强基线降低 24.8%，联合训练下真实场景生成 HPSv3 提升 20.5%，指向从多样视频学习通用可控世界模型的路径。需注意这些均为作者自报指标，评估基线与任务范围有限，潜在动作空间在真实异构具身上的可迁移性与控制精度仍有待独立验证。",
-        "paper_ids": [
-          "arxiv:2610.20160"
-        ]
-      },
-      {
-        "topic": "surgical",
-        "heading": "手术机器人智能化的转化瓶颈：运动补偿与分割鲁棒性",
-        "text": "本轮两篇文献虽分别聚焦心脏运动补偿与器械分割鲁棒性，但共同指向手术机器人智能化的转化瓶颈：孤立算法的性能上限并非主要制约，系统集成与对未见扰动的稳健性才是落地关键。运动补偿综述汇总了感知—预测—控制的定量指标（如180 ms时域0.73–0.81 mm RMSE、三倍刚度变化下力误差<0.08 N），却指出主动闭环补偿历经二十年仍未进入人体试验，首要障碍是系统集成缺口，且证据基本来自猪模型。分割挑战赛以反事实机器人重放构建配对损坏样本，获胜方法在出血、烟雾、低亮度下平均达0.9394 DSC，但作者承认多数方案依赖已知局限的传统技术，呼吁超越数据增强的新鲁棒性范式。两者的差异在于一篇是范围综述、一篇是评测挑战，共同局限是评测与验证环境仍与真实临床场景存在差距，相关性能数字不宜外推为临床有效性证据。",
-        "paper_ids": [
-          "pubmed:42870926",
-          "pubmed:42873631"
-        ]
-      }
-    ],
-    "analysis_basis": "abstract"
+    "status": "not_generated",
+    "sections": [],
+    "note": "按阅读模式不生成每日综合总结。"
   },
   "pending_count": 0,
   "paper_count": 3,
@@ -60,10 +42,11 @@
     "window_end": "2026-10-14",
     "date_basis": "UTC",
     "date_basis_policy": "只按来源声明的日粒度日期分配日报：published 在窗口内记 window_match(day_basis=published)；否则使用窗口内的 PubMed 入库日 indexed_at，并公开 discovery_kind=backfill（补录，非当日首发）；日粒度日期可确认在窗口外且无窗口内入库日的记录本轮不公开；日期过粗或缺失者保留为 uncertain_date 待后续显式补录，不补造精确日期。",
-    "out_of_window_count": 705,
-    "undated_count": 0,
+    "out_of_window_count": 1786,
+    "undated_count": 2970,
     "pending_count_by_source": {
-      "pubmed": 4
+      "arxiv": 20,
+      "pubmed": 7
     },
     "sources_unavailable": [],
     "sources_incomplete": [

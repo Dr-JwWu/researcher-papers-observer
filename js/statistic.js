@@ -13,7 +13,9 @@
  *     3. 只统计已收录样本：缺失日期不补 0、不插值，缺口日期显式列出；
  *     4. 全部改用 DOM API 构建（原模板字符串 innerHTML 注入面已消除）；
  *     5. 删除登录守卫与屏幕尺寸警告的 innerHTML 写法；
- *     6. 精简：口径一句话，缺口提示改短句；公开导出不转载原摘要时侧栏显示来源提示。
+ *     6. 精简：口径一句话，缺口提示改短句；公开导出不转载原摘要时侧栏显示来源提示；
+ *     7. 2026-10 阅读改版：侧栏卡片与首页一致，不再显示主题标签（统计页也没有
+ *        “全部”主题选项）；日期选择保留在统计页（统计需要区间），首页已改为连续 feed。
  *   本文件为衍生代码，许可遵循 docs/licenses/daily-arxiv-LICENSE。
  */
 (function () {
@@ -349,12 +351,7 @@
           class: 'paper-authors',
           text: paper.authors.length ? paper.authors.join(', ') : '作者未标注'
         }));
-        // 侧栏卡片与首页一致：只留主题标签，来源分类移入详情。
-        const tagWrap = dom.el('div', { class: 'paper-categories' });
-        paper.topics.forEach(function (topic) {
-          tagWrap.appendChild(dom.el('span', { class: 'topic-tag topic-' + topic, text: PD.i18n.topicLabel(topic) }));
-        });
-        card.appendChild(tagWrap);
+        // 主题不再作为卡片标签展示（与首页一致）；统计页也没有“全部”主题选项。
         const summaryText = paper.ai.tldr && paper.ai.tldr.trim() !== ''
           ? paper.ai.tldr
           : (PD.hasPublicAbstract(paper) ? paper.abstract : '');

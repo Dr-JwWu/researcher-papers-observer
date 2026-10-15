@@ -8,6 +8,9 @@
  *   变更（相对上游 daily 的同名行为）：数据源改为本站相对 data/ 目录；
  *   URL 必须通过 http(s) 白名单；日期按 published_precision 显示、不补造月日；
  *   主题用 topics（embodied/surgical，允许双命中）而非 categories；pdf 仅真实 PDF。
+ *   2026-10 阅读改版新增：可选 reading 字段（中文标题 / 分条要点 / 可核单位 / 合法配图）；
+ *   配图 src 走 assets/papers/ 相对路径白名单（无协议、无主机、无穿越）；
+ *   详情四项优先用结构化列表，旧 AI 字符串只做保守分条（不破小数、不改写）。
  *   本文件不是上游文件，不重新标注 MIT，许可仍随 docs/licenses 说明。
  *
  * 读取的数据契约（与 paper_digest/export.py 一致，前端只读不写）：
@@ -144,6 +147,52 @@
       return /^\/pdf\//.test(path) || path.endsWith('.pdf');
     }
     return path.endsWith('.pdf');
+  }
+
+  /**
+   * 卡片配图（reading.figure.src）的唯一入口：只允许本站静态目录
+   * `assets/papers/` 下的、由后端许可核对后落盘的单张图片。
+   *
+   * 与公开导出契约 v0.4 严格一致：文件名必须是内容 sha256（64 位小写十六进制）
+   * 加 `.png/.jpg/.jpeg/.webp`，**不允许子目录、不允许任意文件名、不接受 gif/avif/svg**。
+   * 这样即使同源目录里混入别的文件，也无法被数据指向当作论文配图。
+   *
+   * 为什么单独一条白名单、而不复用 safeHttpUrl：
+   *   - 图片必须是许可已核实、由后端复制到本地的静态文件，不允许指向外部主机
+   *     （外部 <img> 会带来第三方追踪与热链，也绕开本项目的“不加载外部资源”约定）；
+   *   - 因此这里显式拒绝任何协议（含 javascript:/data:）、主机、绝对路径、
+   *     `//`、反斜杠、查询串/锚点、控制字符与 `..` 穿越（含百分号编码后的穿越）。
+   * 返回规范化后的相对路径，或 null（非法即不显示图，不猜测、不替换）。
+   */
+  const ASSET_PAPERS_PREFIX = 'assets/papers/';
+  const FIGURE_FILE_RE = /^[0-9a-f]{64}\.(?:png|jpg|jpeg|webp)$/;
+
+  function safeAssetImagePath(value) {
+    if (typeof value !== 'string') return null;
+    const raw = value.trim();
+    if (raw === '') return null;
+    if (hasControlChars(raw)) return null;
+    if (raw.indexOf('\\') !== -1) return null;
+    if (raw.indexOf('?') !== -1 || raw.indexOf('#') !== -1) return null;
+    if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(raw)) return null; // 任何协议（http:、data:、javascript:）
+    if (raw.charAt(0) === '/') return null;                  // 站内绝对路径也不接受
+    if (raw.indexOf('//') !== -1) return null;               // 协议相对 //host
+    let decoded;
+    try {
+      decoded = decodeURIComponent(raw);
+    } catch (error) {
+      return null; // 畸形百分号序列
+    }
+    if (hasControlChars(decoded)) return null;
+    if (decoded.indexOf('\\') !== -1) return null;
+    if (decoded.indexOf('..') !== -1) return null;
+    if (decoded.charAt(0) === '/') return null;
+    if (decoded.indexOf('//') !== -1) return null;
+    if (decoded.indexOf(ASSET_PAPERS_PREFIX) !== 0) return null;
+    const rest = decoded.slice(ASSET_PAPERS_PREFIX.length);
+    // 只允许“一层 + sha256 文件名 + 位图后缀”，与公开导出 v0.4 完全一致。
+    if (!FIGURE_FILE_RE.test(rest)) return null;
+    return ASSET_PAPERS_PREFIX + rest;
   }
 
   /**
@@ -412,6 +461,215 @@
     return text !== '' && !isAbstractPlaceholder(text);
   }
 
+  /* ------------------------------------------------------------------ *
+   * 阅读增强字段 reading（可选）：中文标题、分条要点、可核单位、合法配图
+   *
+   * 形状（后端许可核对后才会写进公开导出；缺字段即不存在，不推断）：
+   *   reading = {
+   *     title_zh: string,
+   *     bullets: {motivation:[str], method:[str], result:[str], conclusion:[str]},
+   *     affiliations: [{name: string, source_url: string}],
+   *     figure: {src: 'assets/papers/<sha256 64位小写十六进制>.png|jpg|jpeg|webp',
+   *              caption: string, source_url: string, license: string}
+   *   }
+   * 17 字段旧数据没有 reading，页面必须照常可读（回退到 AI 字符串）。
+   * ------------------------------------------------------------------ */
+
+  const READING_FIELDS = ['motivation', 'method', 'result', 'conclusion'];
+  /** 渲染护栏：单字段最多渲染多少条要点（超出的数据仍留在原始导出里）。 */
+  const READING_BULLET_LIMIT = 50;
+  const AFFILIATION_LIMIT = 12;
+
+  function emptyReadingBullets() {
+    const out = {};
+    for (let i = 0; i < READING_FIELDS.length; i += 1) out[READING_FIELDS[i]] = [];
+    return out;
+  }
+
+  function normalizeReadingBullets(value) {
+    const source = value && typeof value === 'object' && !Array.isArray(value) ? value : {};
+    const out = emptyReadingBullets();
+    for (let i = 0; i < READING_FIELDS.length; i += 1) {
+      const field = READING_FIELDS[i];
+      const list = stringList(source[field]);
+      const trimmed = [];
+      for (let j = 0; j < list.length && trimmed.length < READING_BULLET_LIMIT; j += 1) {
+        const item = list[j].trim();
+        if (item !== '' && trimmed.indexOf(item) === -1) trimmed.push(item);
+      }
+      out[field] = trimmed;
+    }
+    return out;
+  }
+
+  /**
+   * 可核单位：只认数据里显式给出的 name；source_url 必须通过 http(s) 白名单
+   * 才会成为可点击来源（非法 URL 只丢链接，不丢名称，也绝不按作者名猜单位）。
+   */
+  function normalizeAffiliations(value) {
+    const raw = Array.isArray(value) ? value : [];
+    const out = [];
+    for (let i = 0; i < raw.length && out.length < AFFILIATION_LIMIT; i += 1) {
+      const item = raw[i];
+      if (!item || typeof item !== 'object' || Array.isArray(item)) continue;
+      const name = isNonEmptyString(item.name) ? item.name.trim() : '';
+      if (name === '') continue;
+      if (out.some(function (entry) { return entry.name === name; })) continue;
+      const sourceUrl = safeHttpUrl(item.source_url);
+      out.push({ name: name, sourceUrl: sourceUrl, verifiable: !!sourceUrl });
+    }
+    return out;
+  }
+
+  /**
+   * 配图：src 必须是 assets/papers/ 下的本地静态图片，且必须带非空 license
+   * （许可不明确一律不显示，宁缺勿伪造授权）；source_url 只作为外链来源。
+   */
+  function normalizeFigure(value) {
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+    const src = safeAssetImagePath(value.src);
+    if (!src) return null;
+    const license = isNonEmptyString(value.license) ? value.license.trim() : '';
+    if (license === '') return null;
+    const caption = isNonEmptyString(value.caption) ? value.caption.trim() : '';
+    return { src: src, caption: caption, sourceUrl: safeHttpUrl(value.source_url), license: license };
+  }
+
+  /**
+   * 许可文本 → 官方许可页：只有**固定已知映射**，绝不按任意许可字符串拼 URL
+   * （拼出来的“看似合法”链接会把许可写错，比没有链接更糟）。
+   * 目前真实导出的都是 CC BY 4.0；未知许可返回 {url: null}，页面只显示许可文本。
+   */
+  const LICENSE_LINKS = Object.freeze({
+    'cc by 4.0': 'https://creativecommons.org/licenses/by/4.0/',
+    'https://creativecommons.org/licenses/by/4.0/': 'https://creativecommons.org/licenses/by/4.0/',
+    'http://creativecommons.org/licenses/by/4.0/': 'https://creativecommons.org/licenses/by/4.0/',
+    'creativecommons.org/licenses/by/4.0/': 'https://creativecommons.org/licenses/by/4.0/'
+  });
+
+  function licenseInfo(license) {
+    const text = isNonEmptyString(license) ? license.trim() : '';
+    if (text === '') return { license: '', url: null, known: false };
+    // 归一化只用于查表：大小写、空白、连字符/下划线差异视为同一个已知许可。
+    const key = text.toLowerCase().replace(/[\s_-]+/g, ' ');
+    const url = LICENSE_LINKS[key];
+    if (!url) return { license: text, url: null, known: false };
+    const safe = safeHttpUrl(url);
+    return { license: text, url: safe, known: !!safe };
+  }
+
+  function normalizeReading(value) {
+    const out = {
+      present: false,
+      titleZh: '',
+      bullets: emptyReadingBullets(),
+      affiliations: [],
+      figure: null
+    };
+    if (!value || typeof value !== 'object' || Array.isArray(value)) return out;
+    out.present = true;
+    out.titleZh = isNonEmptyString(value.title_zh) ? value.title_zh.trim() : '';
+    out.bullets = normalizeReadingBullets(value.bullets);
+    out.affiliations = normalizeAffiliations(value.affiliations);
+    out.figure = normalizeFigure(value.figure);
+    return out;
+  }
+
+  /** 卡片/详情主标题：有中文标题用中文，否则回退英文原题（不翻译、不拼接）。 */
+  function displayTitle(paper) {
+    const reading = paper && paper.reading ? paper.reading : null;
+    if (reading && reading.titleZh !== '') return { main: reading.titleZh, secondary: paper.title };
+    return { main: (paper && paper.title) || '', secondary: '' };
+  }
+
+  /* ------------------------------------------------------------------ *
+   * 旧版 AI 长字符串 → 保守分条
+   *
+   * 只有 reading.bullets 的结构化列表缺失时才会用到。规则是“宁可少切”：
+   *   - 只在句末标点后切（。！？；! ? ; 与换行）；
+   *   - 英文句点仅在“后面是空白 + 大写字母/CJK”且“前面不是数字”且
+   *     “前一个词不是常见缩写”时才切 → 不会把 3.5 / 0.92 / et al. / v1.2 切断；
+   *   - 只做切片，不改写、不补写、不合并（每条都是原文的连续子串）。
+   * ------------------------------------------------------------------ */
+
+  const ABBREVIATION_TAIL = /(?:^|[\s(（[【"“'‘])(?:et|al|e\.g|i\.e|eg|ie|fig|figs|eq|eqs|tab|sec|ref|refs|no|nos|vol|pp|cf|vs|approx|ca|dr|mr|mrs|ms|prof|inc|ltd|co|corp|univ|dept|resp|ieee|acm|arxiv|bio|med|min|max|avg|std|etc)$/i;
+
+  function isSentenceBoundary(text, index) {
+    const char = text.charAt(index);
+    if (char === '\n' || char === '。' || char === '！' || char === '？' || char === '；' ||
+        char === '!' || char === '?' || char === ';') {
+      return true;
+    }
+    if (char !== '.') return false;
+    // 保护小数与版本号：只有“点号两侧都是数字”时才是小数点（3.5 / 0.92 / v1.2.3），
+    // 此时绝不切分；句末点号（“达 0.92. The model…”“v1.2 发布。”）仍可切。
+    const prev = text.charAt(index - 1);
+    const next = text.charAt(index + 1);
+    const prevIsDigit = prev >= '0' && prev <= '9';
+    const nextIsDigit = next >= '0' && next <= '9';
+    if (prevIsDigit && nextIsDigit) return false;
+    if (next !== ' ' && next !== '\t' && next !== '\n') return false;
+    let cursor = index + 1;
+    while (cursor < text.length && (text.charAt(cursor) === ' ' || text.charAt(cursor) === '\t')) cursor += 1;
+    if (cursor >= text.length) return true; // 结尾的句点
+    const after = text.charAt(cursor);
+    const isUpperLatin = after >= 'A' && after <= 'Z';
+    const isCjk = after.charCodeAt(0) > 0x2e7f;
+    if (!isUpperLatin && !isCjk) return false;
+    const before = text.slice(0, index);
+    if (ABBREVIATION_TAIL.test(before)) return false;
+    return true;
+  }
+
+  /** 保守分条：返回非空片段数组（每段都是入参的连续子串，只去首尾空白）。 */
+  function splitSentences(text) {
+    if (typeof text !== 'string') return [];
+    const value = text;
+    const parts = [];
+    let start = 0;
+    for (let i = 0; i < value.length; i += 1) {
+      if (!isSentenceBoundary(value, i)) continue;
+      let end = i + 1;
+      // 连续句末标点（"。。"、"！?"）并成一条，避免产生只有标点的条目。
+      while (end < value.length && isSentenceBoundary(value, end)) end += 1;
+      const chunk = value.slice(start, end).trim();
+      if (chunk !== '') parts.push(chunk);
+      start = end;
+      i = end - 1;
+    }
+    if (start < value.length) {
+      const tail = value.slice(start).trim();
+      if (tail !== '') parts.push(tail);
+    }
+    return parts;
+  }
+
+  /**
+   * 详情四项要点：优先 reading.bullets 的结构化列表（不切分），
+   * 否则回退旧 AI 字符串做保守分条（不伪造、不破小数）。
+   * 返回 {field: {items:[str], basis:'reading'|'legacy'|'none'}}。
+   */
+  function paperBullets(paper) {
+    const reading = paper && paper.reading && typeof paper.reading === 'object'
+      ? paper.reading
+      : normalizeReading(null);
+    const ai = (paper && paper.ai) || {};
+    const out = {};
+    for (let i = 0; i < READING_FIELDS.length; i += 1) {
+      const field = READING_FIELDS[i];
+      const structured = reading.bullets && Array.isArray(reading.bullets[field]) ? reading.bullets[field] : [];
+      if (structured.length > 0) {
+        out[field] = { items: structured.slice(), basis: 'reading' };
+        continue;
+      }
+      const legacy = typeof ai[field] === 'string' ? ai[field].trim() : '';
+      out[field] = legacy === ''
+        ? { items: [], basis: 'none' }
+        : { items: splitSentences(legacy), basis: 'legacy' };
+    }
+    return out;
+  }
+
   /**
    * 单条 JSONL 行 → 公开视图字段。返回 null 表示该行不可展示（缺 id 或缺标题）。
    * 注意：不读取 extra；不把 AI 文本混进事实字段。
@@ -435,6 +693,8 @@
       source: source,
       sourceLabel: sourceLabel(record.source),
       title: title,
+      // 可选阅读增强（17 字段旧数据没有 reading，全部字段退化为空，不推断）。
+      reading: normalizeReading(record.reading),
       authors: stringList(record.authors),
       abstract: typeof record.summary === 'string' ? record.summary : '',
       ai: ai,
@@ -741,6 +1001,40 @@
     return cov.sources.some(function (item) { return item.status !== 'complete'; });
   }
 
+  /**
+   * 跨日来源状态聚合：首页按日期倒序连续展示所有日报，但来源状态**只允许一行**。
+   * unavailable（真的没拿到数据）优先于 incomplete（有数据但覆盖不完整），
+   * 两者都按 SOURCES 固定顺序去重；partial 表示至少有一天覆盖不完整，
+   * 仅在既没有 unavailable 也没有 incomplete 时用作兜底短句。
+   */
+  function aggregateScopeStatus(days) {
+    const list = Array.isArray(days) ? days : [];
+    const unavailable = [];
+    const incomplete = [];
+    let partial = false;
+    const pushKnown = function (target, value) {
+      const source = typeof value === 'string' ? value.trim() : '';
+      if (SOURCES.indexOf(source) === -1 || target.indexOf(source) !== -1) return;
+      target.push(source);
+    };
+    for (let i = 0; i < list.length; i += 1) {
+      const day = list[i];
+      if (!day) continue;
+      const digest = day.digest && typeof day.digest === 'object' ? day.digest : {};
+      const dayUnavailable = Array.isArray(digest.unavailableSources) ? digest.unavailableSources : [];
+      const dayIncomplete = Array.isArray(digest.incompleteSources) ? digest.incompleteSources : [];
+      for (let j = 0; j < dayUnavailable.length; j += 1) pushKnown(unavailable, dayUnavailable[j]);
+      for (let k = 0; k < dayIncomplete.length; k += 1) pushKnown(incomplete, dayIncomplete[k]);
+      if (coverageIsPartial(day.coverage)) partial = true;
+    }
+    return {
+      unavailable: unavailable.slice().sort(function (a, b) { return SOURCES.indexOf(a) - SOURCES.indexOf(b); }),
+      incomplete: incomplete.filter(function (source) { return unavailable.indexOf(source) === -1; })
+        .sort(function (a, b) { return SOURCES.indexOf(a) - SOURCES.indexOf(b); }),
+      partial: partial
+    };
+  }
+
   /* ------------------------------------------------------------------ *
    * 主题筛选（允许双命中）与关键词/作者/文本匹配
    * ------------------------------------------------------------------ */
@@ -764,32 +1058,101 @@
     return list.filter(function (paper) { return matchesTopicFilter(paper, selected); });
   }
 
-  /** 关键词/作者搜索用的小写化 haystack：只用事实与摘要，不用 AI 文本冒充事实。 */
+  /**
+   * 页面可见的可搜索字段：中文标题（reading.title_zh）与英文原题、作者、
+   * 论文要点（reading 四节 bullets + AI 五字段，详情里逐条可见）、以及
+   * **真实**公开原摘要。公开导出的占位句不是内容，不进搜索面。
+   */
+  function paperSearchFields(paper) {
+    const record = paper && typeof paper === 'object' ? paper : {};
+    const reading = record.reading && typeof record.reading === 'object' ? record.reading : null;
+    const titleParts = [record.title || ''];
+    if (reading && isNonEmptyString(reading.titleZh)) titleParts.push(reading.titleZh);
+    const points = [];
+    if (reading && reading.bullets && typeof reading.bullets === 'object') {
+      for (let i = 0; i < READING_FIELDS.length; i += 1) {
+        const list = reading.bullets[READING_FIELDS[i]];
+        if (!Array.isArray(list)) continue;
+        for (let j = 0; j < list.length; j += 1) {
+          if (isNonEmptyString(list[j])) points.push(list[j]);
+        }
+      }
+    }
+    for (let i = 0; i < AI_FIELDS.length; i += 1) {
+      const value = record.ai ? record.ai[AI_FIELDS[i]] : '';
+      if (isNonEmptyString(value)) points.push(value);
+    }
+    return {
+      title: titleParts.filter(function (part) { return part !== ''; }).join(' '),
+      author: (record.authors || []).join(', '),
+      points: points.join(' '),
+      abstract: hasPublicAbstract(record) ? record.abstract : ''
+    };
+  }
+
+  /** 全部页面可见内容拼成的小写 haystack（搜索用；不当正则，只做字面子串）。 */
+  function paperSearchHaystack(paper) {
+    const fields = paperSearchFields(paper);
+    return [fields.title, fields.author, fields.points, fields.abstract].join(' ').toLowerCase();
+  }
+
+  /**
+   * 兼容入口：标题（含中文标题）+ 作者 + 真实原摘要；includeAi 时再并入论文要点。
+   * 搜索路径用 paperSearchHaystack（始终包含论文要点）。
+   */
   function paperHaystack(paper, options) {
     const opts = options || {};
-    const parts = [paper.title || '', (paper.authors || []).join(', '), paper.abstract || ''];
-    if (opts.includeAi) {
-      for (let i = 0; i < AI_FIELDS.length; i += 1) parts.push((paper.ai || {})[AI_FIELDS[i]] || '');
-    }
+    const fields = paperSearchFields(paper);
+    const parts = [fields.title, fields.author, fields.abstract];
+    if (opts.includeAi) parts.push(fields.points);
     return parts.join(' ').toLowerCase();
   }
 
-  function matchPaperText(paper, query, options) {
-    const text = isNonEmptyString(query) ? query.trim().toLowerCase() : '';
-    if (text === '') return { matched: false, reason: '' };
-    const hay = paperHaystack(paper, options);
-    return hay.indexOf(text) !== -1 ? { matched: true, reason: 'text' } : { matched: false, reason: '' };
+  /** 一个词命中了哪些可见字段：'title' | 'author' | 'points' | 'abstract'。 */
+  function searchHitFields(paper, term) {
+    const needle = isNonEmptyString(term) ? term.trim().toLowerCase() : '';
+    if (needle === '') return [];
+    const fields = paperSearchFields(paper);
+    return ['title', 'author', 'points', 'abstract'].filter(function (key) {
+      return fields[key].toLowerCase().indexOf(needle) !== -1;
+    });
   }
 
-  /** 关键词之间是“或”，且只匹配标题/摘要中的字面子串（不当正则）。 */
+  /** 命中原因：字段区分标题/作者/论文要点；只有真实原摘要的命中记为 text。 */
+  const SEARCH_REASON_KIND = { title: 'title', author: 'author', points: 'points', abstract: 'text' };
+
+  function matchPaperText(paper, query, options) {
+    const text = isNonEmptyString(query) ? query.trim() : '';
+    if (text === '') return { matched: false, reason: '' };
+    const hits = searchHitFields(paper, text);
+    return hits.length > 0
+      ? { matched: true, reason: SEARCH_REASON_KIND[hits[0]] || 'text' }
+      : { matched: false, reason: '' };
+  }
+
+  /** 关键词之间是“或”，且只做字面子串匹配（不当正则）。 */
   function matchPaperKeywords(paper, keywords) {
     const list = stringList(keywords);
     if (list.length === 0) return { matched: false, matchedKeywords: [] };
-    const hay = paperHaystack(paper, { includeAi: false });
     const matchedKeywords = list.filter(function (keyword) {
-      return hay.indexOf(keyword.toLowerCase()) !== -1;
+      return searchHitFields(paper, keyword).length > 0;
     });
     return { matched: matchedKeywords.length > 0, matchedKeywords: matchedKeywords };
+  }
+
+  /** 一组检索词 → 去重的字段级命中原因（如 title:手术机器人、points:抓取）。 */
+  function searchReasons(paper, terms) {
+    const list = stringList(terms);
+    const out = [];
+    for (let i = 0; i < list.length; i += 1) {
+      const term = list[i];
+      const hits = searchHitFields(paper, term);
+      for (let j = 0; j < hits.length; j += 1) {
+        const reason = (SEARCH_REASON_KIND[hits[j]] || 'text') + ':' + term;
+        if (out.indexOf(reason) === -1) out.push(reason);
+      }
+    }
+    return out;
   }
 
   /** 作者匹配：作者姓名里的字面子串，多个作者之间是“或”。 */
@@ -819,13 +1182,11 @@
       });
     }
     const scored = list.map(function (paper) {
-      const keywordHit = matchPaperKeywords(paper, keywords);
-      const authorHit = matchPaperAuthors(paper, authors);
-      const textHit = matchPaperText(paper, query, { includeAi: false });
-      const reasons = [];
-      if (keywordHit.matched) reasons.push('keyword:' + keywordHit.matchedKeywords.join(','));
-      if (authorHit.matched) reasons.push('author:' + authorHit.matchedAuthors.join(','));
-      if (textHit.matched) reasons.push('text:' + query);
+      // 检索面 = 全部页面可见内容；命中原因区分 标题/作者/论文要点
+      // （真实公开原摘要的命中记 text；公开占位句不参与）。
+      const terms = keywords.concat(authors);
+      if (query !== '') terms.push(query);
+      const reasons = searchReasons(paper, terms);
       return { paper: paper, matched: reasons.length > 0, reasons: reasons };
     });
     // 稳定排序：匹配优先，其余保持原顺序。
@@ -1068,12 +1429,24 @@
     containsHtmlMarkup: containsHtmlMarkup,
     normalizeHttpUrl: normalizeHttpUrl,
     safeHttpUrl: safeHttpUrl,
+    safeAssetImagePath: safeAssetImagePath,
     isRealPdfUrl: isRealPdfUrl,
     paperLinks: paperLinks,
     sourceLabel: sourceLabel,
     normalizeDiscoveryKind: normalizeDiscoveryKind,
     isAbstractPlaceholder: isAbstractPlaceholder,
     hasPublicAbstract: hasPublicAbstract,
+
+    READING_FIELDS: READING_FIELDS,
+    READING_BULLET_LIMIT: READING_BULLET_LIMIT,
+    normalizeReading: normalizeReading,
+    normalizeAffiliations: normalizeAffiliations,
+    normalizeFigure: normalizeFigure,
+    licenseInfo: licenseInfo,
+    LICENSE_LINKS: LICENSE_LINKS,
+    displayTitle: displayTitle,
+    splitSentences: splitSentences,
+    paperBullets: paperBullets,
 
     isIsoDate: isIsoDate,
     normalizePrecision: normalizePrecision,
@@ -1105,10 +1478,15 @@
     computeCoverage: computeCoverage,
     hasAnyGap: hasAnyGap,
     coverageIsPartial: coverageIsPartial,
+    aggregateScopeStatus: aggregateScopeStatus,
 
     matchesTopicFilter: matchesTopicFilter,
     filterPapersByTopic: filterPapersByTopic,
     paperHaystack: paperHaystack,
+    paperSearchFields: paperSearchFields,
+    paperSearchHaystack: paperSearchHaystack,
+    searchHitFields: searchHitFields,
+    searchReasons: searchReasons,
     matchPaperText: matchPaperText,
     matchPaperKeywords: matchPaperKeywords,
     matchPaperAuthors: matchPaperAuthors,

@@ -1,6 +1,6 @@
 {
   "date": "2026-10-09",
-  "generated_at": "2026-10-15T08:57:09.933169+00:00",
+  "generated_at": "2026-10-15T13:34:10.061220+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -8,18 +8,18 @@
         "source": "arxiv",
         "status": "partial",
         "candidate_count": 8061,
-        "metadata_fetched": 3000,
-        "missing_metadata": 0,
+        "metadata_fetched": 3400,
+        "missing_metadata": 4661,
         "date_from": "2026-10-08",
         "date_to": "2026-10-14",
-        "error_count": 0,
+        "error_count": 1,
         "limit_count": 4
       },
       {
         "source": "pubmed",
         "status": "complete",
-        "candidate_count": 112,
-        "metadata_fetched": 112,
+        "candidate_count": 348,
+        "metadata_fetched": 348,
         "missing_metadata": 0,
         "date_from": "2026-10-08",
         "date_to": "2026-10-14",
@@ -30,48 +30,23 @@
     "scope_note": "仅对已配置来源与检索窗口留痕，不代表全网穷尽。"
   },
   "digest": {
-    "status": "completed",
-    "sections": [
-      {
-        "topic": "embodied",
-        "heading": "稀疏潜表示提升零样本强化学习",
-        "text": "该工作在基于后继特征的零样本强化学习框架下指出任务编码器的稠密潜表示会使推断奖励信号在状态空间中弥散、削弱目标相关状态与背景的对比度，并提出仅在训练期施加 l1 稀疏惩罚，将奖励预测结构集中到更小的有效子空间，且不改变网络架构与闭式推断流程。方法以单行代码改动叠加于 TD-JEPA，在 DMC 与 OGBench 共 65 个任务、13 个域级比较中全部提升：DMC 平均回报由 661±6 升至 714±3，OGBench 平均成功率由 38.0±0.8 升至 48.4±2.3，并在 9/13 个域上取得所比较零样本基线中的最高平均性能。作为单一论文，其证据仍限于作者自报的基准结果，稀疏惩罚引入的额外超参数敏感性、跨域泛化能力以及真实机器人场景中的有效性尚待独立验证。",
-        "paper_ids": [
-          "arxiv:2610.14400"
-        ]
-      },
-      {
-        "topic": "surgical",
-        "heading": "手术视频分析与入路安全：从帧选择到组织层识别",
-        "text": "两项工作都把深度学习用于术中视觉，但主线不同：KAFR 将基于工具运动学的自适应帧选择从机器人手术迁移到腹腔镜，在 80 例胆囊切除术数据上仅用 0.58% 的帧取得 91.0% 阶段分类 F1，与 LoViT（90.2%）和 Trans-SVNet（89.7%）相当，核心是压缩长视频冗余、降低计算负担；另一项则针对直接光学穿刺器置入的空间迷失风险，用 DeepLabV3+ 对腹直肌、腹直肌鞘和腹膜做像素级分割，mIoU 0.794、mDice 0.883，组织类别间直接混淆仅 0.0–0.3%。差异在证据形态：前者以分类效率与基准对比见长，后者以分层解剖识别与置信区间报告见长。值得关注的局限是二者均限于单一数据来源——前者未展示跨中心泛化，后者为 10 例单中心试点，均需更大规模验证才谈得上临床转化。",
-        "paper_ids": [
-          "pubmed:42851469",
-          "pubmed:42855513"
-        ]
-      },
-      {
-        "topic": "surgical",
-        "heading": "仿真遥操作在手术机器人工具设计中的评估路径",
-        "text": "该研究提出可配置的 Real2Sim 双臂遥操作框架，用 Omni-to-Unity 与 dVRK-to-Unity 两套系统在不同主手机器人和不同运动学构型的仿真工具上执行仿真手术任务，实验中未观察到系统故障，意义在于为工具迭代设计提供紧凑、可复用的评估途径。局限是结果以可行性为主，摘要未给出量化性能指标，且评估停留在仿真环境，尚未涉及真实手术中的工具有效性或临床结局。",
-        "paper_ids": [
-          "pubmed:42853000"
-        ]
-      }
-    ],
-    "analysis_basis": "abstract"
+    "status": "not_generated",
+    "sections": [],
+    "note": "按阅读模式不生成每日综合总结。"
   },
-  "pending_count": 1,
-  "paper_count": 4,
+  "pending_count": 4,
+  "paper_count": 40,
   "research_scope": {
     "policy": "weekly_capture_partitioned_by_known_date",
     "window_start": "2026-10-08",
     "window_end": "2026-10-14",
     "date_basis": "UTC",
     "date_basis_policy": "只按来源声明的日粒度日期分配日报：published 在窗口内记 window_match(day_basis=published)；否则使用窗口内的 PubMed 入库日 indexed_at，并公开 discovery_kind=backfill（补录，非当日首发）；日粒度日期可确认在窗口外且无窗口内入库日的记录本轮不公开；日期过粗或缺失者保留为 uncertain_date 待后续显式补录，不补造精确日期。",
-    "out_of_window_count": 705,
-    "undated_count": 0,
+    "out_of_window_count": 1786,
+    "undated_count": 2970,
     "pending_count_by_source": {
-      "pubmed": 4
+      "arxiv": 20,
+      "pubmed": 7
     },
     "sources_unavailable": [],
     "sources_incomplete": [

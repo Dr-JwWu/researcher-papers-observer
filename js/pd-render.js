@@ -1,5 +1,5 @@
 /**
- * ResearcherPapers 前端渲染层：论文卡片、详情模态框、当日汇总面板。
+ * ResearcherPapers 前端渲染层：按日期倒序的连续日报列表、论文卡片、详情模态框。
  *
  * 来源与变更声明 / Provenance notice:
  *   本文件由上游 daily-arXiv-ai-enhanced
@@ -10,16 +10,17 @@
  *   版权与许可归属上游原作者，本项目不重新标注、不改为 MIT。
  *   主要变更：
  *     1. 全部改用 pd-dom.createEl/textContent 构建，删除 innerHTML 模板拼接；
- *     2. 主题分组改用 topics（embodied/surgical，允许双命中），
- *        categories 仅作为来源分类标签展示，不再当主题；
- *     3. 发表日期按 published_precision 显示，修订/发现时间单独标注，不补造日期；
- *     4. PDF 区域只在数据含真实 pdf 时创建 iframe/按钮，删除 url.replace('abs','pdf'|'html')；
- *     5. 模态框新增“AI 摘要（仅依据摘要）”单行依据说明与日报引用标记；
- *     6. 删除 KimiChat 第三方预填链接，改为复制摘要页链接（仅本地剪贴板）；
- *     7. 精简：删除 research_scope 工程口径、候选取回/缺元数据/错误计数、
- *        结构自洽诊断、原始 paper id（引用改“第 N 篇”）与卡片逐条免责声明；
- *        公开导出不转载原摘要时只给短句＋来源页按钮；
- *        当日总结按当前主题筛选分节。
+ *     2. 主题不再作为卡片/详情标签展示（顶部两个主题按钮只做筛选）；
+ *     3. 连续日期列表：每个报告日期一个 heading（日期 + 收录篇数 + 同日修订），
+ *        卡片沿用 daily 上游版式，按日期倒序排列，默认全部可读；
+ *     4. 卡片标题：中文 title_zh 大字、英文原题小字（缺中文标题时只显示原题）；
+ *     5. 合法配图（reading.figure，本站 assets/papers/ 白名单 + 非空许可）
+ *        嵌在卡片顶部；缺图/许可不明/非法 URL 一律不显示，也不用占位图冒充；
+ *     6. 详情：作者 + 可核单位（无则“单位待核实”，绝不按作者名猜），
+ *        motivation/method/result/conclusion 四项一律 <ul><li> 分条；
+ *     7. 删除当日总结正文、PDF 预览与按钮、旧版 “TL;DR” 字样
+ *        （改“一句话看懂”）与“日报引用”标记；
+ *     8. 来源状态同一时刻只给一行短句，不展示候选/取回/缺元数据/错误等工程计数。
  *   本文件为衍生代码（derivative work），许可遵循 docs/licenses/daily-arxiv-LICENSE。
  */
 (function (root) {
@@ -29,32 +30,10 @@
   const dom = PD.dom;
   const i18n = PD.i18n;
   const T = i18n.TEXT;
+  const READING_FIELDS = PD.READING_FIELDS || ['motivation', 'method', 'result', 'conclusion'];
 
-  function topicTags(paper, className) {
-    const wrap = dom.el('div', { class: className || 'paper-card-topics' });
-    paper.topics.forEach(function (topic) {
-      wrap.appendChild(dom.el('span', {
-        class: 'topic-tag topic-' + topic,
-        text: i18n.topicLabel(topic)
-      }));
-    });
-    if (paper.topics.length === 0) {
-      wrap.appendChild(dom.el('span', { class: 'topic-tag topic-unknown', text: '主题未标注' }));
-    }
-    return wrap;
-  }
-
-  function categoryTags(paper, className) {
-    const wrap = dom.el('div', { class: className || 'paper-card-categories' });
-    if (paper.categories.length === 0) {
-      // 后端对未知来源不再强填 med.*：这里如实显示“未知”，不伪造分类。
-      wrap.appendChild(dom.el('span', { class: 'category-unknown', text: T.cardCategoriesUnknown }));
-      return wrap;
-    }
-    paper.categories.forEach(function (category) {
-      wrap.appendChild(dom.el('span', { class: 'category-tag', text: category }));
-    });
-    return wrap;
+  function sourceTag(paper) {
+    return dom.el('span', { class: 'source-tag source-' + paper.sourceLabel, text: i18n.sourceLabel(paper.sourceLabel) });
   }
 
   /**
@@ -68,10 +47,6 @@
       title: i18n.discoveryHint('backfill'),
       text: T.discoveryBackfillCard
     });
-  }
-
-  function sourceTag(paper) {
-    return dom.el('span', { class: 'source-tag source-' + paper.sourceLabel, text: i18n.sourceLabel(paper.sourceLabel) });
   }
 
   /** 卡片日期：日精度是常态，不再写“（精确到日）”；只有月/年这类不完整精度才提示。 */
@@ -124,16 +99,91 @@
       const parts = String(reason).split(':');
       const kind = parts[0];
       const value = parts.slice(1).join(':');
-      if (kind === 'keyword') return T.matchReasonKeyword + ': ' + value;
+      if (kind === 'title') return T.matchReasonTitle + ': ' + value;
       if (kind === 'author') return T.matchReasonAuthor + ': ' + value;
+      if (kind === 'points') return T.matchReasonPoints + ': ' + value;
       return T.matchReasonText + ': ' + value;
     });
     return dom.el('div', { class: 'match-badge', title: labels.join(' | '), 'aria-label': labels.join(' | ') });
   }
 
+  /** 标题：中文大字 + 英文原题小字（无中文标题时只显示原题，不翻译、不拼接）。 */
+  function titleNode(paper, terms, options) {
+    const opts = options || {};
+    const titles = PD.displayTitle(paper);
+    const node = dom.el(opts.tag || 'h3', { class: opts.className || 'paper-card-title' });
+    const main = dom.el('span', { class: opts.mainClass || 'paper-card-title-zh paper-title-zh' });
+    dom.highlighted(main, titles.main, terms || [], 'keyword-highlight');
+    node.appendChild(main);
+    if (titles.secondary) {
+      // 有中文标题就始终给出英文原题（即使字符串相同也不隐去，避免“看起来没有原题”）
+      const secondary = dom.el('span', { class: opts.secondaryClass || 'paper-card-title-en paper-title-en' });
+      dom.highlighted(secondary, titles.secondary, terms || [], 'keyword-highlight');
+      node.appendChild(secondary);
+    }
+    return node;
+  }
+
+  /**
+   * 许可：CC BY 4.0 用固定已知映射给出官方许可页链接（rel noopener noreferrer）；
+   * 未知许可只显示纯文本，绝不按任意字符串拼链接。
+   */
+  function licenseNode(license) {
+    const wrap = dom.el('span', { class: 'figure-license' });
+    wrap.appendChild(dom.el('span', { class: 'figure-license-label', text: T.figureLicense + '：' }));
+    const info = PD.licenseInfo ? PD.licenseInfo(license) : { url: null };
+    const link = info.url ? dom.externalLink(info.url, license, 'figure-license-link') : null;
+    if (link) {
+      link.setAttribute('rel', 'noopener noreferrer');
+      // 与单位来源链接一致：点许可链接/回车不得冒泡触发卡片点击（否则会误开详情）
+      wrap.appendChild(stopLinkBubble(link));
+    } else {
+      wrap.appendChild(dom.el('span', { class: 'figure-license-text', text: license }));
+    }
+    return wrap;
+  }
+
+  /**
+   * CC BY 署名信息（作者 + 论文标题 + 图源 + 许可）：放在 figure 的 title 上，
+   * 卡片本身已显示标题与作者，图注保持短句；图片字节不改动。
+   */
+  function figureCredit(paper, figure) {
+    const parts = [];
+    if (paper.authors && paper.authors.length > 0) parts.push('作者：' + paper.authors.join('、'));
+    if (paper.title) parts.push('论文：' + paper.title);
+    if (figure.sourceUrl) parts.push('图源：' + figure.sourceUrl);
+    parts.push(T.figureLicense + '：' + figure.license);
+    return parts.join(' · ');
+  }
+
+  /**
+   * 卡片顶部配图：只有 reading.figure 通过 assets/papers/ 白名单且许可非空时才创建。
+   * 图注写 caption、许可（已知许可给官方链接）与图源外链（source_url 必须是 http/https）。
+   */
+  function figureBlock(paper) {
+    const figure = paper.reading && paper.reading.figure ? paper.reading.figure : null;
+    if (!figure) return null;
+    const img = dom.assetImage(figure.src, figure.caption || T.figureAltFallback, 'paper-card-figure-img');
+    if (!img) return null;
+    const wrap = dom.el('figure', { class: 'paper-card-figure paper-figure' });
+    wrap.setAttribute('title', figureCredit(paper, figure));
+    wrap.appendChild(img);
+    const caption = dom.el('figcaption', { class: 'paper-card-figure-caption' });
+    if (figure.caption) {
+      caption.appendChild(dom.el('span', { class: 'figure-caption-text', text: figure.caption }));
+    }
+    caption.appendChild(licenseNode(figure.license));
+    const link = dom.externalLink(figure.sourceUrl, T.figureSource, 'figure-source-link');
+    // 图源链接同样隔离冒泡，避免误触卡片打开详情
+    if (link) dom.append(caption, [' · ', stopLinkBubble(link)]);
+    wrap.appendChild(caption);
+    return wrap;
+  }
+
   /**
    * 单张卡片。结构对齐上游 paper-card（index / header / title / authors /
-   * categories / body / summary / footer / Details），仅替换数据来源与安全渲染。
+   * tag row / body / summary / footer），仅替换数据来源与安全渲染：
+   * 卡片上只保留来源（+ 补录短标签），不再显示主题与来源分类。
    */
   function paperCard(item, index, options) {
     const opts = options || {};
@@ -144,32 +194,27 @@
       role: 'button',
       tabindex: '0'
     });
+    const figure = figureBlock(paper);
+    if (figure) card.appendChild(figure);
     card.appendChild(dom.el('div', { class: 'paper-card-index', text: String(index + 1) }));
     const badge = matchBadge(item.reasons);
     if (badge) card.appendChild(badge);
 
     const header = dom.el('div', { class: 'paper-card-header' });
-    const titleNode = dom.el('h3', { class: 'paper-card-title' });
-    dom.highlighted(titleNode, paper.title, opts.titleTerms || [], 'keyword-highlight');
-    header.appendChild(titleNode);
+    header.appendChild(titleNode(paper, opts.titleTerms || []));
     header.appendChild(authorNodes(paper, opts.authorTerms || []));
+    // 卡片也显示可核单位（短名单，单行省略号）；没有单位时如实写“单位待核实”。
+    header.appendChild(affiliationCardLine(paper));
     const tagRow = dom.el('div', { class: 'paper-card-tag-row' });
-    // 卡片只保留两件事：来源 + 主题（补录论文再多一个短标签）。
     tagRow.appendChild(sourceTag(paper));
     const discovery = discoveryTag(paper);
     if (discovery) tagRow.appendChild(discovery);
-    paper.topics.forEach(function (topic) {
-      tagRow.appendChild(dom.el('span', { class: 'topic-tag topic-' + topic, text: i18n.topicLabel(topic) }));
-    });
-    if (paper.topics.length === 0) {
-      tagRow.appendChild(dom.el('span', { class: 'topic-tag topic-unknown', text: '主题未标注' }));
-    }
     header.appendChild(tagRow);
     card.appendChild(header);
 
     const body = dom.el('div', { class: 'paper-card-body' });
     const summary = dom.el('p', { class: 'paper-card-summary' });
-    // 卡片正文优先 AI 概括；没有 AI 概括时只有真实原摘要才展示，
+    // 卡片正文优先 AI 概括（不写 “TL;DR” 之类标签）；没有 AI 概括时只有真实原摘要才展示，
     // 公开导出的占位句不当摘要显示。
     const summaryText = paper.ai.tldr && paper.ai.tldr.trim() !== ''
       ? paper.ai.tldr
@@ -187,78 +232,94 @@
     return card;
   }
 
-  /** 主题分组标题（保留上游 .category-button 视觉体系）。 */
-  const UNLABELED_TOPIC = '__unlabeled';
+  /** 同日修订：只展示真实发生的数量与说明（0 不写出来）。 */
+  function renderRevision(digest) {
+    const revision = digest && digest.revision ? digest.revision : null;
+    if (!revision || !revision.present) return null;
+    const parts = [];
+    if (revision.addedCount !== null && revision.addedCount > 0) parts.push(T.revisionAdded + ' ' + revision.addedCount + ' ' + T.revisionUnit);
+    if (revision.removedCount !== null && revision.removedCount > 0) parts.push(T.revisionRemoved + ' ' + revision.removedCount + ' ' + T.revisionUnit);
+    if (parts.length === 0 && !revision.note) return null;
+    const row = dom.el('span', { class: 'revision-row feed-day-revision' });
+    row.appendChild(dom.el('span', { class: 'revision-label', text: T.revisionTitle + '：' }));
+    row.appendChild(dom.el('span', { text: parts.join(' · ') }));
+    if (revision.note) {
+      row.appendChild(dom.el('span', { class: 'revision-note', text: (parts.length ? ' · ' : '') + revision.note }));
+    }
+    return row;
+  }
 
-  function groupHeading(topic, count) {
-    const heading = dom.el('div', { class: 'topic-group-heading' });
-    const label = topic === UNLABELED_TOPIC ? '主题未标注' : i18n.topicLabel(topic);
-    heading.appendChild(dom.el('span', { class: 'topic-group-title', text: label }));
-    heading.appendChild(dom.el('span', { class: 'category-count', text: String(count) }));
+  /** 日期 heading：日期 + 收录篇数（+ 同日修订一行）。 */
+  function dayHeading(day) {
+    const heading = dom.el('h2', { class: 'feed-day-heading feed-date-heading' });
+    if (PD.isIsoDate(day.date)) {
+      heading.appendChild(dom.el('time', { class: 'feed-day-date', datetime: day.date, text: day.date }));
+    } else {
+      heading.appendChild(dom.el('span', { class: 'feed-day-date', text: T.feedDayUnknown }));
+    }
+    heading.appendChild(dom.el('span', {
+      class: 'feed-day-count',
+      text: i18n.formatTemplate(T.feedDayCount, { n: day.count })
+    }));
+    const revision = renderRevision(day.digest);
+    if (revision) heading.appendChild(revision);
     return heading;
   }
 
   /**
-   * 论文列表渲染。
-   * - 主题=全部：不分组，每篇只出现一次（双主题论文不会被重复渲染）；
-   * - 选中单个主题：命中该主题的论文成组显示，标题标明主题；
-   * - 主题未标注的论文单独成组，避免被静默隐藏。
-   * items 为 pd-core.rankPapers 的结果（匹配优先排序）。
+   * 连续日期列表（首页主视图）。
+   * options: {
+   *   days: [{date, count, items, digest}],   // 必须已按报告日期倒序
+   *   statusText: '',                          // 同一时刻最多一行的来源状态
+   *   view: 'grid' | 'list',
+   *   titleTerms, authorTerms, onOpen
+   * }
+   * items 为 pd-core.rankPapers 的结果；卡片序号在整个列表内连续编号。
    */
-  function renderPaperList(container, items, options) {
+  function renderFeed(container, options) {
     const opts = options || {};
     dom.clear(container);
-    container.className = 'paper-container' + (opts.view === 'list' ? ' list-view' : '');
-    if (!items || items.length === 0) {
-      container.appendChild(dom.el('div', { class: 'loading-container' }, [
-        dom.el('p', { text: T.noMatchingPapers })
-      ]));
-      return;
+    container.className = 'feed' + (opts.view === 'list' ? ' list-view' : '');
+    if (opts.statusText) {
+      // 来源状态只有一行：不写候选数/取回数/缺元数据/错误数等工程计数。
+      container.appendChild(dom.el('p', { class: 'coverage-brief feed-status', text: opts.statusText }));
     }
-    const selected = opts.topics && opts.topics !== 'all' ? opts.topics : null;
-    const selectedList = selected ? (Array.isArray(selected) ? selected : [selected]) : [];
-    const appendCard = function (item, index) {
-      const card = paperCard(item, index, opts);
-      if (opts.onOpen) {
-        const open = function () { opts.onOpen(item.paper, index); };
-        card.addEventListener('click', open);
-        card.addEventListener('keydown', function (event) {
-          if (event.key === 'Enter' || event.key === ' ') {
-            event.preventDefault();
-            open();
-          }
-        });
-      }
-      container.appendChild(card);
-    };
-
+    const days = Array.isArray(opts.days) ? opts.days : [];
     let index = 0;
-    if (selectedList.length === 0) {
-      items.forEach(function (item) {
-        appendCard(item, index);
-        index += 1;
+    days.forEach(function (day) {
+      const section = dom.el('section', { class: 'feed-day', 'data-date': day.date || '' });
+      section.appendChild(dayHeading(day));
+      const grid = dom.el('div', {
+        class: 'paper-container feed-day-grid' + (opts.view === 'list' ? ' list-view' : '')
       });
-    } else {
-      selectedList.forEach(function (topic) {
-        const group = items.filter(function (item) {
-          return item.paper.topics.indexOf(topic) !== -1;
-        });
-        if (group.length === 0) return;
-        container.appendChild(groupHeading(topic, group.length));
-        group.forEach(function (item) {
-          appendCard(item, index);
+      if (day.notice) {
+        // 该日解析不完整但仍有可读论文：给一行短提示，照常展示有效行。
+        section.appendChild(dom.el('p', { class: 'feed-day-notice', text: day.notice }));
+      }
+      const items = Array.isArray(day.items) ? day.items : [];
+      if (items.length === 0) {
+        grid.appendChild(dom.el('p', { class: 'feed-day-empty', text: day.emptyText || T.feedDayEmpty }));
+      } else {
+        items.forEach(function (item) {
+          const card = paperCard(item, index, opts);
+          if (opts.onOpen) {
+            const open = function () { opts.onOpen(item.paper, index); };
+            card.addEventListener('click', open);
+            card.addEventListener('keydown', function (event) {
+              if (event.key === 'Enter' || event.key === ' ') {
+                event.preventDefault();
+                open();
+              }
+            });
+          }
+          grid.appendChild(card);
           index += 1;
         });
-      });
-    }
-    const unlabeled = items.filter(function (item) { return item.paper.topics.length === 0; });
-    if (unlabeled.length > 0) {
-      container.appendChild(groupHeading(UNLABELED_TOPIC, unlabeled.length));
-      unlabeled.forEach(function (item) {
-        appendCard(item, index);
-        index += 1;
-      });
-    }
+      }
+      section.appendChild(grid);
+      container.appendChild(section);
+    });
+    return container;
   }
 
   function metaRow(label, valueNode) {
@@ -272,21 +333,6 @@
     return metaRow(label, String(value));
   }
 
-  function topicDetail(paper) {
-    const wrap = dom.el('span', { class: 'modal-topics' });
-    if (paper.topics.length === 0) {
-      wrap.appendChild(dom.el('span', { class: 'topic-tag topic-unknown', text: '主题未标注' }));
-      return wrap;
-    }
-    paper.topics.forEach(function (topic) {
-      wrap.appendChild(dom.el('span', { class: 'topic-tag topic-' + topic, text: i18n.topicLabel(topic) }));
-    });
-    if (paper.topics.length > 1) {
-      wrap.appendChild(dom.el('span', { class: 'topic-tag topic-both-hint', text: T.modalTopicsBoth }));
-    }
-    return wrap;
-  }
-
   function dateDetail(paper) {
     const wrap = dom.el('span', { class: 'modal-date' });
     const published = PD.describePublished(paper.published, paper.publishedPrecision);
@@ -297,152 +343,146 @@
       wrap.appendChild(dom.el('span', { class: 'date-precision', text: '（' + i18n.precisionLabel(published.precision) + '）' }));
     }
     const updated = PD.describeUpdated(paper.updated);
-    const discovered = PD.describeDiscovered(paper.discoveredAt);
     if (updated.display) {
       wrap.appendChild(dom.el('span', { class: 'date-extra', text: ' · ' + T.cardUpdated + ': ' + updated.display }));
     }
-    if (discovered.display) {
+    // 抓取时间（discovered_at）不上详情：它是抓取时刻，不是发表事实。
+    return wrap;
+  }
+
+  /**
+   * 可核单位（数据里显式给出的 reading.affiliations）：
+   *   - 卡片：一行短名单（最多 2 个，更多时用 title 给全量），单行省略号，不猜、不顶宽；
+   *   - 详情：完整列表，source_url 通过 http(s) 白名单才成为外链；
+   *   - 没有单位：写“单位待核实”，绝不按作者名或机构习惯推测。
+   * 单位来源链接自带 stopPropagation：点它不会冒泡触发卡片点击（否则会误开详情）。
+   */
+  function stopLinkBubble(node) {
+    const stop = function (event) {
+      if (event && typeof event.stopPropagation === 'function') event.stopPropagation();
+    };
+    node.addEventListener('click', stop);
+    node.addEventListener('keydown', stop);
+    return node;
+  }
+
+  function affiliationEntryNode(entry) {
+    const link = dom.externalLink(entry.sourceUrl, entry.name, 'affiliation-name affiliation-link');
+    if (link) {
+      link.setAttribute('title', entry.name + '（' + T.modalAffiliationsSource + '）');
+      return stopLinkBubble(link);
+    }
+    return dom.el('span', { class: 'affiliation-name', title: entry.name, text: entry.name });
+  }
+
+  function affiliationList(paper) {
+    const reading = paper && paper.reading && typeof paper.reading === 'object' ? paper.reading : {};
+    return Array.isArray(reading.affiliations) ? reading.affiliations : [];
+  }
+
+  function affiliationCardLine(paper) {
+    const list = affiliationList(paper);
+    const wrap = dom.el('p', { class: 'paper-card-affiliations' });
+    if (list.length === 0) {
+      wrap.appendChild(dom.el('span', { class: 'affiliation-unknown', text: T.modalAffiliationsUnknown }));
+      return wrap;
+    }
+    const limit = 2;
+    wrap.setAttribute('title', list.map(function (entry) { return entry.name; }).join('、'));
+    list.slice(0, limit).forEach(function (entry, index) {
+      if (index > 0) dom.append(wrap, ['、']);
+      wrap.appendChild(affiliationEntryNode(entry));
+    });
+    if (list.length > limit) {
       wrap.appendChild(dom.el('span', {
-        class: 'date-extra date-discovered',
-        title: '发现时间来自抓取时刻，不是发表日期',
-        text: ' · ' + T.cardDiscovered + ': ' + discovered.display
+        class: 'affiliation-more',
+        text: ' 等 ' + list.length + ' 个单位'
       }));
     }
     return wrap;
   }
 
+  function affiliationDetail(paper) {
+    const list = affiliationList(paper);
+    if (list.length === 0) {
+      return dom.el('span', { class: 'modal-affiliations-unknown', text: T.modalAffiliationsUnknown });
+    }
+    const wrap = dom.el('ul', { class: 'modal-affiliations paper-affiliations' });
+    list.forEach(function (entry) {
+      const item = dom.el('li', { class: 'modal-affiliation' });
+      item.appendChild(affiliationEntryNode(entry));
+      wrap.appendChild(item);
+    });
+    return wrap;
+  }
+
+  /** 四项要点：一律 <ul><li>；没有内容的字段写一句“摘要未提供”。 */
+  function bulletList(items) {
+    const list = dom.el('ul', { class: 'paper-ai-bullets' });
+    const values = Array.isArray(items) ? items : [];
+    if (values.length === 0) {
+      list.appendChild(dom.el('li', { class: 'ai-bullet ai-bullet-empty', text: T.modalAiEmpty }));
+      return list;
+    }
+    values.forEach(function (text) {
+      list.appendChild(dom.el('li', { class: 'ai-bullet', text: text }));
+    });
+    return list;
+  }
+
   /**
-   * AI 五字段。依据说明在详情里只出现一次（短句），卡片上不重复免责声明；
-   * 字段为空时写“摘要未提供”，不伪造。
+   * 论文要点区：一句话看懂 + 四项分条（普通 section 版式，不做橙色警告块）。
+   * 分条优先用 reading.bullets 的结构化列表，缺失时回退旧 AI 字符串的保守分条；
+   * 依据只保留一条细线（全站许可声明在 NOTICE/页脚，正文里不重复免责长句）。
    */
   function aiSection(paper) {
     const section = dom.el('section', { class: 'paper-ai-section' });
     section.appendChild(dom.el('h3', { class: 'paper-ai-title', text: T.modalAi }));
     section.appendChild(dom.el('p', { class: 'paper-ai-basis', text: T.modalAiBasis }));
-    if (!paper.aiAvailable) {
+    const bullets = PD.paperBullets ? PD.paperBullets(paper) : {};
+    const hasBullets = READING_FIELDS.some(function (field) {
+      return bullets[field] && bullets[field].items.length > 0;
+    });
+    if (!paper.aiAvailable && !hasBullets) {
+      // 整篇没有 AI 数据：给一句缺失说明，四项结构照常保留（每项写“摘要未提供”），
+      // 这样阅读结构一致，也不会把“没有分析”误当成有内容。
       section.appendChild(dom.el('p', { class: 'paper-ai-missing', text: T.modalAiMissing }));
-      return section;
     }
-    const tldr = dom.el('div', { class: 'paper-section' });
-    tldr.appendChild(dom.el('h4', { text: T.modalAiField.tldr }));
-    tldr.appendChild(dom.el('p', { text: paper.ai.tldr || PD.AI_EMPTY }));
-    section.appendChild(tldr);
+    const tldr = paper.ai && typeof paper.ai.tldr === 'string' ? paper.ai.tldr.trim() : '';
+    const tldrBlock = dom.el('div', { class: 'paper-section paper-section-tldr' });
+    tldrBlock.appendChild(dom.el('h4', { text: T.modalAiField.tldr }));
+    tldrBlock.appendChild(dom.el('p', { class: 'ai-tldr', text: tldr === '' ? T.modalAiEmpty : tldr }));
+    section.appendChild(tldrBlock);
+
     const grid = dom.el('div', { class: 'paper-sections' });
-    ['motivation', 'method', 'result', 'conclusion'].forEach(function (field) {
+    READING_FIELDS.forEach(function (field) {
       const item = dom.el('div', { class: 'paper-section' });
       item.appendChild(dom.el('h4', { text: T.modalAiField[field] }));
-      item.appendChild(dom.el('p', { text: paper.ai[field] || PD.AI_EMPTY }));
+      item.appendChild(bulletList(bullets[field] ? bullets[field].items : []));
       grid.appendChild(item);
     });
     section.appendChild(grid);
     return section;
   }
 
-  function pdfSection(paper) {
-    const section = dom.el('section', { class: 'pdf-preview-section' });
-    const header = dom.el('div', { class: 'pdf-header' });
-    header.appendChild(dom.el('h3', { text: T.modalPdfPreview }));
-    const pdfUrl = paper.links.pdf;
-    if (!pdfUrl) {
-      section.appendChild(header);
-      section.appendChild(dom.el('p', { class: 'pdf-unavailable', text: T.modalNoPdf }));
-      return section;
-    }
-    const button = dom.el('button', {
-      class: 'pdf-expand-btn',
-      type: 'button',
-      title: '放大/还原 PDF 预览'
-    });
-    button.appendChild(dom.el('svg', { class: 'expand-icon', viewBox: '0 0 24 24', width: '24', height: '24', 'aria-hidden': 'true' }, [
-      dom.el('path', { d: 'M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z' })
-    ]));
-    button.appendChild(dom.el('svg', { class: 'collapse-icon', viewBox: '0 0 24 24', width: '24', height: '24', 'aria-hidden': 'true' }, [
-      dom.el('path', { d: 'M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z' })
-    ]));
-    header.appendChild(button);
-    section.appendChild(header);
-    const frame = dom.pdfFrame(pdfUrl, paper.title);
-    const container = dom.el('div', { class: 'pdf-container' });
-    if (frame) container.appendChild(frame);
-    section.appendChild(container);
-
-    // 展开/还原：仅改样式，不写 HTML（替代上游 onclick="togglePdfSize(this)"）。
-    const expandIcon = button.querySelector('.expand-icon');
-    const collapseIcon = button.querySelector('.collapse-icon');
-    if (collapseIcon) collapseIcon.style.setProperty('display', 'none');
-    button.addEventListener('click', function () {
-      const expanded = container.classList.toggle('expanded');
-      if (frame) frame.style.setProperty('height', expanded ? '90vh' : '800px');
-      if (expandIcon) expandIcon.style.setProperty('display', expanded ? 'none' : 'block');
-      if (collapseIcon) collapseIcon.style.setProperty('display', expanded ? 'block' : 'none');
-      const existing = document.querySelector('.pdf-overlay');
-      if (expanded) {
-        const overlay = dom.el('div', { class: 'pdf-overlay' });
-        overlay.addEventListener('click', function () { button.click(); });
-        document.body.appendChild(overlay);
-      } else if (existing) {
-        existing.remove();
-      }
-    });
-    return section;
-  }
-
-  function copyLinkButton(paper, options) {
-    const opts = options || {};
-    const url = paper.links.abs;
-    const button = dom.el('button', {
-      class: 'button icon-button copy-link-button',
-      type: 'button',
-      title: T.modalCopyLink
-    }, [dom.el('span', { class: 'copy-link-label', text: T.modalCopyLink })]);
-    button.addEventListener('click', function () {
-      if (!url) {
-        if (opts.onNotice) opts.onNotice(T.modalNoLinkToCopy, 'info');
-        return;
-      }
-      const done = function (ok) {
-        if (opts.onNotice) {
-          opts.onNotice(ok ? T.modalCopied : T.modalCopyFailed, ok ? 'success' : 'info');
-        }
-      };
-      if (navigator.clipboard && navigator.clipboard.writeText) {
-        navigator.clipboard.writeText(url).then(function () { done(true); }, function () { done(false); });
-      } else {
-        const area = dom.el('textarea', { class: 'copy-fallback', value: url });
-        area.style.setProperty('position', 'fixed');
-        area.style.setProperty('left', '-9999px');
-        document.body.appendChild(area);
-        area.select();
-        let ok = false;
-        try { ok = document.execCommand('copy'); } catch (error) { ok = false; }
-        area.remove();
-        done(ok);
-      }
-    });
-    return button;
-  }
-
   /**
-   * 详情模态框内容（对齐上游 showPaperDetails 的阅读顺序：
-   * 作者/分类/日期 → AI 五字段 → 原摘要 → PDF 预览）。
+   * 详情模态框内容（阅读顺序：作者/单位/来源/发表日期 → 论文要点（分条）→ 原摘要）。
+   * 只留事实：标题、作者、可核单位、发表日期、DOI、来源；不显示来源分类、
+   * 抓取时间（discovered_at）与进入方式的长说明（只留小短标签）；
+   * 不再有 PDF 预览区或 PDF 按钮。
    */
   function renderPaperModal(refs, paper, context) {
     const ctx = context || {};
-    const T2 = i18n.TEXT;
     dom.clear(refs.body);
 
     const wrap = dom.el('section', { class: 'paper-details' });
     const meta = dom.el('div', { class: 'paper-meta' });
-    meta.appendChild(metaRow('作者: ', dom.el('span', {
+    meta.appendChild(metaRow(T.modalAuthors + ': ', dom.el('span', {
       class: 'modal-authors',
       text: paper.authors.length ? paper.authors.join(', ') : '作者未标注'
     })));
+    meta.appendChild(metaRow(T.modalAffiliations + ': ', affiliationDetail(paper)));
     meta.appendChild(metaRow('来源: ', dom.el('span', {}, [sourceTag(paper)])));
-    meta.appendChild(metaRow('主题: ', topicDetail(paper)));
-    meta.appendChild(metaRow(T.cardCategories + ': ', dom.el('span', {
-      class: 'modal-categories',
-      text: paper.categories.length ? paper.categories.join(', ') : T.cardCategoriesUnknown
-    })));
     meta.appendChild(metaRow(T.cardPublished + ': ', dateDetail(paper)));
     if (paper.discoveryKind) {
       // 详情保留完整进入方式（卡片只留“补录”短标签）。
@@ -456,51 +496,44 @@
           text: label
         }));
       }
-      discoveryWrap.appendChild(dom.el('span', {
-        class: 'discovery-hint',
-        text: ' ' + i18n.discoveryHint(kind)
-      }));
       meta.appendChild(metaRow('进入方式: ', discoveryWrap));
     }
     if (paper.doi) meta.appendChild(detailRow(T.modalDoi + ': ', paper.doi));
-    if (ctx.cited) {
-      meta.appendChild(metaRow('', dom.el('span', { class: 'digest-cited-badge', text: T2.modalCiteInDigest })));
-    }
     wrap.appendChild(meta);
 
     wrap.appendChild(aiSection(paper));
 
     const abstractSection = dom.el('section', { class: 'paper-abstract-section' });
     if (PD.hasPublicAbstract(paper)) {
-      abstractSection.appendChild(dom.el('h3', { text: T2.modalAbstract }));
+      abstractSection.appendChild(dom.el('h3', { text: T.modalAbstract }));
       const abstractNode = dom.el('p', { class: 'original-abstract' });
       dom.highlighted(abstractNode, paper.abstract, ctx.titleTerms || [], 'keyword-highlight');
       abstractSection.appendChild(abstractNode);
     } else {
       // 公开导出不转载原摘要（未逐篇核准许可）：只给一句短提示与来源页按钮，
       // 不在“原摘要”标题下摆占位句假装有摘要。
-      abstractSection.appendChild(dom.el('p', { class: 'abstract-link-note', text: T2.abstractLinkNote }));
-      const sourceLink = dom.externalLink(paper.links.abs, T2.modalOpenAbs, 'abstract-source-link');
+      abstractSection.appendChild(dom.el('p', { class: 'abstract-link-note', text: T.abstractLinkNote }));
+      const sourceLink = dom.externalLink(paper.links.abs, T.modalOpenAbs, 'abstract-source-link');
       if (sourceLink) abstractSection.appendChild(sourceLink);
     }
     wrap.appendChild(abstractSection);
-
-    wrap.appendChild(pdfSection(paper));
     refs.body.appendChild(wrap);
 
-    // 标题区
+    // 标题区：中文大字 + 英文原题小字
     dom.clear(refs.title);
     if (typeof ctx.index === 'number' && ctx.index > 0) {
       refs.title.appendChild(dom.el('span', { class: 'paper-index-badge', text: String(ctx.index) }));
     }
-    const titleText = dom.el('span', { class: 'modal-title-text' });
-    dom.highlighted(titleText, paper.title, ctx.titleTerms || [], 'keyword-highlight');
-    refs.title.appendChild(titleText);
+    refs.title.appendChild(titleNode(paper, ctx.titleTerms || [], {
+      tag: 'span',
+      className: 'modal-title',
+      mainClass: 'modal-title-zh paper-title-zh',
+      secondaryClass: 'modal-title-en paper-title-en'
+    }));
 
-    // 底部链接按钮：只设置已通过白名单的真实链接。
+    // 底部链接按钮：只设置已通过白名单的真实链接（没有 PDF 按钮）。
     const linkTargets = [
-      { node: refs.absLink, url: paper.links.abs, label: T2.modalOpenAbs },
-      { node: refs.pdfLink, url: paper.links.pdf, label: T2.modalOpenPdf },
+      { node: refs.absLink, url: paper.links.abs, label: T.modalOpenAbs },
       { node: refs.codeLink, url: paper.links.code, label: '代码仓库' }
     ];
     linkTargets.forEach(function (target) {
@@ -523,176 +556,50 @@
     return wrap;
   }
 
-  /** 来源状态的纯文本（同一时刻最多一条，供面板与区间视图共用）。 */
+  /**
+   * 来源状态一行的纯文本（同一时刻最多一条）：
+   *   真的没拿到数据的来源 > 有数据但覆盖不完整的来源 > 通用“部分来源覆盖不完整”。
+   */
+  function sourceStatusText(scopeStatus) {
+    const status = scopeStatus || {};
+    const unavailable = Array.isArray(status.unavailable) ? status.unavailable : [];
+    if (unavailable.length > 0) {
+      return i18n.formatTemplate(T.sourceUnavailable, {
+        sources: unavailable.map(function (source) { return i18n.sourceLabel(source); }).join('、')
+      });
+    }
+    const incomplete = Array.isArray(status.incomplete) ? status.incomplete : [];
+    if (incomplete.length > 0) {
+      return i18n.formatTemplate(T.sourceIncomplete, {
+        sources: incomplete.map(function (source) { return i18n.sourceLabel(source); }).join('、')
+      });
+    }
+    if (status.partial) return T.digestCoveragePartial;
+    return '';
+  }
+
+  /** 单日来源状态（兼容入口，内部走同一套聚合规则）。 */
   function coverageBriefText(coverage, digest) {
-    const scope = digest || {};
-    const unavailable = Array.isArray(scope.unavailableSources) ? scope.unavailableSources : [];
-    const unavailableLabels = unavailable.map(function (source) { return i18n.sourceLabel(source); });
-    if (unavailableLabels.length > 0) {
-      // 真的没拿到数据的来源优先，且只给这一条（不再叠加“覆盖不完整”）。
-      return i18n.formatTemplate(T.sourceUnavailable, { sources: unavailableLabels.join('、') });
-    }
-    const incomplete = Array.isArray(scope.incompleteSources) ? scope.incompleteSources : [];
-    const incompleteLabels = incomplete.map(function (source) { return i18n.sourceLabel(source); });
-    if (incompleteLabels.length > 0) {
-      // 有数据但覆盖不完整（如预算上限）：说“覆盖不完整”，不说“暂不可用”。
-      return i18n.formatTemplate(T.sourceIncomplete, { sources: incompleteLabels.join('、') });
-    }
-    if (!PD.coverageIsPartial(coverage)) return '';
-    return T.digestCoveragePartial;
-  }
-
-  /**
-   * 来源状态一行：unavailable > incomplete > 通用 partial。
-   * 候选数、取回数、缺元数据数、错误数属于流程诊断，不在研究者页面上出现。
-   */
-  function coverageBrief(coverage, digest) {
-    const text = coverageBriefText(coverage, digest);
-    if (text === '') return null;
-    return dom.el('p', { class: 'coverage-brief', text: text });
-  }
-
-  /** 同日修订：只展示真实发生的数量与说明（0 不写出来）。 */
-  function renderRevision(digest) {
-    const revision = digest.revision;
-    if (!revision || !revision.present) return null;
-    const parts = [];
-    if (revision.addedCount !== null && revision.addedCount > 0) parts.push(T.revisionAdded + ' ' + revision.addedCount + ' ' + T.revisionUnit);
-    if (revision.removedCount !== null && revision.removedCount > 0) parts.push(T.revisionRemoved + ' ' + revision.removedCount + ' ' + T.revisionUnit);
-    if (parts.length === 0 && !revision.note) return null;
-    const row = dom.el('p', { class: 'revision-row' });
-    row.appendChild(dom.el('span', { class: 'revision-label', text: T.revisionTitle + ': ' }));
-    row.appendChild(dom.el('span', { text: parts.join(' · ') }));
-    if (revision.note) {
-      row.appendChild(dom.el('span', { class: 'revision-note', text: (parts.length ? ' · ' : '') + revision.note }));
-    }
-    return row;
-  }
-
-  /** 分节是否属于当前主题筛选：未标注主题的分节不隐藏，避免漏掉内容。 */
-  function sectionMatchesTopic(section, topic) {
-    if (!topic || topic === 'all') return true;
-    if (!section.topic) return true;
-    return section.topic === topic;
-  }
-
-  /**
-   * 引用按钮：只对已发布论文给“第 N 篇”，不显示原始 paper id；
-   * 引用不到论文时不给按钮，也不输出内部一致性诊断。
-   */
-  function citeChip(id, options) {
-    const opts = options || {};
-    const index = opts.paperIndex && opts.paperIndex[id];
-    if (!index) return null;
-    const button = dom.el('button', {
-      class: 'cite-chip',
-      type: 'button',
-      'data-paper-id': id,
-      text: i18n.formatTemplate(T.digestCiteOrdinal, { n: index })
-    });
-    if (opts.onCite) {
-      button.addEventListener('click', function () { opts.onCite(id); });
-    }
-    return button;
-  }
-
-  /**
-   * 当日总结面板（简短版）：
-   *   收录 N 篇 · N 篇待审核 · 更新于 …；同一时刻最多一条来源状态
-   *   （“本期 arXiv 来源暂缺”＞“本期 arXiv 覆盖不完整”＞“部分来源覆盖不完整”）；
-   *   分节正文按当前主题筛选（选具身智能时不再满屏手术总结）；
-   *   digest.status=partial 时保留已完成分节并给一行“总结尚不完整”；
-   *   日报缺失/生成失败只显示“暂无日报/暂无总结”，不外露内部 error、状态或计数。
-   *
-   * options: {topic, onCite, paperIndex}
-   */
-  function renderDigest(refs, digest, coverage, options) {
-    const opts = options || {};
-    dom.clear(refs.container);
-    const panel = dom.el('section', { class: 'digest-panel' });
-    panel.appendChild(dom.el('h2', { class: 'digest-heading', text: T.digestTitle }));
-
-    const statusRow = dom.el('div', { class: 'digest-status-row' });
-    statusRow.appendChild(dom.el('span', {
-      class: 'digest-count',
-      text: T.digestPublished + ' ' + coverage.publishedCount + ' ' + T.digestUnit
-    }));
-    if (coverage.pendingCount !== null && coverage.pendingCount > 0) {
-      statusRow.appendChild(dom.el('span', {
-        class: 'digest-pending',
-        text: coverage.pendingCount + ' ' + T.digestUnit + T.digestPending
-      }));
-    }
-    const updated = PD.describeTimestamp(digest.generatedAt);
-    if (updated.display) {
-      statusRow.appendChild(dom.el('span', { class: 'digest-generated' }, [
-        dom.el('time', { datetime: updated.iso, text: T.digestUpdated + ' ' + updated.display })
-      ]));
-    }
-    panel.appendChild(statusRow);
-
-    const brief = coverageBrief(coverage, digest);
-    if (brief) panel.appendChild(brief);
-
-    const revisionRow = renderRevision(digest);
-    if (revisionRow) panel.appendChild(revisionRow);
-
-    // digest.status：
-    //   completed → 分节正文；
-    //   partial   → 分节正文照常显示 + 一行“总结尚不完整”（后半段分析未完成）；
-    //   no_included_papers / failed / 缺失 → 只给一句短话，不外露 note/status/error。
-    const status = digest.available ? digest.digest.status : 'unavailable';
-    if (!digest.available && digest.problem === 'missing') {
-      panel.appendChild(dom.el('p', { class: 'digest-notice', text: T.digestNoPapers }));
-    } else if (status === 'no_included_papers') {
-      panel.appendChild(dom.el('p', { class: 'digest-notice', text: T.digestNoIncluded }));
-    } else if (status !== 'completed' && status !== 'partial') {
-      panel.appendChild(dom.el('p', { class: 'digest-notice', text: T.digestNoSummary }));
-    } else {
-      const sections = digest.digest.sections.filter(function (section) {
-        return sectionMatchesTopic(section, opts.topic);
-      });
-      if (sections.length === 0) {
-        panel.appendChild(dom.el('p', { class: 'digest-notice', text: T.digestNoSummary }));
-      }
-      sections.forEach(function (section) {
-        const block = dom.el('article', { class: 'digest-section' });
-        // 分节标题只保留 heading：主题已由标题本身表达，不再重复一枚 topic 徽标。
-        const heading = dom.el('h3', { class: 'digest-section-heading' });
-        heading.appendChild(dom.el('span', { class: 'digest-heading-text', text: section.heading || '（无标题）' }));
-        block.appendChild(heading);
-        block.appendChild(dom.el('p', { class: 'digest-text', text: section.text }));
-        const chips = section.paperIds.map(function (id) { return citeChip(id, opts); }).filter(Boolean);
-        if (chips.length > 0) {
-          const cites = dom.el('div', { class: 'digest-cites' });
-          cites.appendChild(dom.el('span', { class: 'digest-cites-label', text: T.digestCiteLabel + '：' }));
-          chips.forEach(function (chip) { cites.appendChild(chip); });
-          block.appendChild(cites);
-        }
-        panel.appendChild(block);
-      });
-      if (status === 'partial') {
-        panel.appendChild(dom.el('p', { class: 'digest-notice digest-incomplete', text: T.digestIncomplete }));
-      }
-    }
-
-    refs.container.appendChild(panel);
-    return panel;
+    if (!PD.aggregateScopeStatus) return '';
+    return sourceStatusText(PD.aggregateScopeStatus([{ coverage: coverage, digest: digest }]));
   }
 
   PD.render = {
     paperCard: paperCard,
-    renderPaperList: renderPaperList,
+    renderFeed: renderFeed,
     renderPaperModal: renderPaperModal,
-    renderDigest: renderDigest,
+    sourceStatusText: sourceStatusText,
     coverageBriefText: coverageBriefText,
     renderRevision: renderRevision,
-    topicTags: topicTags,
+    figureBlock: figureBlock,
+    figureCredit: figureCredit,
+    licenseNode: licenseNode,
+    titleNode: titleNode,
     discoveryTag: discoveryTag,
-    categoryTags: categoryTags,
     publishedLine: publishedLine,
+    affiliationDetail: affiliationDetail,
+    affiliationCardLine: affiliationCardLine,
     aiSection: aiSection,
-    pdfSection: pdfSection,
-    copyLinkButton: copyLinkButton
+    bulletList: bulletList
   };
 })(typeof globalThis !== 'undefined' ? globalThis : this);

@@ -10,6 +10,9 @@
  *   分类、关键词都会进入 HTML。本文件改为 createElement + textContent 构建，
  *   并集中处理外链（http/https 白名单、rel="noopener noreferrer"）。
  *   因此本目录下不再存在任何把外来字符串写入 innerHTML 的代码路径。
+ *   2026-10 阅读改版：新增 assetImage()，配图只接受 pd-core 的
+ *   assets/papers/ 相对路径白名单（不复用也不放宽 el() 的 http(s) src 规则）；
+ *   页面仍然不创建任何指向外部主机的 img（无第三方追踪）。
  *   本文件为项目自写代码，不重新标注上游许可，亦不把上游代码标为 MIT。
  */
 (function (root) {
@@ -36,7 +39,7 @@
     button: ['type', 'disabled', 'title'],
     a: ['target', 'rel'],
     img: ['src', 'alt', 'width', 'height', 'loading'],
-    time: [],
+    time: ['datetime'],
     small: [],
     strong: [],
     em: [],
@@ -254,6 +257,28 @@
     }, null, doc);
   }
 
+  /**
+   * 卡片配图：只接受 pd-core.safeAssetImagePath 通过的 assets/papers/ 本地相对图片。
+   *
+   * 这里刻意**不复用** el() 的 src 规则（那条规则只放行 http/https，用于外链），
+   * 也不放宽它：图片走单独的、更窄的白名单（无协议、无主机、无查询串、无穿越，
+   * 且只允许位图扩展名）。非法路径一律返回 null —— 不显示图，不用占位图冒充。
+   */
+  function assetImage(src, alt, className, doc) {
+    if (!PD.safeAssetImagePath) return null;
+    const safe = PD.safeAssetImagePath(src);
+    if (!safe) return null;
+    const node = el('img', {
+      class: className || '',
+      alt: alt === null || alt === undefined ? '' : String(alt),
+      // 本地静态小图：eager 加载（不用 lazy），这样“图片确实加载成功”可以被真机验收断言；
+      // 路径已由 assets/papers/ 白名单限定，不会产生任何外部请求。
+      loading: 'eager'
+    }, null, doc);
+    node.setAttribute('src', safe);
+    return node;
+  }
+
   PD.dom = {
     el: el,
     append: append,
@@ -263,6 +288,7 @@
     externalLink: externalLink,
     downloadLink: downloadLink,
     pdfFrame: pdfFrame,
+    assetImage: assetImage,
     setStyle: setStyle,
     isAllowedTag: isAllowedTag,
     isSvgTag: isSvgTag,

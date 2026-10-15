@@ -6,10 +6,18 @@
  *   （main 01fdad3b0aec2d2f7977b686253a7b0c1c8273dc，Modified Apache License，
  *   参考 .upstream/daily-arxiv/css，许可证副本见 docs/licenses/daily-arxiv-LICENSE）
  *   的 styles.css / settings.css / statistic.css 继续承担原有版式；
- *   本文件只补充本项目新增元素的样式（主题标签、日期精度、当日总结面板、
- *   原生日期输入、关于页、runtime 错误条），不改动上游既有类名语义。
+ *   本文件只补充本项目新增元素的样式（主题标签、日期精度、来源状态、
+ *   按日期倒序的连续日报列表、卡片中文大标题/英文副标题、卡片配图、
+ *   详情分条要点与可核单位、原生日期输入、关于页、runtime 错误条），
+ *   不改动上游既有类名语义。
  *   引用的上游视觉变量（--primary-color 等）来自 styles.css。
  *   2026-10 精简：删除验证 banner、安全横幅、research_scope 与流程计数相关样式。
+ *   2026-10 阅读改版：新增 .feed / .feed-day-* / .paper-card-title-zh|en /
+ *   .paper-card-figure-* / .paper-ai-bullets / .modal-affiliations 等样式；
+ *   上游 daily 的卡片色板与网格继续沿用（不重画为别的产品）。
+ *   2026-10 二次精简：论文要点改普通 section 版式（去橙色警告块）、
+ *   卡片改为内容高度（grid align-items: start，行内保留空白但不撑高卡片）、
+ *   配图常高 object-fit: contain（不裁剪）。
  */
 
 /* ---------- 页头“来源与许可”入口 ---------- */
@@ -175,24 +183,25 @@
     flex-wrap: wrap;
 }
 
+/* 论文要点：普通 section 版式（不做橙色警告块，正文只留一条细依据说明） */
 .paper-ai-section {
     margin: 14px 0;
-    padding: 12px;
-    border: 1px dashed rgba(180, 83, 9, 0.5);
+    padding: 12px 14px;
+    border: 1px solid var(--border-color, #e5e7eb);
     border-radius: var(--radius-sm, 6px);
-    background: rgba(245, 158, 11, 0.06);
+    background: var(--bg-secondary, #fafafa);
 }
 
 .paper-ai-title {
-    margin: 0 0 4px;
+    margin: 0 0 2px;
     font-size: 1rem;
-    color: #b45309;
+    color: var(--text-primary, #111827);
 }
 
 .paper-ai-basis {
     margin: 0 0 10px;
-    font-size: 0.78rem;
-    color: #92400e;
+    font-size: 0.75rem;
+    color: var(--text-secondary, #6b7280);
 }
 
 .paper-ai-missing {
@@ -247,6 +256,23 @@
 
 .copy-link-label {
     font-size: 0.78rem;
+}
+
+/*
+ * 复制摘要页链接是文字按钮：上游把模态框底部的 .button.icon-button 固定成 40x40，
+ * 会把 7 个汉字挤成竖排（真实浏览器截图里可见）。这里只对这一个按钮放宽宽度，
+ * 其它图标按钮保持 40x40 不变。
+ */
+.paper-modal-footer .button.icon-button.copy-link-button {
+    width: auto;
+    min-width: 40px;
+    padding: 8px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+}
+
+.copy-link-label {
+    white-space: nowrap;
 }
 
 .copy-toast {
@@ -564,6 +590,241 @@
 }
 
 /* ==================================================================
+ * 2026-10 阅读改版：按报告日期倒序的连续日报列表（feed）
+ * ================================================================== */
+
+.feed {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+/* 来源状态：同一时刻只允许一行短句 */
+.feed-status {
+    margin: 14px 0 0;
+}
+
+.feed-day {
+    margin-top: 26px;
+    min-width: 0;
+}
+
+.feed-day-heading {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 10px;
+    margin: 0;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color, #e5e7eb);
+    font-size: 1.12rem;
+    line-height: 1.4;
+}
+
+.feed-day-date {
+    font-weight: 700;
+    color: var(--text-primary, #111827);
+    white-space: nowrap;
+}
+
+.feed-day-count {
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: var(--text-secondary, #4b5563);
+    white-space: nowrap;
+}
+
+.feed-day-revision {
+    font-size: 0.78rem;
+    font-weight: 400;
+    margin: 0;
+}
+
+.feed-day-revision .revision-label {
+    font-weight: 600;
+}
+
+.paper-container.feed-day-grid {
+    margin-top: 16px;
+}
+
+.feed-day-empty {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--text-secondary, #6b7280);
+}
+
+/* 解析不完整但仍有可读论文：一行短提示（不露原始坏行与计数） */
+.feed-day-notice {
+    margin: 6px 0 0;
+    font-size: 0.78rem;
+    color: #b45309;
+}
+
+/* ---------- 卡片：中文大标题 + 英文副标题 ---------- */
+.paper-card-title-zh {
+    display: block;
+    font-size: 17px;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.paper-card-title-en {
+    display: block;
+    margin-top: 4px;
+    font-size: 12.5px;
+    font-weight: 400;
+    line-height: 1.45;
+    color: var(--text-secondary, #6b7280);
+}
+
+/* ---------- 卡片顶部配图（只在合法公开且有许可时出现） ---------- */
+.paper-card-figure {
+    margin: 0;
+    border-radius: var(--radius-md, 8px) var(--radius-md, 8px) 0 0;
+    overflow: hidden;
+    background: rgba(31, 41, 55, 0.04);
+}
+
+/* 常高 + contain：不裁剪图片内容（宁可留边，也不把论文配图裁掉） */
+.paper-card-figure-img {
+    display: block;
+    width: 100%;
+    height: 200px;
+    object-fit: contain;
+    background: rgba(31, 41, 55, 0.04);
+}
+
+/*
+ * 卡片按内容高度排列：网格撑满行的旧默认（.paper-card { min-height: 100% }）会让
+ * 同一行里没有配图的卡片跟着有图卡片一起变高，留下大片空白。这里对齐到 start，
+ * 卡片高度跟着内容走；行内空白保留（不做 masonry），但卡片本身不再空。
+ */
+.paper-container:not(.list-view) {
+    align-items: start;
+}
+
+.paper-card {
+    min-height: 0;
+    align-self: start;
+}
+
+.paper-card-figure-caption {
+    padding: 6px 12px;
+    font-size: 0.72rem;
+    line-height: 1.5;
+    color: var(--text-secondary, #6b7280);
+    overflow-wrap: anywhere;
+}
+
+.figure-caption-text {
+    margin-right: 6px;
+}
+
+.figure-license {
+    margin-right: 6px;
+}
+
+.figure-source-link,
+.figure-license-link,
+.affiliation-source-link {
+    color: var(--primary-color, #a42c25);
+}
+
+.figure-license {
+    white-space: normal;
+}
+
+/* ---------- 详情：中文大标题 / 英文副标题 ---------- */
+.modal-title-zh {
+    display: block;
+    font-size: 1.1rem;
+    font-weight: 600;
+    line-height: 1.5;
+}
+
+.modal-title-en {
+    display: block;
+    margin-top: 4px;
+    font-size: 0.82rem;
+    font-weight: 400;
+    line-height: 1.45;
+    color: var(--text-secondary, #6b7280);
+}
+
+/* ---------- 详情：可核单位 ---------- */
+.modal-affiliations {
+    margin: 0;
+    padding-left: 18px;
+}
+
+.modal-affiliation {
+    margin: 2px 0;
+    line-height: 1.6;
+}
+
+.affiliation-source-link {
+    font-size: 0.78rem;
+}
+
+.modal-affiliations-unknown {
+    font-size: 0.85rem;
+    color: var(--text-secondary, #6b7280);
+}
+
+/* ---------- 卡片：可核单位短名单（单行省略号，不顶宽） ---------- */
+.paper-card-affiliations {
+    margin: -4px 0 10px;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--text-secondary, #6b7280);
+    max-width: 100%;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.paper-card-affiliations .affiliation-link {
+    color: var(--primary-color, #a42c25);
+    text-decoration: none;
+}
+
+.paper-card-affiliations .affiliation-link:hover {
+    text-decoration: underline;
+}
+
+.paper-card-affiliations .affiliation-unknown,
+.paper-card-affiliations .affiliation-more {
+    color: var(--text-tertiary, #9ca3af);
+}
+
+/* ---------- 详情：四项要点一律分条 ---------- */
+.paper-ai-bullets {
+    margin: 4px 0 0;
+    padding-left: 18px;
+}
+
+.paper-ai-bullets li {
+    margin: 4px 0;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+}
+
+.paper-ai-bullets .ai-bullet-empty {
+    list-style: none;
+    margin-left: -18px;
+    color: var(--text-secondary, #6b7280);
+}
+
+.ai-tldr {
+    margin: 0;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+/* ==================================================================
  * 窄屏（手机）适配：只做必要响应式，桌面布局不变。
  * 目标：390px / 320px 视口下 body 不出现横向溢出（scrollWidth <= 视口宽），
  *       页头品牌与控件分两行或收缩，日期不折行，主题导航仍可横向滚动使用。
@@ -583,7 +844,12 @@ html {
 .digest-generated,
 .paper-meta-row,
 .paper-card-title,
+.paper-card-title-zh,
+.paper-card-title-en,
 .paper-card-summary,
+.paper-card-figure-caption,
+.paper-ai-bullets li,
+.feed-day-heading,
 .original-abstract,
 .digest-text,
 .revision-row {
@@ -673,6 +939,31 @@ html {
         -webkit-overflow-scrolling: touch;
         scrollbar-width: thin;
     }
+
+    /*
+     * 搜索框必须能在窄屏收缩：上游 #textSearchInput 固定 220px（styles.css:404），
+     * 放大镜展开搜索框后，320px 视口的筛选行放不下（真实 239 站点实测
+     * documentElement.scrollWidth 354 > 320，且在 0/50/100/300/600/1000ms 都稳定复现，
+     * 不是 resize 瞬态）。这里只让它按容器收缩——不隐藏搜索框、不裁剪输入文字，
+     * 长关键词照常换行/滚动，不用 overflow 掩盖。
+     */
+    .text-search {
+        min-width: 0;
+        flex: 1 1 auto;
+        max-width: 100%;
+    }
+
+    .text-search .search-input-wrapper {
+        min-width: 0;
+        flex: 1 1 auto;
+        max-width: 100%;
+    }
+
+    #textSearchInput {
+        width: 100%;
+        min-width: 0;
+        max-width: 100%;
+    }
 }
 
 @media (max-width: 420px) {
@@ -756,6 +1047,35 @@ html {
 
     .digest-status-row {
         gap: 8px;
+    }
+
+    /* 连续日期列表：标题收小、配图压矮，避免 320/390px 顶宽 */
+    .feed-day-heading {
+        font-size: 1rem;
+        gap: 8px;
+    }
+
+    .paper-container.feed-day-grid {
+        margin-top: 12px;
+    }
+
+    .paper-card-figure-img {
+        height: 150px;
+    }
+
+    .modal-title-zh {
+        font-size: 1rem;
+    }
+
+    /* 窄屏模态框底部：允许换行，文字按钮不把弹窗顶宽 */
+    .paper-modal-footer {
+        flex-wrap: wrap;
+        row-gap: 8px;
+    }
+
+    .paper-modal-buttons {
+        flex-wrap: wrap;
+        justify-content: flex-end;
     }
 }
 

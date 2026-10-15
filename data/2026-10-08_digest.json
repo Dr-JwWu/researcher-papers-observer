@@ -1,6 +1,6 @@
 {
   "date": "2026-10-08",
-  "generated_at": "2026-10-15T08:57:09.932751+00:00",
+  "generated_at": "2026-10-15T13:34:10.051907+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -8,18 +8,18 @@
         "source": "arxiv",
         "status": "partial",
         "candidate_count": 8061,
-        "metadata_fetched": 3000,
-        "missing_metadata": 0,
+        "metadata_fetched": 3400,
+        "missing_metadata": 4661,
         "date_from": "2026-10-08",
         "date_to": "2026-10-14",
-        "error_count": 0,
+        "error_count": 1,
         "limit_count": 4
       },
       {
         "source": "pubmed",
         "status": "complete",
-        "candidate_count": 112,
-        "metadata_fetched": 112,
+        "candidate_count": 348,
+        "metadata_fetched": 348,
         "missing_metadata": 0,
         "date_from": "2026-10-08",
         "date_to": "2026-10-14",
@@ -30,48 +30,23 @@
     "scope_note": "仅对已配置来源与检索窗口留痕，不代表全网穷尽。"
   },
   "digest": {
-    "status": "completed",
-    "sections": [
-      {
-        "topic": "embodied",
-        "heading": "多智能体第一人称世界模型：共享世界中的细粒度具身交互",
-        "text": "该工作将多智能体第一人称世界建模形式化为多个智能体在共享世界中的同步 ego 流生成，指出跨视角动作一致性、共享环境一致性与交互状态更新的传播是核心挑战。方法上以共享 token 序列联合去噪各 ego 流，条件于所有智能体的目标视角位姿，并以共享环境记忆约束生成，同时提出面向环境、状态更新与身份一致性的共享世界一致性指标。其意义在于把第一人称世界模型从单智能体、粗糙动作（移动、相机控制、离散指令）推进到细粒度多智能体交互，并提供了可比较的评测维度。局限在于结果仅报告在真实与合成数据上相对既有方法的优势，具体量化数值与跨场景泛化边界尚未充分呈现，交互一致性的度量依赖作者新提出的指标，外部可比性有待验证。",
-        "paper_ids": [
-          "arxiv:2610.12299"
-        ]
-      },
-      {
-        "topic": "surgical",
-        "heading": "手术阶段与器械识别",
-        "text": "两项手术阶段识别研究均基于回顾性手术视频：腹腔镜远端胃切除术研究以93例视频、12个阶段训练YOLOv8器械检测与bi-LSTM时序模型（器械检测mAP50约94%、阶段准确率85%），小儿胃底折叠术研究则以38例视频、9个阶段构建冻结ViT加双向GRU模型（平均准确率0.812、macro-F1 0.805），说明该任务在成人与小儿术式中均初步可行。二者的共同瓶颈是视觉或流程相邻阶段的误判，小儿研究中阶段时长估计误差也主要集中在裂孔关闭与包裹成形；胃切除研究将器械检测输出作为阶段模型输入，小儿研究则依赖冻结骨干适配小样本，技术路线侧重不同。由于样本量有限且均为摘要层面的报告（胃切除研究明确为单中心，小儿研究未见外部验证），阶段识别的泛化性与进入真实工作流的价值仍需多中心前瞻验证。",
-        "paper_ids": [
-          "pubmed:42845252",
-          "pubmed:42850300"
-        ]
-      },
-      {
-        "topic": "surgical",
-        "heading": "机器人手术技能的可解释视频评估",
-        "text": "在手术技能评估方向，一项研究基于JIGSAWS公开缝合视频，用稠密光流提取运动幅度、jerk与平滑度等可解释标志物，再以类别加权随机森林结合SHAP完成技能分类与解释，避免依赖机器人遥测与黑盒模型。结果显示部分标志物在专家、中级与新手间存在显著组间差异，但留一用户交叉验证下分类表现有限（总体准确率38.5%、平衡准确率29.5%），作者据此提示这些标志物尚不宜单独作为专长评估指标。其意义在于提供了透明、可解释的视频化评估基线并指出平滑度与jerk类特征的贡献，局限是仅使用单一公开数据集、用户独立泛化不足，且摘要未报告外部验证。",
-        "paper_ids": [
-          "pubmed:42848670"
-        ]
-      }
-    ],
-    "analysis_basis": "abstract"
+    "status": "not_generated",
+    "sections": [],
+    "note": "按阅读模式不生成每日综合总结。"
   },
-  "pending_count": 1,
-  "paper_count": 4,
+  "pending_count": 7,
+  "paper_count": 68,
   "research_scope": {
     "policy": "weekly_capture_partitioned_by_known_date",
     "window_start": "2026-10-08",
     "window_end": "2026-10-14",
     "date_basis": "UTC",
     "date_basis_policy": "只按来源声明的日粒度日期分配日报：published 在窗口内记 window_match(day_basis=published)；否则使用窗口内的 PubMed 入库日 indexed_at，并公开 discovery_kind=backfill（补录，非当日首发）；日粒度日期可确认在窗口外且无窗口内入库日的记录本轮不公开；日期过粗或缺失者保留为 uncertain_date 待后续显式补录，不补造精确日期。",
-    "out_of_window_count": 705,
-    "undated_count": 0,
+    "out_of_window_count": 1786,
+    "undated_count": 2970,
     "pending_count_by_source": {
-      "pubmed": 4
+      "arxiv": 20,
+      "pubmed": 7
     },
     "sources_unavailable": [],
     "sources_incomplete": [

@@ -1,6 +1,6 @@
 {
   "date": "2026-10-10",
-  "generated_at": "2026-10-15T08:57:09.933335+00:00",
+  "generated_at": "2026-10-15T13:34:10.065923+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -8,18 +8,18 @@
         "source": "arxiv",
         "status": "partial",
         "candidate_count": 8061,
-        "metadata_fetched": 3000,
-        "missing_metadata": 0,
+        "metadata_fetched": 3400,
+        "missing_metadata": 4661,
         "date_from": "2026-10-08",
         "date_to": "2026-10-14",
-        "error_count": 0,
+        "error_count": 1,
         "limit_count": 4
       },
       {
         "source": "pubmed",
         "status": "complete",
-        "candidate_count": 112,
-        "metadata_fetched": 112,
+        "candidate_count": 348,
+        "metadata_fetched": 348,
         "missing_metadata": 0,
         "date_from": "2026-10-08",
         "date_to": "2026-10-14",
@@ -30,31 +30,23 @@
     "scope_note": "仅对已配置来源与检索窗口留痕，不代表全网穷尽。"
   },
   "digest": {
-    "status": "completed",
-    "sections": [
-      {
-        "topic": "embodied",
-        "heading": "InsQL：以组合式平均速度建模实现单步生成式离线RL策略",
-        "text": "该工作将扩散策略的流匹配视角改写为平均速度参数化，并引入组合机制，使策略可直接从噪声映射到动作，同时把行为正则化的 actor-critic 优化统一在同一框架内，训练无需蒸馏、多阶段流程或雅可比计算，推理仅一次前向并可选价值引导的候选选择。作为本轮唯一论文，其意义在于为多步生成式策略的训练与推理开销问题提供了理论上自洽的单步替代方案，若结论成立，可改善离线强化学习在机器人操作中的部署效率。局限在于相关优势均为摘要自述，未给出基准或真机任务的具体数值、对比配置与统计检验，单步平均速度建模对复杂多模态动作分布的覆盖能力、候选选择带来的额外推理成本及跨任务泛化性仍待验证。",
-        "paper_ids": [
-          "arxiv:2610.14941"
-        ]
-      }
-    ],
-    "analysis_basis": "abstract"
+    "status": "not_generated",
+    "sections": [],
+    "note": "按阅读模式不生成每日综合总结。"
   },
-  "pending_count": 0,
-  "paper_count": 1,
+  "pending_count": 5,
+  "paper_count": 20,
   "research_scope": {
     "policy": "weekly_capture_partitioned_by_known_date",
     "window_start": "2026-10-08",
     "window_end": "2026-10-14",
     "date_basis": "UTC",
     "date_basis_policy": "只按来源声明的日粒度日期分配日报：published 在窗口内记 window_match(day_basis=published)；否则使用窗口内的 PubMed 入库日 indexed_at，并公开 discovery_kind=backfill（补录，非当日首发）；日粒度日期可确认在窗口外且无窗口内入库日的记录本轮不公开；日期过粗或缺失者保留为 uncertain_date 待后续显式补录，不补造精确日期。",
-    "out_of_window_count": 705,
-    "undated_count": 0,
+    "out_of_window_count": 1786,
+    "undated_count": 2970,
     "pending_count_by_source": {
-      "pubmed": 4
+      "arxiv": 20,
+      "pubmed": 7
     },
     "sources_unavailable": [],
     "sources_incomplete": [
