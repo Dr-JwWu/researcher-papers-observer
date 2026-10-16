@@ -1,6 +1,6 @@
 {
   "date": "2026-10-08",
-  "generated_at": "2026-10-16T08:27:55.081086+00:00",
+  "generated_at": "2026-10-16T09:44:52.975905+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -9,7 +9,7 @@
         "status": "partial",
         "candidate_count": 0,
         "metadata_fetched": 0,
-        "missing_metadata": 0,
+        "missing_metadata": 2970,
         "date_from": "2026-10-08",
         "date_to": "2026-10-14",
         "error_count": 0,
@@ -20,7 +20,7 @@
         "status": "partial",
         "candidate_count": 0,
         "metadata_fetched": 0,
-        "missing_metadata": 0,
+        "missing_metadata": 13,
         "date_from": "2026-10-08",
         "date_to": "2026-10-14",
         "error_count": 0,

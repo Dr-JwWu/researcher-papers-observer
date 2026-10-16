@@ -277,11 +277,12 @@
     state.availableDates.forEach(function (date) {
       const day = state.days[date];
       if (!dayReady(day)) return;
-      const papers = PD.filterPapersByTopic(day.papers, state.topics);
+      const papers = PD.topicView(day.papers, state.topics).items.map(function (item) { return item.paper; });
       const ranked = PD.rankPapers(papers, {
         keywords: state.keywords,
         authors: state.authors,
-        text: state.text
+        text: state.text,
+        preserveOrder: day.papers.some(function (paper) { return !!paper.selection; })
       });
       // 解析缺口（坏行/缺字段行）不能看起来像“这天没有论文”：
       //   有有效行 → 照常展示 + 一行“部分内容无法读取”；
@@ -310,6 +311,85 @@
     return days;
   }
 
+  /* Date navigation uses the rendered rows, never digest/raw-topic totals. The scroll
+   * listener also covers zero-paper sections, short days and end-of-page clamping. */
+  let dateSections = [];
+  let dateButtons = [];
+  let activeDate = '';
+  let scrollFrame = false;
+
+  function readingOffset() {
+    const header = document.querySelector('header');
+    const height = header && header.getBoundingClientRect ? header.getBoundingClientRect().height : 0;
+    if (refs.readingLayout) refs.readingLayout.style.setProperty('--reading-top', (height + 16) + 'px');
+    return height + 20;
+  }
+
+  function setActiveDate(date) {
+    activeDate = date;
+    dateButtons.forEach(function (button) {
+      const active = button.getAttribute('data-date') === date;
+      button.classList.toggle('active', active);
+      if (active) {
+        button.setAttribute('aria-current', 'date');
+        // Reveal the active item inside the horizontal rail without scrolling the page.
+        if (button.getBoundingClientRect && refs.dateNav.getBoundingClientRect) {
+          const item = button.getBoundingClientRect();
+          const rail = refs.dateNav.getBoundingClientRect();
+          if (item.left < rail.left) refs.dateNav.scrollLeft -= rail.left - item.left;
+          else if (item.right > rail.right) refs.dateNav.scrollLeft += item.right - rail.right;
+        }
+      } else button.removeAttribute('aria-current');
+    });
+  }
+
+  function updateActiveDate() {
+    scrollFrame = false;
+    if (!dateSections.length || !dateSections[0].getBoundingClientRect) return;
+    const offset = readingOffset();
+    let current = dateSections[0];
+    dateSections.forEach(function (section) {
+      if (section.getBoundingClientRect().top <= offset + 1) current = section;
+    });
+    // The last short/empty day may never reach the header because the document ends.
+    if (window.innerHeight + window.pageYOffset >= document.documentElement.scrollHeight - 2) {
+      current = dateSections[dateSections.length - 1];
+    }
+    setActiveDate(current.getAttribute('data-date'));
+  }
+
+  function queueActiveDate() {
+    if (scrollFrame) return;
+    scrollFrame = true;
+    if (window.requestAnimationFrame) window.requestAnimationFrame(updateActiveDate);
+    else updateActiveDate();
+  }
+
+  function renderDateNav(days) {
+    if (!refs.dateNav) return;
+    dom.clear(refs.dateNav);
+    dateButtons = [];
+    dateSections = Array.prototype.slice.call(refs.paperContainer.querySelectorAll('.feed-day'));
+    days.forEach(function (day, index) {
+      const button = dom.el('button', {
+        class: 'date-nav-button', type: 'button', 'data-date': day.date,
+        'aria-controls': 'feed-day-' + day.date,
+        text: day.date + '（' + day.count + '）'
+      });
+      button.addEventListener('click', function () {
+        const section = dateSections[index];
+        if (!section || !section.getBoundingClientRect) return;
+        const top = section.getBoundingClientRect().top + window.pageYOffset - readingOffset();
+        window.scrollTo({ top: Math.max(0, top), behavior: 'auto' });
+        setActiveDate(day.date);
+      });
+      refs.dateNav.appendChild(button);
+      dateButtons.push(button);
+    });
+    setActiveDate(activeDate || (days[0] && days[0].date));
+    updateActiveDate();
+  }
+
   function renderFeed() {
     if (!refs.paperContainer) return;
     const days = buildFeedDays();
@@ -336,6 +416,7 @@
         openModal(paper, state.currentIndex);
       }
     });
+    renderDateNav(days);
     renderHeaderLabel();
     renderTopicNav();
   }
@@ -413,6 +494,8 @@
   /* ------------------------------ 事件绑定 ------------------------------ */
 
   function bindEvents() {
+    window.addEventListener('scroll', queueActiveDate, { passive: true });
+    window.addEventListener('resize', queueActiveDate);
     if (refs.closeModal) refs.closeModal.addEventListener('click', closeModal);
     if (refs.modal) refs.modal.addEventListener('click', function (event) {
       if (event.target === refs.modal) closeModal();
@@ -473,6 +556,8 @@
   function collectRefs() {
     refs.currentDate = document.getElementById('currentDate');
     refs.paperContainer = document.getElementById('paperContainer');
+    refs.dateNav = document.getElementById('dateNav');
+    refs.readingLayout = document.querySelector('.reading-layout');
     refs.categoryScroll = document.querySelector('.category-scroll');
     refs.filterTags = document.getElementById('filterTags');
     refs.searchToggle = document.getElementById('textSearchToggle');

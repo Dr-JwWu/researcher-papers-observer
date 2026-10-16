@@ -52,7 +52,7 @@
     },
     {
       "path": "css/pd-adapt.css",
-      "sha256": "15bcfa901be4ddeb2e367d76ed39df9d0b87abba4b4df47b7940cd9ef49d1365"
+      "sha256": "f330ab65c2da2749fcb7221c013e9aa430cb2fb2cc817e41236fa2dcd4ad3500"
     },
     {
       "path": "css/screenshot-placeholder.svg",
@@ -76,7 +76,7 @@
     },
     {
       "path": "data/2026-10-08_digest.json",
-      "sha256": "496d79042fe826d0120856bcfc6f204aa61da835722e9931fdd2c9fc4f64ef82"
+      "sha256": "1ad5050d07003b2901bc9b49d852f4865510660e7db4c9b46a078ae66490ad58"
     },
     {
       "path": "data/2026-10-09_AI_enhanced_Chinese.jsonl",
@@ -84,7 +84,7 @@
     },
     {
       "path": "data/2026-10-09_digest.json",
-      "sha256": "f7c8d7c45f8472139e08f7952fb49ba91660e57b389647d929820862887b5495"
+      "sha256": "f1b3adc1e37c92173cb292e667c426c78efde08088addb99a3a499e84655f437"
     },
     {
       "path": "data/2026-10-10_AI_enhanced_Chinese.jsonl",
@@ -92,7 +92,7 @@
     },
     {
       "path": "data/2026-10-10_digest.json",
-      "sha256": "7a9f8c0f87001afb7aae7e729869b9d028673088cf549c4229dad323e4d9540f"
+      "sha256": "9f266e37a7168173b01fccf59fade3329ba3aec39ab1b913921d031ef789c02c"
     },
     {
       "path": "data/2026-10-11_AI_enhanced_Chinese.jsonl",
@@ -100,7 +100,7 @@
     },
     {
       "path": "data/2026-10-11_digest.json",
-      "sha256": "f3a0567f74221468587c2898090826ba4dfc669247db6d7a19c2ecc66af30ce8"
+      "sha256": "fad3898976513a8afcc72824491f6d20d115bd0a8bc4f1833929b8afb8b9aeab"
     },
     {
       "path": "data/2026-10-12_AI_enhanced_Chinese.jsonl",
@@ -108,7 +108,7 @@
     },
     {
       "path": "data/2026-10-12_digest.json",
-      "sha256": "e7b2bb15f59311ba29bda6fd8b23f8763e142099aee9234da8508d051ab3f6d6"
+      "sha256": "ac1dbb1ef67d380fa45585a8269f138f67b3edcfabc50faeb1440a13e8fcba26"
     },
     {
       "path": "data/2026-10-13_AI_enhanced_Chinese.jsonl",
@@ -116,7 +116,7 @@
     },
     {
       "path": "data/2026-10-13_digest.json",
-      "sha256": "ae226755480a9b2946fdec83ae294333e1b3f88cf183bcc30e1f4a25a0e40f2b"
+      "sha256": "a2d207d7911a4f8f2bd9dd69ec8be73f480317b5903362220cd8e5fa91b003c7"
     },
     {
       "path": "data/2026-10-14_AI_enhanced_Chinese.jsonl",
@@ -124,11 +124,11 @@
     },
     {
       "path": "data/2026-10-14_digest.json",
-      "sha256": "b5e6cff16956f92fefcbf03ec567c51a97ba33901af3498f85a84b6306e2fe04"
+      "sha256": "b27d59f2b2f31aa3e25b4e8a32a822e700b376a500213efc9472157d3998e5b2"
     },
     {
       "path": "docs/figure-credits.html",
-      "sha256": "c7d902f90d3896243c3c31306d7a0cb8db32f40a2eb6f7e62d67ea8e1880e597"
+      "sha256": "31fe94da8811dcfd8ae6e31952745475a4829381fc6aa5b339cdb40e9ba7a1dc"
     },
     {
       "path": "docs/licenses/daily-arxiv-LICENSE",
@@ -136,11 +136,11 @@
     },
     {
       "path": "index.html",
-      "sha256": "7fca98cdb9cb12b9b8b762f1ca963045f89d12f5ffeab3e8c574912989a427cf"
+      "sha256": "32c6ac087491e611b770dd6a822ebb8193bf157629f1315d3c728dc7e0725f41"
     },
     {
       "path": "js/app.js",
-      "sha256": "13ecadb0e80c435782f16312c022fdc6433bd365d9d2982e06fea5c8e4d157be"
+      "sha256": "f678b704a0b1e0cfe2ded86affe5a8da683be885683817c662e65e28003cf947"
     },
     {
       "path": "js/data-config.js",
@@ -148,7 +148,7 @@
     },
     {
       "path": "js/pd-core.js",
-      "sha256": "cc8992a84ef74b85894b74dd0b7fac4968187a5dca0790cff28577b37fd08d01"
+      "sha256": "42d9941e9e37583af7e90cac6d158557e8b5da55976edbe2b5f996ec17bd9f5c"
     },
     {
       "path": "js/pd-dom.js",
@@ -164,7 +164,7 @@
     },
     {
       "path": "js/pd-render.js",
-      "sha256": "5eeda1c6d7ef4a011b640e25bba4f813f4121b31fa171201b315f69ef585deb5"
+      "sha256": "9a09fa50486ee21106303271a9f20014719d973ae90d7e34b586e6c9f298b800"
     },
     {
       "path": "js/pd-settings.js",

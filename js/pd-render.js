@@ -244,18 +244,60 @@
    * }
    * items 为 pd-core.rankPapers 的结果；卡片序号在整个列表内连续编号。
    */
+  // Repeated daily public coverage may describe the same collection scope. Use maxima,
+  // never sum its seven copies; only allowlisted source IDs and safe counts reach text.
+  function sourceReasonDetails(days) {
+    const bySource = {};
+    (days || []).forEach(function (day) {
+      const coverage = day.digest && day.digest.coverage;
+      const sources = coverage && Array.isArray(coverage.sources) ? coverage.sources : [];
+      sources.forEach(function (source) {
+        if (!source || PD.SOURCES.indexOf(source.source) === -1) return;
+        const row = bySource[source.source] || { missing: 0, errors: 0, limits: 0, partial: false };
+        row.partial = row.partial || source.status !== 'complete';
+        [['missing', 'missingMetadata'], ['errors', 'errorCount'], ['limits', 'limitCount']].forEach(function (pair) {
+          const value = source[pair[1]];
+          if (Number.isSafeInteger(value) && value >= 0) row[pair[0]] = Math.max(row[pair[0]], value);
+        });
+        bySource[source.source] = row;
+      });
+    });
+    const details = dom.el('details', { class: 'source-reasons' });
+    details.appendChild(dom.el('summary', { text: '查看原因' }));
+    const body = dom.el('div', { class: 'source-reasons-body' });
+    PD.SOURCES.forEach(function (source) {
+      const row = bySource[source];
+      if (!row || (!row.partial && !row.missing && !row.errors && !row.limits)) return;
+      const reasons = [];
+      if (row.missing) reasons.push('部分条目的元数据/摘要待补（' + row.missing + '）');
+      if (row.errors) reasons.push('部分采集记录仍需补全（' + row.errors + '）');
+      if (row.limits) reasons.push('本次收录范围受采集上限影响（' + row.limits + '）');
+      body.appendChild(dom.el('p', { text: i18n.sourceLabel(source) + '：' +
+        (reasons.length ? reasons.join('；') : '收录范围尚未确认完整') + '。' }));
+    });
+    if (!body.children.length) body.appendChild(dom.el('p', { text: '收录范围尚未确认完整。' }));
+    body.appendChild(dom.el('p', { text: '已完成内容可正常阅读；日期仅按核实元数据归档。' }));
+    details.appendChild(body);
+    return details;
+  }
+
   function renderFeed(container, options) {
     const opts = options || {};
     dom.clear(container);
     container.className = 'feed' + (opts.view === 'list' ? ' list-view' : '');
     if (opts.statusText) {
       // 来源状态只有一行：不写候选数/取回数/缺元数据/错误数等工程计数。
-      container.appendChild(dom.el('p', { class: 'coverage-brief feed-status', text: opts.statusText }));
+      const status = dom.el('div', { class: 'feed-status-row' });
+      status.appendChild(dom.el('p', { class: 'coverage-brief feed-status', text: opts.statusText }));
+      status.appendChild(sourceReasonDetails(Array.isArray(opts.days) ? opts.days : []));
+      container.appendChild(status);
     }
     const days = Array.isArray(opts.days) ? opts.days : [];
     let index = 0;
     days.forEach(function (day) {
-      const section = dom.el('section', { class: 'feed-day', 'data-date': day.date || '' });
+      const section = dom.el('section', {
+        class: 'feed-day', 'data-date': day.date || '', id: 'feed-day-' + day.date
+      });
       section.appendChild(dayHeading(day));
       const grid = dom.el('div', {
         class: 'paper-container feed-day-grid' + (opts.view === 'list' ? ' list-view' : '')

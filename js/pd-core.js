@@ -11,6 +11,8 @@
  *   2026-10 阅读改版新增：可选 reading 字段（中文标题 / 分条要点 / 可核单位 / 合法配图）；
  *   配图 src 走 assets/papers/ 相对路径白名单（无协议、无主机、无穿越）；
  *   详情四项优先用结构化列表，旧 AI 字符串只做保守分条（不破小数、不改写）。
+ *   2026-10 每日精选新增：可选 selection 字段（topics/scores/ranks 严格校验、全有或全无），
+ *   单主题筛选按该主题 rank 升序、并集/无筛选保持后端行顺序（不按 id 重排）。
  *   本文件不是上游文件，不重新标注 MIT，许可仍随 docs/licenses 说明。
  *
  * 读取的数据契约（与 paper_digest/export.py 一致，前端只读不写）：
@@ -30,6 +32,15 @@
   /** 主题标签：只有这两个，允许双命中。 */
   const TOPICS = ['embodied', 'surgical'];
   const TOPIC_ORDER = { embodied: 0, surgical: 1 };
+
+  /**
+   * 可选第 19 字段 selection（后端每日精选契约，未出现时按 legacy 处理）：
+   *   {topics:['embodied'|'surgical'], scores:{topic:0..100}, ranks:{topic:1..20}}
+   * 契约上限：每个主题每日最多精选 SELECTION_MAX_RANK 篇。
+   */
+  const SELECTION_MAX_RANK = 20;
+  const SELECTION_SCORE_MIN = 0;
+  const SELECTION_SCORE_MAX = 100;
 
   /** 来源：只认 arxiv/pubmed，其它一律按未知来源显示、不当成 arXiv。 */
   const SOURCES = ['arxiv', 'pubmed'];
@@ -753,6 +764,10 @@
     const discovered = isNonEmptyString(record.discovered_at) ? record.discovered_at.trim() : null;
     const source = SOURCES.indexOf(record.source) !== -1 ? record.source : '';
     const links = paperLinks(record);
+    const topics = normalizeTopics(record.topics);
+    const selection = normalizeSelection(record.selection, topics);
+    // Legacy means absent only: malformed editorial metadata must not expose raw-topic rows.
+    if (Object.prototype.hasOwnProperty.call(record, 'selection') && !selection) return null;
 
     return {
       id: id,
@@ -766,7 +781,9 @@
       ai: ai,
       aiBasis: record.analysis_basis === 'abstract' ? 'abstract' : '',
       aiAvailable: AI_FIELDS.some(function (key) { return ai[key].trim() !== ''; }),
-      topics: normalizeTopics(record.topics),
+      topics: topics,
+      // 可选每日精选契约（缺字段才为 legacy；存在但非法已拒绝，不推断名次或分数）
+      selection: selection,
       categories: normalizeCategories(record.categories),
       doi: isNonEmptyString(record.doi) ? record.doi.trim() : null,
       published: published,
@@ -1111,7 +1128,7 @@
    * 选两个主题 → 并集（等价于 all，但用于明确“双主题”视图）。
    */
   function matchesTopicFilter(paper, selected) {
-    const topics = paper && Array.isArray(paper.topics) ? paper.topics : [];
+    const topics = paperSelectedTopics(paper);
     if (!selected || selected === 'all') return true;
     const wanted = Array.isArray(selected) ? selected : [selected];
     const valid = wanted.filter(function (item) { return TOPICS.indexOf(item) !== -1; });
@@ -1122,6 +1139,117 @@
   function filterPapersByTopic(papers, selected) {
     const list = Array.isArray(papers) ? papers : [];
     return list.filter(function (paper) { return matchesTopicFilter(paper, selected); });
+  }
+
+  /* ------------------------------------------------------------------ *
+   * 可选每日精选契约 selection（第 19 字段）
+   *
+   * 后端每日每个主题独立按重要性精选 5–20 篇；前端只读这个契约：
+   *   - 形状严格校验，全有或全无：存在但非法的 selection 使该行不可展示，
+   *     parseJsonl 计入 dropped 并沿用部分内容无法读取提示；只有缺字段才是 legacy；
+   *   - 合法 selection 强替“显示/筛选主题”：某篇论文只有在 selection.topics
+   *     里的主题筛选下才出现（不再按全部原 topics 出现）；
+   *   - 前端绝不按 id 或分数重排：没有主题筛选时行顺序就是后端给的顺序。
+   * ------------------------------------------------------------------ */
+
+  function isPlainObject(value) {
+    return value !== null && typeof value === 'object' && !Array.isArray(value);
+  }
+
+  function hasExactKeys(object, keys) {
+    if (!isPlainObject(object)) return false;
+    const own = Object.keys(object);
+    if (own.length !== keys.length) return false;
+    return keys.every(function (key) {
+      return Object.prototype.hasOwnProperty.call(object, key);
+    });
+  }
+
+  /**
+   * selection 归一化：合法返回 {topics, scores, ranks}，否则返回 null（调用者拒绝有此字段的行）。
+   * 校验点：topics 必须是数组、只含已知主题、不重复、非空，且是 paper.final topics 的子集；
+   * scores/ranks 的键集合必须与 topics 完全一致；score 为 0..100 整数，rank 为 1..20 整数。
+   */
+  function normalizeSelection(value, paperTopics) {
+    if (!hasExactKeys(value, ['topics', 'scores', 'ranks'])) return null;
+    if (!Array.isArray(value.topics)) return null;
+    const topics = normalizeTopics(value.topics);
+    if (topics.length === 0 || value.topics.length !== topics.length) return null;
+    const own = Array.isArray(paperTopics) ? paperTopics : [];
+    const subset = topics.every(function (topic) { return own.indexOf(topic) !== -1; });
+    if (!subset) return null;
+    if (!hasExactKeys(value.scores, topics) || !hasExactKeys(value.ranks, topics)) return null;
+    const scores = {};
+    const ranks = {};
+    for (let i = 0; i < topics.length; i += 1) {
+      const topic = topics[i];
+      const score = value.scores[topic];
+      const rank = value.ranks[topic];
+      if (!Number.isInteger(score) || score < SELECTION_SCORE_MIN || score > SELECTION_SCORE_MAX) return null;
+      if (!Number.isInteger(rank) || rank < 1 || rank > SELECTION_MAX_RANK) return null;
+      scores[topic] = score;
+      ranks[topic] = rank;
+    }
+    return { topics: topics, scores: scores, ranks: ranks };
+  }
+
+  /**
+   * 一篇论文“可筛选的主题集合”：
+   *   有合法 selection → 严格用 selection.topics（每日精选集合）；
+   *   没有（旧数据）→ 回退原 topics，保持既有语义。
+   */
+  function paperSelectedTopics(paper) {
+    const record = isPlainObject(paper) ? paper : {};
+    const selection = record.selection;
+    if (isPlainObject(selection) && Array.isArray(selection.topics) && selection.topics.length > 0) {
+      return selection.topics.slice();
+    }
+    return Array.isArray(record.topics) ? record.topics.slice() : [];
+  }
+
+  /**
+   * 主题视图（selection 感知）：
+   *   - 都不选（含 'all'/未知值）→ 全部论文，保持后端行顺序（绝不按 id 重排）；
+   *   - 同时选中两个主题 → 两主题并集，同样保持后端行顺序；
+   *   - 只选一个主题 → 只保留该主题精选/命中的论文，按该主题 rank 升序；
+   *     legacy（无 rank）行按原行顺序排在精选行之后：同一天内排序，不跨日、不用全局名次。
+   * 返回 {mode:'union'|'single', topics, items:[{paper, rank}]}，rank=null 表示并集/legacy。
+   */
+  function topicView(papers, selected) {
+    const list = Array.isArray(papers) ? papers : [];
+    const wanted = normalizeTopics(selected === 'all' ? [] : selected);
+    if (wanted.length !== 1) {
+      const items = [];
+      for (let i = 0; i < list.length; i += 1) {
+        const paper = list[i];
+        const topics = paperSelectedTopics(paper);
+        const keep = wanted.length === 0 || wanted.some(function (topic) { return topics.indexOf(topic) !== -1; });
+        if (keep) items.push({ paper: paper, rank: null });
+      }
+      return { mode: 'union', topics: wanted, items: items };
+    }
+    const topic = wanted[0];
+    const rows = [];
+    for (let i = 0; i < list.length; i += 1) {
+      const paper = list[i];
+      if (paperSelectedTopics(paper).indexOf(topic) === -1) continue;
+      const selection = isPlainObject(paper) ? paper.selection : null;
+      const rank = selection && isPlainObject(selection.ranks) && Number.isInteger(selection.ranks[topic])
+        ? selection.ranks[topic]
+        : null;
+      rows.push({ paper: paper, rank: rank, index: i });
+    }
+    rows.sort(function (a, b) {
+      if (a.rank !== null && b.rank !== null) return (a.rank - b.rank) || (a.index - b.index);
+      if (a.rank !== null) return -1;
+      if (b.rank !== null) return 1;
+      return a.index - b.index;
+    });
+    return {
+      mode: 'single',
+      topics: wanted,
+      items: rows.map(function (row) { return { paper: row.paper, rank: row.rank }; })
+    };
   }
 
   /**
@@ -1255,7 +1383,9 @@
       const reasons = searchReasons(paper, terms);
       return { paper: paper, matched: reasons.length > 0, reasons: reasons };
     });
-    // 稳定排序：匹配优先，其余保持原顺序。
+    // 精选排序是编辑契约；检索只标记，不覆盖 rank 或后端 union 行序。
+    if (current.preserveOrder) return scored;
+    // Legacy 稳定排序：匹配优先，其余保持原顺序。
     const matchedFirst = scored.filter(function (item) { return item.matched; });
     const rest = scored.filter(function (item) { return !item.matched; });
     return matchedFirst.concat(rest);
@@ -1550,6 +1680,10 @@
 
     matchesTopicFilter: matchesTopicFilter,
     filterPapersByTopic: filterPapersByTopic,
+    normalizeSelection: normalizeSelection,
+    paperSelectedTopics: paperSelectedTopics,
+    topicView: topicView,
+    SELECTION_MAX_RANK: SELECTION_MAX_RANK,
     paperHaystack: paperHaystack,
     paperSearchFields: paperSearchFields,
     paperSearchHaystack: paperSearchHaystack,

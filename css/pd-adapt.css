@@ -19,7 +19,7 @@
  *   → 单位 pill（原文 + 中文）/ 论文编号灰 pill / 小来源标签 → 概括 → 只留“查看详情”；
  *   卡片不再有 index 编号、作者、补录标记与日期（详情仍保留作者、单位与配图许可）。
  *   2026-10 二次精简：论文要点改普通 section 版式（去橙色警告块）、
- *   卡片改为内容高度（grid align-items: start，行内保留空白但不撑高卡片）、
+ *   2026-10-16：卡片按每行最高自然内容等高（grid stretch + flex footer）、
  *   配图常高 object-fit: contain（不裁剪）。
  */
 
@@ -596,11 +596,112 @@
  * 2026-10 阅读改版：按报告日期倒序的连续日报列表（feed）
  * ================================================================== */
 
+/* Narrow sticky date rail keeps the daily content grid at three columns on desktop.
+   On phones the navigation stays in document flow and scrolls internally, not over cards. */
+.reading-layout {
+    display: grid;
+    grid-template-columns: 154px minmax(0, 1fr);
+    gap: 24px;
+    align-items: start;
+    --reading-top: 180px;
+}
+
+.date-nav {
+    position: sticky;
+    top: var(--reading-top);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-top: 26px;
+    min-width: 0;
+    max-height: calc(100dvh - var(--reading-top) - 16px);
+    overflow-y: auto;
+}
+
+.date-nav:empty { display: none; }
+
+.date-nav-button {
+    flex: 0 0 auto;
+    padding: 9px 8px;
+    text-align: left;
+    white-space: nowrap;
+    font: inherit;
+    font-size: 0.8rem;
+    font-variant-numeric: tabular-nums;
+    border: 1px solid var(--border-color, #d1d5db);
+    border-radius: var(--radius-sm, 6px);
+    color: var(--text-secondary, #4b5563);
+    background: var(--card-bg-color, #fff);
+    cursor: pointer;
+}
+
+.date-nav-button.active {
+    color: var(--primary-color, #a42c25);
+    border-color: var(--primary-color, #a42c25);
+    background: var(--background-light, #fff7f5);
+    font-weight: 600;
+}
+
+.date-nav-button:focus-visible {
+    outline: 2px solid var(--primary-color, #a42c25);
+    outline-offset: -3px;
+}
+
+@media (min-width: 1200px) {
+    .reading-layout .feed-day-grid:not(.list-view) {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 24px;
+    }
+}
+
+@media (min-width: 769px) and (max-width: 1199px) {
+    .reading-layout .feed-day-grid:not(.list-view) {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .reading-layout { display: block; }
+    .date-nav {
+        position: static;
+        flex-direction: row;
+        max-height: none;
+        max-width: 100%;
+        overflow-x: auto;
+        overflow-y: hidden;
+        margin-top: 14px;
+        padding-bottom: 6px;
+        scrollbar-width: thin;
+    }
+    .reading-layout .feed-day-grid:not(.list-view) {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
 .feed {
     width: 100%;
     max-width: 100%;
     min-width: 0;
 }
+
+/* Closed disclosure stays beside the short status; opening remains in flow. */
+.feed-status-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 12px;
+}
+.source-reasons {
+    margin-top: 14px;
+    font-size: 0.78rem;
+    color: var(--text-secondary, #4b5563);
+    min-width: 0;
+    max-width: 100%;
+}
+.source-reasons summary { cursor: pointer; }
+.source-reasons[open] { flex-basis: 100%; margin-top: 4px; }
+.source-reasons-body p { margin: 6px 0; overflow-wrap: anywhere; }
 
 /* 来源状态：同一时刻只允许一行短句 */
 .feed-status {
@@ -710,18 +811,23 @@
     display: none;
 }
 
-/*
- * 卡片按内容高度排列：网格撑满行的旧默认（.paper-card { min-height: 100% }）会让
- * 同一行里没有配图的卡片跟着有图卡片一起变高，留下大片空白。这里对齐到 start，
- * 卡片高度跟着内容走；行内空白保留（不做 masonry），但卡片本身不再空。
- */
+/* Grid determines each row from its tallest natural content, then stretches cards.
+   No fixed card height, clipping or line clamp; shorter cards keep the footer below. */
 .paper-container:not(.list-view) {
-    align-items: start;
+    align-items: stretch;
 }
 
 .paper-card {
     min-height: 0;
-    align-self: start;
+    min-width: 0;
+    align-self: stretch;
+    border: 1px solid #c8cdd4;
+    box-shadow: 0 3px 10px rgba(31, 41, 55, 0.13), 0 1px 3px rgba(31, 41, 55, 0.08);
+}
+
+.paper-card:hover {
+    border-color: var(--primary-color, #a42c25);
+    box-shadow: 0 6px 18px rgba(31, 41, 55, 0.18);
 }
 
 /* ---------- 卡片标签行：单位 pill / 论文编号灰 pill / 小来源标签 ---------- */
