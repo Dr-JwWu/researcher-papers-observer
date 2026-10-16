@@ -279,6 +279,25 @@
     return node;
   }
 
+  /**
+   * 逐图署名页链接：只接受 pd-core.safeCreditUrl 通过的**本站相对**地址
+   * （docs/figure-credits.html#paper-…）；与 externalLink 一样 target=_blank +
+   * rel="noopener noreferrer"；非法返回 null。
+   * 这里刻意不复用 externalLink（它只放行 http/https），也不放宽它的规则。
+   */
+  function creditLink(url, label, className, doc) {
+    if (!PD.safeCreditUrl) return null;
+    const safe = PD.safeCreditUrl(url);
+    if (!safe) return null;
+    const node = el('a', { class: className || '' }, label === null || label === undefined ? safe : label, doc);
+    node.setAttribute('href', safe);
+    // 与 externalLink 同一套外跳规范：新标签页 + noopener noreferrer
+    node.setAttribute('target', '_blank');
+    node.setAttribute('rel', 'noopener noreferrer');
+    node.setAttribute('data-local', 'credits');
+    return node;
+  }
+
   PD.dom = {
     el: el,
     append: append,
@@ -289,6 +308,7 @@
     downloadLink: downloadLink,
     pdfFrame: pdfFrame,
     assetImage: assetImage,
+    creditLink: creditLink,
     setStyle: setStyle,
     isAllowedTag: isAllowedTag,
     isSvgTag: isSvgTag,

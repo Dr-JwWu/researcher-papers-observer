@@ -116,6 +116,10 @@
 
     // 配图：只在许可明确且图已复制到本站静态目录时显示
     figureSource: '图源',
+    // 卡片不写 caption/许可大段（图片本身点进逐图署名页）；详情必须明确许可与图源入口
+    modalFigureLicense: '配图许可',
+    figureCreditTitle: '图片来源与许可',
+    figureCreditsLink: '许可与图片来源',
     figureLicense: '许可',
     figureAltFallback: '论文配图',
 

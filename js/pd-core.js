@@ -470,7 +470,8 @@
    *     bullets: {motivation:[str], method:[str], result:[str], conclusion:[str]},
    *     affiliations: [{name: string, source_url: string}],
    *     figure: {src: 'assets/papers/<sha256 64位小写十六进制>.png|jpg|jpeg|webp',
-   *              caption: string, source_url: string, license: string}
+   *              caption: string, source_url: string, license: string,
+   *              credit_url?: 'docs/figure-credits.html#paper-<cid>'}
    *   }
    * 17 字段旧数据没有 reading，页面必须照常可读（回退到 AI 字符串）。
    * ------------------------------------------------------------------ */
@@ -512,13 +513,40 @@
     for (let i = 0; i < raw.length && out.length < AFFILIATION_LIMIT; i += 1) {
       const item = raw[i];
       if (!item || typeof item !== 'object' || Array.isArray(item)) continue;
+      // 新 schema：name（原文）+ name_zh（中文）；旧数据只有 name 也照常可用。
       const name = isNonEmptyString(item.name) ? item.name.trim() : '';
-      if (name === '') continue;
-      if (out.some(function (entry) { return entry.name === name; })) continue;
+      const nameZh = isNonEmptyString(item.name_zh) ? item.name_zh.trim() : '';
+      if (name === '' && nameZh === '') continue;
+      const key = (name || nameZh).toLowerCase();
+      if (out.some(function (entry) { return (entry.name || entry.nameZh).toLowerCase() === key; })) continue;
       const sourceUrl = safeHttpUrl(item.source_url);
-      out.push({ name: name, sourceUrl: sourceUrl, verifiable: !!sourceUrl });
+      out.push({
+        name: name,
+        nameZh: nameZh,
+        // 展示标签：原文 + （中文）；只有中文时就用中文，不拼接空括号。
+        label: name === '' ? nameZh : (nameZh === '' || nameZh === name ? name : name + '（' + nameZh + '）'),
+        sourceUrl: sourceUrl,
+        verifiable: !!sourceUrl
+      });
     }
     return out;
+  }
+
+  /**
+   * 卡片上的论文编号 pill：只做前缀剥离，不拼接、不猜测。
+   *   arxiv:2610.18869 → 2610.18869     pubmed:42853000 → PMID 42853000
+   * 其它来源保留原始 id；空 id 返回 ''。
+   */
+  function paperIdLabel(paper) {
+    const id = paper && isNonEmptyString(paper.id) ? paper.id.trim() : '';
+    if (id === '') return '';
+    const match = /^([A-Za-z]+):(.+)$/.exec(id);
+    if (!match) return id;
+    const source = match[1].toLowerCase();
+    const value = match[2].trim();
+    if (value === '') return '';
+    if (source === 'pubmed') return 'PMID ' + value;
+    return value;
   }
 
   /**
@@ -532,7 +560,45 @@
     const license = isNonEmptyString(value.license) ? value.license.trim() : '';
     if (license === '') return null;
     const caption = isNonEmptyString(value.caption) ? value.caption.trim() : '';
-    return { src: src, caption: caption, sourceUrl: safeHttpUrl(value.source_url), license: license };
+    return {
+      src: src,
+      caption: caption,
+      sourceUrl: safeHttpUrl(value.source_url),
+      license: license,
+      creditUrl: safeCreditUrl(value.credit_url)
+    };
+  }
+
+  /**
+   * 逐图署名页（figure.credit_url）的唯一入口：**只允许本站生成的相对署名页**，
+   * 精确形如 `docs/figure-credits.html#paper-2610-18869`（backend c671：canonical id 转小写，
+   * `[a-z0-9]` 之外的连续字符归一为 '-'，因此必须是 `paper-` + 非空分段、单短横连接）。
+   * 不接受无锚点裸页、尾随/连续短横、协议、主机、绝对路径、穿越或查询串；
+   * 非法即返回 null（页面回退到图源外链，不猜地址）。
+   * 注意：NOTICE 上的集中署名页入口是静态 HTML 里的普通相对链接，不经过本函数。
+   */
+  const CREDIT_URL_RE = /^docs\/figure-credits\.html#paper-[a-z0-9]+(?:-[a-z0-9]+)*$/;
+  const CREDIT_URL_MAX = 200;
+
+  function safeCreditUrl(value) {
+    if (typeof value !== 'string') return null;
+    const raw = value.trim();
+    if (raw === '') return null;
+    if (hasControlChars(raw)) return null;
+    if (raw.indexOf('\\') !== -1) return null;
+    if (raw.indexOf('?') !== -1) return null;
+    if (/^[a-zA-Z][a-zA-Z0-9+.-]*:/.test(raw)) return null;
+    if (raw.charAt(0) === '/' || raw.indexOf('//') !== -1) return null;
+    let decoded;
+    try {
+      decoded = decodeURIComponent(raw);
+    } catch (error) {
+      return null;
+    }
+    if (decoded.indexOf('..') !== -1) return null;
+    if (decoded.length > CREDIT_URL_MAX) return null;
+    if (!CREDIT_URL_RE.test(decoded)) return null;
+    return decoded;
   }
 
   /**
@@ -1430,6 +1496,7 @@
     normalizeHttpUrl: normalizeHttpUrl,
     safeHttpUrl: safeHttpUrl,
     safeAssetImagePath: safeAssetImagePath,
+    safeCreditUrl: safeCreditUrl,
     isRealPdfUrl: isRealPdfUrl,
     paperLinks: paperLinks,
     sourceLabel: sourceLabel,
@@ -1442,6 +1509,7 @@
     normalizeReading: normalizeReading,
     normalizeAffiliations: normalizeAffiliations,
     normalizeFigure: normalizeFigure,
+    paperIdLabel: paperIdLabel,
     licenseInfo: licenseInfo,
     LICENSE_LINKS: LICENSE_LINKS,
     displayTitle: displayTitle,

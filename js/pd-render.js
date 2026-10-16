@@ -36,63 +36,6 @@
     return dom.el('span', { class: 'source-tag source-' + paper.sourceLabel, text: i18n.sourceLabel(paper.sourceLabel) });
   }
 
-  /**
-   * 卡片进入方式标签：只有补录论文需要一个短标签“补录”（不是当日首发）。
-   * 检索窗匹配属于正常检索结果，不在卡片上出现；详情里仍保留进入方式一行。
-   */
-  function discoveryTag(paper) {
-    if (paper.discoveryKind !== 'backfill') return null;
-    return dom.el('span', {
-      class: 'discovery-tag discovery-backfill',
-      title: i18n.discoveryHint('backfill'),
-      text: T.discoveryBackfillCard
-    });
-  }
-
-  /** 卡片日期：日精度是常态，不再写“（精确到日）”；只有月/年这类不完整精度才提示。 */
-  function publishedLine(paper) {
-    const published = PD.describePublished(paper.published, paper.publishedPrecision);
-    const wrap = dom.el('span', { class: 'paper-card-date' });
-    if (published.display === '') {
-      dom.append(wrap, [dom.el('span', { class: 'date-unknown', text: '发表日期未标注' })]);
-    } else {
-      dom.append(wrap, [dom.el('time', { datetime: published.iso, text: published.display })]);
-      if (published.precision === 'month' || published.precision === 'year') {
-        dom.append(wrap, [
-          dom.el('span', { class: 'date-precision', text: '（' + i18n.precisionLabel(published.precision) + '）' })
-        ]);
-      }
-    }
-    return wrap;
-  }
-
-  function authorNodes(paper, terms) {
-    const formatted = PD.formatAuthorsForCard(paper.authors);
-    const wrap = dom.el('p', { class: 'paper-card-authors' });
-    if (formatted.total === 0) {
-      dom.append(wrap, [dom.el('span', { class: 'authors-unknown', text: '作者未标注' })]);
-      return wrap;
-    }
-    formatted.display.forEach(function (author, index) {
-      if (index > 0) dom.append(wrap, [', ']);
-      if (author === '…') {
-        wrap.appendChild(dom.el('span', { class: 'author-ellipsis', text: '…' }));
-        return;
-      }
-      const span = dom.el('span', { class: 'author-item' });
-      dom.highlighted(span, author, terms, 'author-highlight');
-      wrap.appendChild(span);
-    });
-    if (formatted.truncated) {
-      wrap.appendChild(dom.el('span', {
-        class: 'author-count-hint',
-        title: '共 ' + formatted.total + ' 位作者',
-        text: '（共 ' + formatted.total + ' 位）'
-      }));
-    }
-    return wrap;
-  }
-
   function matchBadge(reasons) {
     if (!reasons || reasons.length === 0) return null;
     const labels = reasons.map(function (reason) {
@@ -157,8 +100,23 @@
   }
 
   /**
-   * 卡片顶部配图：只有 reading.figure 通过 assets/papers/ 白名单且许可非空时才创建。
-   * 图注写 caption、许可（已知许可给官方链接）与图源外链（source_url 必须是 http/https）。
+   * 配图链接目标：优先 backend 生成的本地署名页（credit_url），旧数据回退图源外链。
+   * 返回 {href, local} 或 null。
+   */
+  function figureHref(figure) {
+    if (!figure) return null;
+    const local = PD.safeCreditUrl ? PD.safeCreditUrl(figure.creditUrl) : null;
+    if (local) return { href: local, local: true };
+    if (figure.sourceUrl) return { href: figure.sourceUrl, local: false };
+    return null;
+  }
+
+  /**
+   * 卡片配图：只有 reading.figure 通过 assets/papers/ 白名单且许可非空时才创建。
+   * 卡片只放一张图、不写 caption/source/license 文字（用户要求）；
+   * 合法署名不丢：图片整块可点，指向 backend 生成的逐图署名页（credit_url；
+   * 旧数据回退图源页），alt 保留原 caption，title 用短句“图片来源与许可”，
+   * 完整署名（作者/标题/许可/来源/原 caption）集中在署名页。
    */
   function figureBlock(paper) {
     const figure = paper.reading && paper.reading.figure ? paper.reading.figure : null;
@@ -166,17 +124,28 @@
     const img = dom.assetImage(figure.src, figure.caption || T.figureAltFallback, 'paper-card-figure-img');
     if (!img) return null;
     const wrap = dom.el('figure', { class: 'paper-card-figure paper-figure' });
-    wrap.setAttribute('title', figureCredit(paper, figure));
-    wrap.appendChild(img);
-    const caption = dom.el('figcaption', { class: 'paper-card-figure-caption' });
-    if (figure.caption) {
-      caption.appendChild(dom.el('span', { class: 'figure-caption-text', text: figure.caption }));
+    const target = figureHref(figure);
+    if (target && target.local) {
+      const link = dom.creditLink(target.href, img, 'paper-figure-link');
+      if (link) {
+        link.setAttribute('title', T.figureCreditTitle);
+        link.setAttribute('aria-label', T.figureCreditTitle);
+        link.setAttribute('data-credit-target', 'credits');
+        wrap.appendChild(stopLinkBubble(link));
+        return wrap;
+      }
     }
-    caption.appendChild(licenseNode(figure.license));
-    const link = dom.externalLink(figure.sourceUrl, T.figureSource, 'figure-source-link');
-    // 图源链接同样隔离冒泡，避免误触卡片打开详情
-    if (link) dom.append(caption, [' · ', stopLinkBubble(link)]);
-    wrap.appendChild(caption);
+    if (target && !target.local) {
+      const link = dom.externalLink(target.href, img, 'paper-figure-link');
+      if (link) {
+        link.setAttribute('title', T.figureCreditTitle);
+        link.setAttribute('aria-label', T.figureCreditTitle);
+        link.setAttribute('data-credit-target', 'source');
+        wrap.appendChild(stopLinkBubble(link));
+        return wrap;
+      }
+    }
+    wrap.appendChild(img);
     return wrap;
   }
 
@@ -194,37 +163,36 @@
       role: 'button',
       tabindex: '0'
     });
-    const figure = figureBlock(paper);
-    if (figure) card.appendChild(figure);
-    card.appendChild(dom.el('div', { class: 'paper-card-index', text: String(index + 1) }));
     const badge = matchBadge(item.reasons);
     if (badge) card.appendChild(badge);
 
+    // 1) 标题最上（中文大字 + 英文原题小字；index 编号/作者/补录/日期都不上卡片）
     const header = dom.el('div', { class: 'paper-card-header' });
     header.appendChild(titleNode(paper, opts.titleTerms || []));
-    header.appendChild(authorNodes(paper, opts.authorTerms || []));
-    // 卡片也显示可核单位（短名单，单行省略号）；没有单位时如实写“单位待核实”。
-    header.appendChild(affiliationCardLine(paper));
+
+    // 2) 标签行：单位 pill（原文 + 中文）+ 论文编号灰 pill + 小而保留的来源标签
     const tagRow = dom.el('div', { class: 'paper-card-tag-row' });
+    const units = unitPills(paper);
+    if (units) tagRow.appendChild(units);
+    const idPill = paperIdPill(paper);
+    if (idPill) tagRow.appendChild(idPill);
     tagRow.appendChild(sourceTag(paper));
-    const discovery = discoveryTag(paper);
-    if (discovery) tagRow.appendChild(discovery);
     header.appendChild(tagRow);
     card.appendChild(header);
 
+    // 3) 配图：仅一张、无 caption 文字，图片整块可点去逐图署名页（旧数据回退图源）
+    const figure = figureBlock(paper);
+    if (figure) card.appendChild(figure);
+
+    // 4) 正文：AI 概括 + 页脚只留“查看详情”（不带日期）
     const body = dom.el('div', { class: 'paper-card-body' });
     const summary = dom.el('p', { class: 'paper-card-summary' });
-    // 卡片正文优先 AI 概括（不写 “TL;DR” 之类标签）；没有 AI 概括时只有真实原摘要才展示，
-    // 公开导出的占位句不当摘要显示。
     const summaryText = paper.ai.tldr && paper.ai.tldr.trim() !== ''
       ? paper.ai.tldr
       : (PD.hasPublicAbstract(paper) ? paper.abstract : '');
     dom.highlighted(summary, summaryText === '' ? T.abstractLinkNote : summaryText, opts.titleTerms || [], 'keyword-highlight');
     body.appendChild(summary);
     const footer = dom.el('div', { class: 'paper-card-footer' });
-    const left = dom.el('div', { class: 'footer-left' });
-    left.appendChild(publishedLine(paper));
-    footer.appendChild(left);
     footer.appendChild(dom.el('span', { class: 'paper-card-link', text: T.cardDetails }));
     body.appendChild(footer);
     card.appendChild(body);
@@ -367,12 +335,40 @@
   }
 
   function affiliationEntryNode(entry) {
-    const link = dom.externalLink(entry.sourceUrl, entry.name, 'affiliation-name affiliation-link');
+    const label = entry.label || entry.name || entry.nameZh || '';
+    const link = dom.externalLink(entry.sourceUrl, label, 'affiliation-name affiliation-link');
     if (link) {
-      link.setAttribute('title', entry.name + '（' + T.modalAffiliationsSource + '）');
+      link.setAttribute('title', label + '（' + T.modalAffiliationsSource + '）');
       return stopLinkBubble(link);
     }
-    return dom.el('span', { class: 'affiliation-name', title: entry.name, text: entry.name });
+    return dom.el('span', { class: 'affiliation-name', title: label, text: label });
+  }
+
+  /**
+   * 详情里的配图许可行：卡片不再写 caption / 许可大段，但详情必须明确 license 与图源
+   * （集中逐图署名由 backend 生成 artwork credits 后再补锚点，这里先给图源页）。
+   */
+  function figureLicenseRow(paper) {
+    const figure = paper.reading && paper.reading.figure ? paper.reading.figure : null;
+    if (!figure) return null;
+    const wrap = dom.el('span', { class: 'modal-figure-license' });
+    // 完整署名（作者/标题/许可/来源/caption）在署名页；详情给一行明确入口
+    wrap.setAttribute('title', figureCredit(paper, figure));
+    const target = figureHref(figure);
+    if (target && target.local) {
+      const credits = dom.creditLink(target.href, T.figureCreditsLink, 'figure-credits-link');
+      if (credits) wrap.appendChild(stopLinkBubble(credits));
+    }
+    if (target && !target.local) {
+      const source = dom.externalLink(target.href, T.figureSource, 'figure-source-link');
+      if (source) dom.append(wrap, [' · ', stopLinkBubble(source)]);
+    }
+    if (figure.creditUrl === null || figure.creditUrl === undefined) {
+      // 旧数据没有署名页：仍明确写出许可（已知许可给官方页链接）
+      if (wrap.childNodes.length > 0) dom.append(wrap, [' · ']);
+      wrap.appendChild(licenseNode(figure.license));
+    }
+    return wrap;
   }
 
   function affiliationList(paper) {
@@ -380,26 +376,48 @@
     return Array.isArray(reading.affiliations) ? reading.affiliations : [];
   }
 
-  function affiliationCardLine(paper) {
-    const list = affiliationList(paper);
-    const wrap = dom.el('p', { class: 'paper-card-affiliations' });
-    if (list.length === 0) {
-      wrap.appendChild(dom.el('span', { class: 'affiliation-unknown', text: T.modalAffiliationsUnknown }));
-      return wrap;
+  /**
+   * 卡片单位 pill：原文 + （中文），有合法 source_url 时整颗 pill 可点（新窗口、隔离冒泡）。
+   * 未知单位不再满屏“单位待核实”：卡片上直接不显示任何单位 pill（补全状态由后台处理）；
+   * 详情仍会如实写“单位待核实”。
+   */
+  const CARD_UNIT_LIMIT = 3;
+
+  function unitPill(entry) {
+    const label = entry.label || entry.name || entry.nameZh || '';
+    const link = entry.sourceUrl
+      ? dom.externalLink(entry.sourceUrl, label, 'paper-unit-pill paper-unit-link')
+      : null;
+    if (link) {
+      link.setAttribute('title', label + '（' + T.modalAffiliationsSource + '）');
+      link.setAttribute('rel', 'noopener noreferrer');
+      return stopLinkBubble(link);
     }
-    const limit = 2;
-    wrap.setAttribute('title', list.map(function (entry) { return entry.name; }).join('、'));
-    list.slice(0, limit).forEach(function (entry, index) {
-      if (index > 0) dom.append(wrap, ['、']);
-      wrap.appendChild(affiliationEntryNode(entry));
+    return dom.el('span', { class: 'paper-unit-pill', title: label, text: label });
+  }
+
+  function unitPills(paper) {
+    const list = affiliationList(paper);
+    if (list.length === 0) return null;
+    const wrap = dom.el('div', { class: 'paper-card-units' });
+    wrap.setAttribute('title', list.map(function (entry) { return entry.label || entry.name; }).join('、'));
+    list.slice(0, CARD_UNIT_LIMIT).forEach(function (entry) {
+      wrap.appendChild(unitPill(entry));
     });
-    if (list.length > limit) {
+    if (list.length > CARD_UNIT_LIMIT) {
       wrap.appendChild(dom.el('span', {
-        class: 'affiliation-more',
-        text: ' 等 ' + list.length + ' 个单位'
+        class: 'paper-unit-pill paper-unit-more',
+        text: '+' + (list.length - CARD_UNIT_LIMIT)
       }));
     }
     return wrap;
+  }
+
+  /** 论文编号 pill（灰）：arxiv:2610.18869 → 2610.18869；pubmed:1 → PMID 1。 */
+  function paperIdPill(paper) {
+    const label = PD.paperIdLabel ? PD.paperIdLabel(paper) : '';
+    if (label === '') return null;
+    return dom.el('span', { class: 'paper-id-pill', title: label, text: label });
   }
 
   function affiliationDetail(paper) {
@@ -484,20 +502,8 @@
     meta.appendChild(metaRow(T.modalAffiliations + ': ', affiliationDetail(paper)));
     meta.appendChild(metaRow('来源: ', dom.el('span', {}, [sourceTag(paper)])));
     meta.appendChild(metaRow(T.cardPublished + ': ', dateDetail(paper)));
-    if (paper.discoveryKind) {
-      // 详情保留完整进入方式（卡片只留“补录”短标签）。
-      const discoveryWrap = dom.el('span', { class: 'modal-discovery' });
-      const kind = paper.discoveryKind;
-      const label = i18n.discoveryLabel(kind);
-      if (label) {
-        discoveryWrap.appendChild(dom.el('span', {
-          class: 'discovery-tag discovery-' + kind,
-          title: i18n.discoveryHint(kind),
-          text: label
-        }));
-      }
-      meta.appendChild(metaRow('进入方式: ', discoveryWrap));
-    }
+    const licenseRow = figureLicenseRow(paper);
+    if (licenseRow) meta.appendChild(metaRow(T.modalFigureLicense + ': ', licenseRow));
     if (paper.doi) meta.appendChild(detailRow(T.modalDoi + ': ', paper.doi));
     wrap.appendChild(meta);
 
@@ -592,13 +598,15 @@
     coverageBriefText: coverageBriefText,
     renderRevision: renderRevision,
     figureBlock: figureBlock,
+    figureHref: figureHref,
     figureCredit: figureCredit,
     licenseNode: licenseNode,
     titleNode: titleNode,
-    discoveryTag: discoveryTag,
-    publishedLine: publishedLine,
     affiliationDetail: affiliationDetail,
-    affiliationCardLine: affiliationCardLine,
+    figureLicenseRow: figureLicenseRow,
+    unitPills: unitPills,
+    unitPill: unitPill,
+    paperIdPill: paperIdPill,
     aiSection: aiSection,
     bulletList: bulletList
   };

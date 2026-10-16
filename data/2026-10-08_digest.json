@@ -1,30 +1,30 @@
 {
   "date": "2026-10-08",
-  "generated_at": "2026-10-15T13:34:10.051907+00:00",
+  "generated_at": "2026-10-16T08:27:55.081086+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
       {
         "source": "arxiv",
         "status": "partial",
-        "candidate_count": 8061,
-        "metadata_fetched": 3400,
-        "missing_metadata": 4661,
-        "date_from": "2026-10-08",
-        "date_to": "2026-10-14",
-        "error_count": 1,
-        "limit_count": 4
-      },
-      {
-        "source": "pubmed",
-        "status": "complete",
-        "candidate_count": 348,
-        "metadata_fetched": 348,
+        "candidate_count": 0,
+        "metadata_fetched": 0,
         "missing_metadata": 0,
         "date_from": "2026-10-08",
         "date_to": "2026-10-14",
         "error_count": 0,
-        "limit_count": 0
+        "limit_count": 5
+      },
+      {
+        "source": "pubmed",
+        "status": "partial",
+        "candidate_count": 0,
+        "metadata_fetched": 0,
+        "missing_metadata": 0,
+        "date_from": "2026-10-08",
+        "date_to": "2026-10-14",
+        "error_count": 0,
+        "limit_count": 5
       }
     ],
     "scope_note": "仅对已配置来源与检索窗口留痕，不代表全网穷尽。"
@@ -34,8 +34,8 @@
     "sections": [],
     "note": "按阅读模式不生成每日综合总结。"
   },
-  "pending_count": 7,
-  "paper_count": 68,
+  "pending_count": 4,
+  "paper_count": 69,
   "research_scope": {
     "policy": "weekly_capture_partitioned_by_known_date",
     "window_start": "2026-10-08",
@@ -45,12 +45,13 @@
     "out_of_window_count": 1786,
     "undated_count": 2970,
     "pending_count_by_source": {
-      "arxiv": 20,
+      "arxiv": 11,
       "pubmed": 7
     },
     "sources_unavailable": [],
     "sources_incomplete": [
-      "arxiv"
+      "arxiv",
+      "pubmed"
     ],
     "note": "计数只描述本轮已配置来源与检索窗口，不代表领域没有新论文；pending 为预算不足或失败的待审条目，不是相关性配额。"
   }

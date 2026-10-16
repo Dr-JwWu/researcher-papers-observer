@@ -12,7 +12,7 @@
   "files": [
     {
       "path": "NOTICE.html",
-      "sha256": "dc72b8d488530ed9d67fdc52ca68ca73b1414e0d1a259e8e97996981a345d8fc"
+      "sha256": "7e9bf5aff138899c0df4170255086d787b1aacf4aeb138e565fca437a4dc4995"
     },
     {
       "path": "assets/file-list.txt",
@@ -52,7 +52,7 @@
     },
     {
       "path": "css/pd-adapt.css",
-      "sha256": "4b958939e5a8e4ecd59370ae886eacd30b0a97cae91cb54d469f6707bb0b620c"
+      "sha256": "15bcfa901be4ddeb2e367d76ed39df9d0b87abba4b4df47b7940cd9ef49d1365"
     },
     {
       "path": "css/screenshot-placeholder.svg",
@@ -72,59 +72,63 @@
     },
     {
       "path": "data/2026-10-08_AI_enhanced_Chinese.jsonl",
-      "sha256": "f8b7047ac6bacaf077727ba2f0d4a6c9ba2b0dc7a3ed12b87955643c24e28448"
+      "sha256": "dd049b44090843473f3035becbbe43062ed265e86c4c8ab60fca792a13f92884"
     },
     {
       "path": "data/2026-10-08_digest.json",
-      "sha256": "a54b5c58fac0a549bc577418a9d5e606696b8902a2a9e7f0e0b61ad7299b61a7"
+      "sha256": "496d79042fe826d0120856bcfc6f204aa61da835722e9931fdd2c9fc4f64ef82"
     },
     {
       "path": "data/2026-10-09_AI_enhanced_Chinese.jsonl",
-      "sha256": "f459bb838dda1dda976ecf917b7f5ff8ee1fafe42a347e6896f7f1a4e1e243d1"
+      "sha256": "573a368c00bd818568561b1a9a62f0309dd587f8d9d475731772d903d6fb5077"
     },
     {
       "path": "data/2026-10-09_digest.json",
-      "sha256": "5c8a67ef184567d4e0042c606e7c5591ec9daef5a7ee4ee4fd3868f12c42cc39"
+      "sha256": "f7c8d7c45f8472139e08f7952fb49ba91660e57b389647d929820862887b5495"
     },
     {
       "path": "data/2026-10-10_AI_enhanced_Chinese.jsonl",
-      "sha256": "b0f2ee418e6f349b65eb11060bf78a912bc2d112db20063dc5d780c46b6e2f22"
+      "sha256": "bf2f2588f2c34313f75e2a7b8fc2deb412b870759c70b0493194c0973c7bf655"
     },
     {
       "path": "data/2026-10-10_digest.json",
-      "sha256": "8d935753ff5bd5f4bc167c9931eb59c5edf19ca5d65782266c03e7824e3b5f80"
+      "sha256": "7a9f8c0f87001afb7aae7e729869b9d028673088cf549c4229dad323e4d9540f"
     },
     {
       "path": "data/2026-10-11_AI_enhanced_Chinese.jsonl",
-      "sha256": "feb84ad4be7f6501a8a8064d0eeb878bde777b40009142bd75d2bf79c87b039d"
+      "sha256": "09b4e7c58aa29d7ae04dd2a8937a14cfe666ee6070f9539839c4c0756866e863"
     },
     {
       "path": "data/2026-10-11_digest.json",
-      "sha256": "63fcdf3bac8f1580b72637bc13a5bf63ff9e29fd6cea46895801a02d85f26981"
+      "sha256": "f3a0567f74221468587c2898090826ba4dfc669247db6d7a19c2ecc66af30ce8"
     },
     {
       "path": "data/2026-10-12_AI_enhanced_Chinese.jsonl",
-      "sha256": "f80fd091112444b28a0149d1afcc804a39033aad5ee4e57ebaabc68091795368"
+      "sha256": "235fca49d22c1800068f6d0dcf8f92b1710227b900609d1763a8d01e8033f44e"
     },
     {
       "path": "data/2026-10-12_digest.json",
-      "sha256": "b4ddafdc9d1e1063031da1473b0515def51c466d2c87cd988c73e28e6c8e1a5f"
+      "sha256": "e7b2bb15f59311ba29bda6fd8b23f8763e142099aee9234da8508d051ab3f6d6"
     },
     {
       "path": "data/2026-10-13_AI_enhanced_Chinese.jsonl",
-      "sha256": "4d4e07f64452899b5ad293d018b0f42a4a61fd45af65653296d8b1f03548ac4d"
+      "sha256": "de7491f2f7d1a0fced1c3b67781e74bfdac9fb55d37bd9b1f9636fe181ce23d4"
     },
     {
       "path": "data/2026-10-13_digest.json",
-      "sha256": "81a50b780f905eed8cb558d52d819e48080ee66071e6643beb837647730bf7f0"
+      "sha256": "ae226755480a9b2946fdec83ae294333e1b3f88cf183bcc30e1f4a25a0e40f2b"
     },
     {
       "path": "data/2026-10-14_AI_enhanced_Chinese.jsonl",
-      "sha256": "362dea325f9cdc1883d46d5d6e437f3c8ef3da5f6e9cee505f39c6a30e2b4755"
+      "sha256": "88cdd86ac838d2f5d00413288a7290851b5b046911aa14526ed1c2b83579f1a1"
     },
     {
       "path": "data/2026-10-14_digest.json",
-      "sha256": "948b4a0fabd0b5ae74ca0ba2e3249cda407fdffced89c619520edf9282df671d"
+      "sha256": "b5e6cff16956f92fefcbf03ec567c51a97ba33901af3498f85a84b6306e2fe04"
+    },
+    {
+      "path": "docs/figure-credits.html",
+      "sha256": "c7d902f90d3896243c3c31306d7a0cb8db32f40a2eb6f7e62d67ea8e1880e597"
     },
     {
       "path": "docs/licenses/daily-arxiv-LICENSE",
@@ -144,15 +148,15 @@
     },
     {
       "path": "js/pd-core.js",
-      "sha256": "dfefe2d34e0b9c1764f881e5c32679418ab2e5ac8cf100063042fb17f77905e2"
+      "sha256": "cc8992a84ef74b85894b74dd0b7fac4968187a5dca0790cff28577b37fd08d01"
     },
     {
       "path": "js/pd-dom.js",
-      "sha256": "8c1774d760b7a9b58f033d6cea8deefdebeb3c8c9bd888221fc81c9ff80eaa80"
+      "sha256": "14a193755c7bc510bec1cdb68532c29d91ddff2223c633fd4d877a6ef9da75f6"
     },
     {
       "path": "js/pd-i18n.js",
-      "sha256": "ec67c395780691784371342bb65f7a31ab69d9bb9d1f10a0baaad9c40e711adf"
+      "sha256": "a115bee8082724ea58090719a21653de46545ba77a3437792c9274af29d1c3f1"
     },
     {
       "path": "js/pd-prefs.js",
@@ -160,7 +164,7 @@
     },
     {
       "path": "js/pd-render.js",
-      "sha256": "9dc4a00e55a93476971daa1c99dff97afbcf7852101ec91b576c5b06051e9d95"
+      "sha256": "5eeda1c6d7ef4a011b640e25bba4f813f4121b31fa171201b315f69ef585deb5"
     },
     {
       "path": "js/pd-settings.js",
