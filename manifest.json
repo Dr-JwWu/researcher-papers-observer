@@ -27,10 +27,6 @@
       "sha256": "020d646fa285af04517ccd421aac13d6d9774053efa2f1a50a7f064db4887350"
     },
     {
-      "path": "assets/papers/196af434a57682396a461070c0fc02ef2c2feedda9daf630f4a88124bbe9039b.png",
-      "sha256": "196af434a57682396a461070c0fc02ef2c2feedda9daf630f4a88124bbe9039b"
-    },
-    {
       "path": "assets/papers/43cf5a8ff32f5740f0fe4c25224e791a083d91d7e2ea4f91a6477b49b0d0ca19.webp",
       "sha256": "43cf5a8ff32f5740f0fe4c25224e791a083d91d7e2ea4f91a6477b49b0d0ca19"
     },
@@ -72,63 +68,63 @@
     },
     {
       "path": "data/2026-10-08_AI_enhanced_Chinese.jsonl",
-      "sha256": "dd049b44090843473f3035becbbe43062ed265e86c4c8ab60fca792a13f92884"
+      "sha256": "a40fddd0228bea7c396b6b787f13ead69100f6e4f6f68d0ad27dd83e7d3365be"
     },
     {
       "path": "data/2026-10-08_digest.json",
-      "sha256": "1ad5050d07003b2901bc9b49d852f4865510660e7db4c9b46a078ae66490ad58"
+      "sha256": "a4d2f0f1b180d70a1e27c38a8a3711a8f80fa820c8c41bac08a38f0b55c9f137"
     },
     {
       "path": "data/2026-10-09_AI_enhanced_Chinese.jsonl",
-      "sha256": "573a368c00bd818568561b1a9a62f0309dd587f8d9d475731772d903d6fb5077"
+      "sha256": "1ca304ebf4cbd23263ad5b2826a784130d3702daf1f9c24c1d09e926e22d53ad"
     },
     {
       "path": "data/2026-10-09_digest.json",
-      "sha256": "f1b3adc1e37c92173cb292e667c426c78efde08088addb99a3a499e84655f437"
+      "sha256": "3ee1d0001514850d0d8f14d6acdc04fe30aa1ad6011fb02e3136a3e875039c0c"
     },
     {
       "path": "data/2026-10-10_AI_enhanced_Chinese.jsonl",
-      "sha256": "bf2f2588f2c34313f75e2a7b8fc2deb412b870759c70b0493194c0973c7bf655"
+      "sha256": "e8e7b099bfd1fa3ba2880da3fb53957e4841e55bb10a085423451c45722de7cb"
     },
     {
       "path": "data/2026-10-10_digest.json",
-      "sha256": "9f266e37a7168173b01fccf59fade3329ba3aec39ab1b913921d031ef789c02c"
+      "sha256": "27b4f00abd112eb88e67c8a87258012a36fb09f1e0bd9e8efe892c08d0f3dd8c"
     },
     {
       "path": "data/2026-10-11_AI_enhanced_Chinese.jsonl",
-      "sha256": "09b4e7c58aa29d7ae04dd2a8937a14cfe666ee6070f9539839c4c0756866e863"
+      "sha256": "d8b5421de914a41c297b974f088294f99c0df68169e6696b5f156313f1ed4c8d"
     },
     {
       "path": "data/2026-10-11_digest.json",
-      "sha256": "fad3898976513a8afcc72824491f6d20d115bd0a8bc4f1833929b8afb8b9aeab"
+      "sha256": "e1cfc688da6373f42bd222045747415c277b9a08393183ead4eac10f44692575"
     },
     {
       "path": "data/2026-10-12_AI_enhanced_Chinese.jsonl",
-      "sha256": "235fca49d22c1800068f6d0dcf8f92b1710227b900609d1763a8d01e8033f44e"
+      "sha256": "c97a63b8b9f77e833b6ffe19d5e0d29f5942bd6d99c1cb4ce17ceddbbbb9a31b"
     },
     {
       "path": "data/2026-10-12_digest.json",
-      "sha256": "ac1dbb1ef67d380fa45585a8269f138f67b3edcfabc50faeb1440a13e8fcba26"
+      "sha256": "7e7d457e98eebd08e9a6d83acc69ac50513e24572f64ea98da7fcb38e52539f1"
     },
     {
       "path": "data/2026-10-13_AI_enhanced_Chinese.jsonl",
-      "sha256": "de7491f2f7d1a0fced1c3b67781e74bfdac9fb55d37bd9b1f9636fe181ce23d4"
+      "sha256": "afb0e5b3ec2a2a8e55de769c6ecaf20becb2d6489295196f3e87575c05b39854"
     },
     {
       "path": "data/2026-10-13_digest.json",
-      "sha256": "a2d207d7911a4f8f2bd9dd69ec8be73f480317b5903362220cd8e5fa91b003c7"
+      "sha256": "d482a569568498094325ce523372b326139443775f5ce175f9c7974294b7226b"
     },
     {
       "path": "data/2026-10-14_AI_enhanced_Chinese.jsonl",
-      "sha256": "88cdd86ac838d2f5d00413288a7290851b5b046911aa14526ed1c2b83579f1a1"
+      "sha256": "805bae5834353d9fb7b0efddaab8eed2ca71f3ce33acadf571f5a33edac0f95e"
     },
     {
       "path": "data/2026-10-14_digest.json",
-      "sha256": "b27d59f2b2f31aa3e25b4e8a32a822e700b376a500213efc9472157d3998e5b2"
+      "sha256": "132406596863047491bd4bf798dd620a67b1aa11ab40a96e0f3524009bafe781"
     },
     {
       "path": "docs/figure-credits.html",
-      "sha256": "31fe94da8811dcfd8ae6e31952745475a4829381fc6aa5b339cdb40e9ba7a1dc"
+      "sha256": "57439d2d03503aba3d1e4d58c366fd0fc96632e6807fec788fc89cd6e593646b"
     },
     {
       "path": "docs/licenses/daily-arxiv-LICENSE",

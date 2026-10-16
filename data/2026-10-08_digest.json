@@ -1,6 +1,6 @@
 {
   "date": "2026-10-08",
-  "generated_at": "2026-10-16T09:44:52.975905+00:00",
+  "generated_at": "2026-10-16T14:47:31.417856+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -9,11 +9,11 @@
         "status": "partial",
         "candidate_count": 0,
         "metadata_fetched": 0,
-        "missing_metadata": 2970,
+        "missing_metadata": 3746,
         "date_from": "2026-10-08",
         "date_to": "2026-10-14",
         "error_count": 0,
-        "limit_count": 5
+        "limit_count": 4
       },
       {
         "source": "pubmed",
@@ -24,7 +24,7 @@
         "date_from": "2026-10-08",
         "date_to": "2026-10-14",
         "error_count": 0,
-        "limit_count": 5
+        "limit_count": 3
       }
     ],
     "scope_note": "仅对已配置来源与检索窗口留痕，不代表全网穷尽。"
@@ -34,8 +34,8 @@
     "sections": [],
     "note": "按阅读模式不生成每日综合总结。"
   },
-  "pending_count": 4,
-  "paper_count": 69,
+  "pending_count": 2,
+  "paper_count": 32,
   "research_scope": {
     "policy": "weekly_capture_partitioned_by_known_date",
     "window_start": "2026-10-08",
@@ -43,9 +43,9 @@
     "date_basis": "UTC",
     "date_basis_policy": "只按来源声明的日粒度日期分配日报：published 在窗口内记 window_match(day_basis=published)；否则使用窗口内的 PubMed 入库日 indexed_at，并公开 discovery_kind=backfill（补录，非当日首发）；日粒度日期可确认在窗口外且无窗口内入库日的记录本轮不公开；日期过粗或缺失者保留为 uncertain_date 待后续显式补录，不补造精确日期。",
     "out_of_window_count": 1786,
-    "undated_count": 2970,
+    "undated_count": 3746,
     "pending_count_by_source": {
-      "arxiv": 11,
+      "arxiv": 4,
       "pubmed": 7
     },
     "sources_unavailable": [],
@@ -54,5 +54,28 @@
       "pubmed"
     ],
     "note": "计数只描述本轮已配置来源与检索窗口，不代表领域没有新论文；pending 为预算不足或失败的待审条目，不是相关性配额。"
+  },
+  "selection": {
+    "policy": "daily_topic_importance/1",
+    "min_per_topic": 5,
+    "max_per_topic": 20,
+    "rank_basis": "title_and_abstract",
+    "not_fulltext": true,
+    "topics": {
+      "embodied": {
+        "eligible": 58,
+        "scored": 58,
+        "pending": 0,
+        "shortage": 0,
+        "selected": 20
+      },
+      "surgical": {
+        "eligible": 12,
+        "scored": 12,
+        "pending": 0,
+        "shortage": 0,
+        "selected": 12
+      }
+    }
   }
 }
