@@ -1,6 +1,6 @@
 {
   "date": "2026-10-13",
-  "generated_at": "2026-10-16T14:47:31.443204+00:00",
+  "generated_at": "2026-10-17T04:33:59.561543+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -13,7 +13,7 @@
         "date_from": "2026-10-08",
         "date_to": "2026-10-14",
         "error_count": 0,
-        "limit_count": 4
+        "limit_count": 5
       },
       {
         "source": "pubmed",
@@ -24,7 +24,7 @@
         "date_from": "2026-10-08",
         "date_to": "2026-10-14",
         "error_count": 0,
-        "limit_count": 3
+        "limit_count": 5
       }
     ],
     "scope_note": "仅对已配置来源与检索窗口留痕，不代表全网穷尽。"
@@ -45,8 +45,7 @@
     "out_of_window_count": 1786,
     "undated_count": 3746,
     "pending_count_by_source": {
-      "arxiv": 4,
-      "pubmed": 7
+      "arxiv": 4
     },
     "sources_unavailable": [],
     "sources_incomplete": [

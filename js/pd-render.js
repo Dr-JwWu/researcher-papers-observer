@@ -20,7 +20,12 @@
  *        motivation/method/result/conclusion 四项一律 <ul><li> 分条；
  *     7. 删除当日总结正文、PDF 预览与按钮、旧版 “TL;DR” 字样
  *        （改“一句话看懂”）与“日报引用”标记；
- *     8. 来源状态同一时刻只给一行短句，不展示候选/取回/缺元数据/错误等工程计数。
+ *     8. 标题级收录（analysis_basis="title"）卡片不生成空详情：标题与页脚
+ *        “论文原文”都指向数据里真实存在的 abs 链接（绝不拼 PDF），卡片不再
+ *        role=button、不插缺失/仅标题等占位；没有真实摘要时正文不写占位句。
+ *     9. 主 feed 不再常驻来源覆盖 banner/“查看原因”；来源缺口与 partial 状态
+ *        只保留在数据层与内部 helper，不伪造 complete。加载失败等真实用户
+ *        可见错误仍给简短提示。
  *   本文件为衍生代码（derivative work），许可遵循 docs/licenses/daily-arxiv-LICENSE。
  */
 (function (root) {
@@ -50,20 +55,36 @@
     return dom.el('div', { class: 'match-badge', title: labels.join(' | '), 'aria-label': labels.join(' | ') });
   }
 
-  /** 标题：中文大字 + 英文原题小字（无中文标题时只显示原题，不翻译、不拼接）。 */
+  /**
+   * 标题：中文大字 + 英文原题小字（无中文标题时只显示原题，不翻译、不拼接）。
+   * 传入 linkUrl 时整块标题成为真实来源链接（仅标题级卡片使用；只接受已在
+   * pd-core 通过 http(s) 白名单的 abs，缺失/非法就不造链接）。
+   */
   function titleNode(paper, terms, options) {
     const opts = options || {};
     const titles = PD.displayTitle(paper);
     const node = dom.el(opts.tag || 'h3', { class: opts.className || 'paper-card-title' });
     const main = dom.el('span', { class: opts.mainClass || 'paper-card-title-zh paper-title-zh' });
     dom.highlighted(main, titles.main, terms || [], 'keyword-highlight');
-    node.appendChild(main);
-    if (titles.secondary) {
+    const secondary = titles.secondary
       // 有中文标题就始终给出英文原题（即使字符串相同也不隐去，避免“看起来没有原题”）
-      const secondary = dom.el('span', { class: opts.secondaryClass || 'paper-card-title-en paper-title-en' });
-      dom.highlighted(secondary, titles.secondary, terms || [], 'keyword-highlight');
-      node.appendChild(secondary);
+      ? dom.el('span', { class: opts.secondaryClass || 'paper-card-title-en paper-title-en' })
+      : null;
+    if (secondary) dom.highlighted(secondary, titles.secondary, terms || [], 'keyword-highlight');
+
+    const linkUrl = opts.linkUrl ? PD.safeHttpUrl(opts.linkUrl) : null;
+    if (linkUrl) {
+      const link = dom.externalLink(linkUrl, '', opts.linkClass || 'paper-card-title-link');
+      if (link) {
+        link.setAttribute('title', T.cardPaperOriginal);
+        dom.append(link, [main]);
+        if (secondary) dom.append(link, [secondary]);
+        node.appendChild(stopLinkBubble(link));
+        return node;
+      }
     }
+    node.appendChild(main);
+    if (secondary) node.appendChild(secondary);
     return node;
   }
 
@@ -157,18 +178,28 @@
   function paperCard(item, index, options) {
     const opts = options || {};
     const paper = item.paper;
-    const card = dom.el('div', {
-      class: 'paper-card' + (item.matched ? ' matched-paper' : ''),
-      'data-paper-id': paper.id,
-      role: 'button',
-      tabindex: '0'
-    });
+    const titleBasis = PD.paperIsTitleBasis ? PD.paperIsTitleBasis(paper) : paper.aiBasis === 'title';
+    const attrs = {
+      class: 'paper-card' + (item.matched ? ' matched-paper' : '') + (titleBasis ? ' paper-card-title-basis' : ''),
+      'data-paper-id': paper.id
+    };
+    // 标题级卡片没有可生成的详情内容：不做 role=button，避免空详情入口。
+    if (!titleBasis) {
+      attrs.role = 'button';
+      attrs.tabindex = '0';
+    }
+    const card = dom.el('div', attrs);
     const badge = matchBadge(item.reasons);
     if (badge) card.appendChild(badge);
 
+    // 标题级只使用数据里真实存在的 abs；不猜来源、不拼 /pdf、不发起外部请求。
+    const sourceUrl = titleBasis && paper.links ? PD.safeHttpUrl(paper.links.abs) : null;
+
     // 1) 标题最上（中文大字 + 英文原题小字；index 编号/作者/补录/日期都不上卡片）
     const header = dom.el('div', { class: 'paper-card-header' });
-    header.appendChild(titleNode(paper, opts.titleTerms || []));
+    header.appendChild(titleNode(paper, opts.titleTerms || [], titleBasis
+      ? { linkUrl: sourceUrl, linkClass: 'paper-card-title-link' }
+      : {}));
 
     // 2) 标签行：单位 pill（原文 + 中文）+ 论文编号灰 pill + 小而保留的来源标签
     const tagRow = dom.el('div', { class: 'paper-card-tag-row' });
@@ -184,18 +215,40 @@
     const figure = figureBlock(paper);
     if (figure) card.appendChild(figure);
 
-    // 4) 正文：AI 概括 + 页脚只留“查看详情”（不带日期）
+    // 4) 正文：摘要/概括（仅真实内容）+ 页脚
     const body = dom.el('div', { class: 'paper-card-body' });
-    const summary = dom.el('p', { class: 'paper-card-summary' });
-    const summaryText = paper.ai.tldr && paper.ai.tldr.trim() !== ''
-      ? paper.ai.tldr
-      : (PD.hasPublicAbstract(paper) ? paper.abstract : '');
-    dom.highlighted(summary, summaryText === '' ? T.abstractLinkNote : summaryText, opts.titleTerms || [], 'keyword-highlight');
-    body.appendChild(summary);
-    const footer = dom.el('div', { class: 'paper-card-footer' });
-    footer.appendChild(dom.el('span', { class: 'paper-card-link', text: T.cardDetails }));
-    body.appendChild(footer);
-    card.appendChild(body);
+    let hasBody = false;
+    if (titleBasis) {
+      // 有真实摘要才展示；没有就不写“摘要缺失/仅标题判断”等占位。
+      const realSummary = PD.hasPublicAbstract(paper) ? paper.abstract : '';
+      if (realSummary !== '') {
+        const summary = dom.el('p', { class: 'paper-card-summary' });
+        dom.highlighted(summary, realSummary, opts.titleTerms || [], 'keyword-highlight');
+        body.appendChild(summary);
+        hasBody = true;
+      }
+      const footer = dom.el('div', { class: 'paper-card-footer' });
+      const source = sourceUrl
+        ? dom.externalLink(sourceUrl, T.cardPaperOriginal, 'paper-card-link paper-card-source-link')
+        : null;
+      if (source) {
+        footer.appendChild(stopLinkBubble(source));
+        body.appendChild(footer);
+        hasBody = true;
+      }
+    } else {
+      const summary = dom.el('p', { class: 'paper-card-summary' });
+      const summaryText = paper.ai.tldr && paper.ai.tldr.trim() !== ''
+        ? paper.ai.tldr
+        : (PD.hasPublicAbstract(paper) ? paper.abstract : '');
+      dom.highlighted(summary, summaryText === '' ? T.abstractLinkNote : summaryText, opts.titleTerms || [], 'keyword-highlight');
+      body.appendChild(summary);
+      const footer = dom.el('div', { class: 'paper-card-footer' });
+      footer.appendChild(dom.el('span', { class: 'paper-card-link', text: T.cardDetails }));
+      body.appendChild(footer);
+      hasBody = true;
+    }
+    if (hasBody) card.appendChild(body);
 
     return card;
   }
@@ -238,60 +291,17 @@
    * 连续日期列表（首页主视图）。
    * options: {
    *   days: [{date, count, items, digest}],   // 必须已按报告日期倒序
-   *   statusText: '',                          // 同一时刻最多一行的来源状态
    *   view: 'grid' | 'list',
    *   titleTerms, authorTerms, onOpen
    * }
    * items 为 pd-core.rankPapers 的结果；卡片序号在整个列表内连续编号。
+   * 来源覆盖/缺口状态不在这里渲染：主 feed 不再有常驻 banner 或“查看原因”。
+   * 数据层仍保留 coverage/partial 状态，内部 helper（sourceStatusText）供诊断/测试。
    */
-  // Repeated daily public coverage may describe the same collection scope. Use maxima,
-  // never sum its seven copies; only allowlisted source IDs and safe counts reach text.
-  function sourceReasonDetails(days) {
-    const bySource = {};
-    (days || []).forEach(function (day) {
-      const coverage = day.digest && day.digest.coverage;
-      const sources = coverage && Array.isArray(coverage.sources) ? coverage.sources : [];
-      sources.forEach(function (source) {
-        if (!source || PD.SOURCES.indexOf(source.source) === -1) return;
-        const row = bySource[source.source] || { missing: 0, errors: 0, limits: 0, partial: false };
-        row.partial = row.partial || source.status !== 'complete';
-        [['missing', 'missingMetadata'], ['errors', 'errorCount'], ['limits', 'limitCount']].forEach(function (pair) {
-          const value = source[pair[1]];
-          if (Number.isSafeInteger(value) && value >= 0) row[pair[0]] = Math.max(row[pair[0]], value);
-        });
-        bySource[source.source] = row;
-      });
-    });
-    const details = dom.el('details', { class: 'source-reasons' });
-    details.appendChild(dom.el('summary', { text: '查看原因' }));
-    const body = dom.el('div', { class: 'source-reasons-body' });
-    PD.SOURCES.forEach(function (source) {
-      const row = bySource[source];
-      if (!row || (!row.partial && !row.missing && !row.errors && !row.limits)) return;
-      const reasons = [];
-      if (row.missing) reasons.push('部分条目的元数据/摘要待补（' + row.missing + '）');
-      if (row.errors) reasons.push('部分采集记录仍需补全（' + row.errors + '）');
-      if (row.limits) reasons.push('本次收录范围受采集上限影响（' + row.limits + '）');
-      body.appendChild(dom.el('p', { text: i18n.sourceLabel(source) + '：' +
-        (reasons.length ? reasons.join('；') : '收录范围尚未确认完整') + '。' }));
-    });
-    if (!body.children.length) body.appendChild(dom.el('p', { text: '收录范围尚未确认完整。' }));
-    body.appendChild(dom.el('p', { text: '已完成内容可正常阅读；日期仅按核实元数据归档。' }));
-    details.appendChild(body);
-    return details;
-  }
-
   function renderFeed(container, options) {
     const opts = options || {};
     dom.clear(container);
     container.className = 'feed' + (opts.view === 'list' ? ' list-view' : '');
-    if (opts.statusText) {
-      // 来源状态只有一行：不写候选数/取回数/缺元数据/错误数等工程计数。
-      const status = dom.el('div', { class: 'feed-status-row' });
-      status.appendChild(dom.el('p', { class: 'coverage-brief feed-status', text: opts.statusText }));
-      status.appendChild(sourceReasonDetails(Array.isArray(opts.days) ? opts.days : []));
-      container.appendChild(status);
-    }
     const days = Array.isArray(opts.days) ? opts.days : [];
     let index = 0;
     days.forEach(function (day) {
@@ -312,7 +322,11 @@
       } else {
         items.forEach(function (item) {
           const card = paperCard(item, index, opts);
-          if (opts.onOpen) {
+          const titleBasis = PD.paperIsTitleBasis
+            ? PD.paperIsTitleBasis(item.paper)
+            : item.paper.aiBasis === 'title';
+          // 标题级卡片没有详情：不挂打开模态框的点击/键盘监听。
+          if (opts.onOpen && !titleBasis) {
             const open = function () { opts.onOpen(item.paper, index); };
             card.addEventListener('click', open);
             card.addEventListener('keydown', function (event) {
@@ -533,6 +547,11 @@
    */
   function renderPaperModal(refs, paper, context) {
     const ctx = context || {};
+    // 标题级记录没有可生成的详情：直接不产生任何详情内容（不是空四节，
+    // 也不是“方法未提供”式 headline fallback）；来源由卡片标题/页脚承担。
+    if (PD.paperIsTitleBasis ? PD.paperIsTitleBasis(paper) : (paper && paper.aiBasis === 'title')) {
+      return null;
+    }
     dom.clear(refs.body);
 
     const wrap = dom.el('section', { class: 'paper-details' });

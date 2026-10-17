@@ -17,6 +17,9 @@
  *   2026-10 二次精简：详情去掉“来源分类/抓取时间/进入方式长说明”，
  *   “AI 摘要”改“论文要点”，依据只留一句“根据论文摘要整理”，
  *   橙色警告块改普通 section 版式。
+ *   2026-10 标题级收录：新增“论文原文”（无详情标题卡的真实来源入口）；
+ *   来源覆盖短句只保留给内部 sourceStatusText/诊断，不再上主 feed 常驻 banner；
+ *   删除统计页“仅已收录样本/不补0”的静态口径 defence（缺口事实仍逐日列出）。
  *   本文件不重新授权上游代码，许可仍以 docs/licenses 为准。
  */
 (function (root) {
@@ -72,6 +75,8 @@
     matchReasonText: '文本',
 
     cardDetails: '查看详情',
+    // 没有可生成详情的标题级卡片：标题与页脚都用真实 abs 打开论文原文。
+    cardPaperOriginal: '论文原文',
     cardAuthors: '作者',
     cardCategories: '来源分类',
     cardCategoriesUnknown: '来源分类未知',
@@ -123,6 +128,7 @@
     figureLicense: '许可',
     figureAltFallback: '论文配图',
 
+    // 以下三条只由内部 sourceStatusText/诊断使用，主 feed 不再渲染常驻 banner。
     digestCoveragePartial: '部分来源覆盖不完整',
     sourceUnavailable: '本期 {sources} 来源暂缺',
     sourceIncomplete: '本期 {sources} 覆盖不完整',
@@ -136,7 +142,6 @@
     statPublishedCount: '已收录',
     statUnit: '篇',
     statNoData: '没有可统计的数据。',
-    statScopeNote: '统计口径：仅本站已收录样本，缺失日期不补 0。',
     statTrendTitle: '关键词趋势',
     statTrendHint: '仅统计本区间论文标题中的关键词频次。',
     statTrendUnavailable: '区间内没有可绘制的趋势（至少需要两个日期）。',

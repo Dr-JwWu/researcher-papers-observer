@@ -13,6 +13,10 @@
  *   详情四项优先用结构化列表，旧 AI 字符串只做保守分条（不破小数、不改写）。
  *   2026-10 每日精选新增：可选 selection 字段（topics/scores/ranks 严格校验、全有或全无），
  *   单主题筛选按该主题 rank 升序、并集/无筛选保持后端行顺序（不按 id 重排）。
+ *   2026-10 标题级收录：analysis_basis="title" 的公开记录允许 AI:{}、summary:""、
+ *   可选 reading:{title_zh}（以及已核 affiliations/figure），不因缺 AI 五字段丢弃；
+ *   但同一记录若携带非空 AI 字段/方法结果/reading.bullets，则整行拒绝（不静默兼容），
+ *   以免把标题级判断伪装成摘要分析。abstract 旧记录规则完全不变。
  *   本文件不是上游文件，不重新标注 MIT，许可仍随 docs/licenses 说明。
  *
  * 读取的数据契约（与 paper_digest/export.py 一致，前端只读不写）：
@@ -473,6 +477,73 @@
   }
 
   /* ------------------------------------------------------------------ *
+   * 标题级收录（analysis_basis="title"）
+   *
+   * 真实标题、真实来源链接、日期/ID/单位等现有事实照常展示；没有摘要分析就
+   * 不生成摘要、AI 五字段、方法/结果或四节详情。公开记录里的 AI 必须为空，
+   * 且 reading 不得携带 bullets（已核 affiliations/figure 仍可沿通用规则展示）。
+   * 一旦标题级记录携带非空 AI/方法结果/bullets，整行拒绝并计入既有 dropped，
+   * 不把伪造分析静默兼容成“有内容”。abstract 旧记录不走这些宽松规则。
+   * ------------------------------------------------------------------ */
+
+  const ANALYSIS_BASES = ['abstract', 'title'];
+
+  function normalizeAnalysisBasis(value) {
+    if (typeof value !== 'string') return '';
+    const text = value.trim();
+    return ANALYSIS_BASES.indexOf(text) !== -1 ? text : '';
+  }
+
+  /** 标题级公开记录：详情由来源页承担，卡片不生成空详情入口。 */
+  function paperIsTitleBasis(paper) {
+    return !!paper && typeof paper === 'object' && paper.aiBasis === 'title';
+  }
+
+  /**
+   * AI 是否携带任何伪造内容：五个已知字段之外的字符串值也算，
+   * 因为公开契约只允许空对象；非空字符串/数组/对象都说明该行并非纯标题级。
+   */
+  function titleBasisHasFakeAi(value) {
+    if (value === null || value === undefined) return false;
+    if (typeof value === 'string') return value.trim() !== '';
+    if (Array.isArray(value)) return value.length > 0;
+    if (typeof value !== 'object') return true;
+    const keys = Object.keys(value);
+    for (let i = 0; i < keys.length; i += 1) {
+      const item = value[keys[i]];
+      if (typeof item === 'string' && item.trim() !== '') return true;
+      if (Array.isArray(item) && item.length > 0) return true;
+      if (item && typeof item === 'object' && !Array.isArray(item) && Object.keys(item).length > 0) {
+        // 方法/结果等嵌套结构同样算内容，标题级记录不应携带。
+        return true;
+      }
+    }
+    return false;
+  }
+
+  /**
+   * reading.bullets 是否携带内容（含畸形字符串/数组）。空对象或四个空数组
+   * 不构成内容；任何非空条目都拒绝，绝不把标题级记录显示成四节分析。
+   */
+  function titleBasisHasFakeBullets(reading) {
+    if (!reading || typeof reading !== 'object' || Array.isArray(reading)) return false;
+    const bullets = reading.bullets;
+    if (bullets === null || bullets === undefined) return false;
+    if (typeof bullets === 'string') return bullets.trim() !== '';
+    if (Array.isArray(bullets)) return bullets.length > 0;
+    if (typeof bullets !== 'object') return true;
+    const keys = Object.keys(bullets);
+    for (let i = 0; i < keys.length; i += 1) {
+      const item = bullets[keys[i]];
+      if (typeof item === 'string' && item.trim() !== '') return true;
+      if (Array.isArray(item) && item.some(function (entry) {
+        return typeof entry === 'string' && entry.trim() !== '';
+      })) return true;
+    }
+    return false;
+  }
+
+  /* ------------------------------------------------------------------ *
    * 阅读增强字段 reading（可选）：中文标题、分条要点、可核单位、合法配图
    *
    * 形状（后端许可核对后才会写进公开导出；缺字段即不存在，不推断）：
@@ -759,6 +830,13 @@
     if (!id || !title) return null;
 
     const ai = normalizeAi(record.AI);
+    const basis = normalizeAnalysisBasis(record.analysis_basis);
+    const reading = normalizeReading(record.reading);
+    // 标题级：允许 AI:{} / summary:"" / 可选 reading:{title_zh} / 已核 affiliations|figure；
+    // 但伪造 AI、方法结果或 bullets 必须整行拒绝，不能靠隐藏字段伪装成标题级。
+    if (basis === 'title' && (titleBasisHasFakeAi(record.AI) || titleBasisHasFakeBullets(record.reading))) {
+      return null;
+    }
     const published = isNonEmptyString(record.published) ? record.published.trim() : null;
     const updated = isNonEmptyString(record.updated) ? record.updated.trim() : null;
     const discovered = isNonEmptyString(record.discovered_at) ? record.discovered_at.trim() : null;
@@ -775,11 +853,11 @@
       sourceLabel: sourceLabel(record.source),
       title: title,
       // 可选阅读增强（17 字段旧数据没有 reading，全部字段退化为空，不推断）。
-      reading: normalizeReading(record.reading),
+      reading: reading,
       authors: stringList(record.authors),
       abstract: typeof record.summary === 'string' ? record.summary : '',
       ai: ai,
-      aiBasis: record.analysis_basis === 'abstract' ? 'abstract' : '',
+      aiBasis: basis,
       aiAvailable: AI_FIELDS.some(function (key) { return ai[key].trim() !== ''; }),
       topics: topics,
       // 可选每日精选契约（缺字段才为 legacy；存在但非法已拒绝，不推断名次或分数）
@@ -940,7 +1018,7 @@
       status: status,
       sections: sections,
       note: isNonEmptyString(source.note) ? source.note.trim() : '',
-      basis: source.analysis_basis === 'abstract' ? 'abstract' : ''
+      basis: normalizeAnalysisBasis(source.analysis_basis)
     };
   }
 
@@ -1605,6 +1683,7 @@
     DISCOVERY_KINDS: DISCOVERY_KINDS,
     AI_FIELDS: AI_FIELDS,
     AI_EMPTY: AI_EMPTY,
+    ANALYSIS_BASES: ANALYSIS_BASES,
     ABSTRACT_PLACEHOLDER: ABSTRACT_PLACEHOLDER,
     FILE_LIST_PATH: FILE_LIST_PATH,
     DATA_DIR: DATA_DIR,
@@ -1633,6 +1712,8 @@
     normalizeDiscoveryKind: normalizeDiscoveryKind,
     isAbstractPlaceholder: isAbstractPlaceholder,
     hasPublicAbstract: hasPublicAbstract,
+    normalizeAnalysisBasis: normalizeAnalysisBasis,
+    paperIsTitleBasis: paperIsTitleBasis,
 
     READING_FIELDS: READING_FIELDS,
     READING_BULLET_LIMIT: READING_BULLET_LIMIT,

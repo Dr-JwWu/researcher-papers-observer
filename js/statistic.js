@@ -352,10 +352,14 @@
           text: paper.authors.length ? paper.authors.join(', ') : '作者未标注'
         }));
         // 主题不再作为卡片标签展示（与首页一致）；统计页也没有“全部”主题选项。
+        const titleBasis = PD.paperIsTitleBasis ? PD.paperIsTitleBasis(paper) : paper.aiBasis === 'title';
         const summaryText = paper.ai.tldr && paper.ai.tldr.trim() !== ''
           ? paper.ai.tldr
           : (PD.hasPublicAbstract(paper) ? paper.abstract : '');
-        card.appendChild(dom.el('div', { class: 'paper-summary', text: summaryText || T.abstractLinkNote }));
+        // 标题级卡没有摘要分析：没有真实摘要就不铺“原摘要请见…”占位（与首页同规则）。
+        if (summaryText !== '' || !titleBasis) {
+          card.appendChild(dom.el('div', { class: 'paper-summary', text: summaryText || T.abstractLinkNote }));
+        }
         container.appendChild(card);
       });
     }

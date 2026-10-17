@@ -782,6 +782,32 @@
     color: var(--text-secondary, #6b7280);
 }
 
+/* 标题级卡片：没有空详情可开，卡片本体不再表现为按钮 */
+.paper-card.paper-card-title-basis {
+    cursor: default;
+}
+
+/* 标题级卡片：标题整块是真实来源链接（继承卡片标题排版，不额外造按钮） */
+.paper-card-title-link {
+    display: block;
+    color: inherit;
+    text-decoration: none;
+}
+
+.paper-card-title-link:hover .paper-card-title-zh,
+.paper-card-title-link:focus-visible .paper-card-title-zh {
+    text-decoration: underline;
+}
+
+.paper-card-source-link {
+    text-decoration: none;
+}
+
+.paper-card-source-link:hover,
+.paper-card-source-link:focus-visible {
+    text-decoration: underline;
+}
+
 /* ---------- 卡片配图（标题之下、仅一张、无 caption，整块可点去图源） ---------- */
 .paper-card-figure {
     margin: 0;

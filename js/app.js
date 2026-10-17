@@ -18,7 +18,8 @@
  *        每个日期一个 heading（日期 + 收录篇数），默认全部可读；
  *     5. 主题过滤只有两个按钮、没有“全部”：初始都不选 = 两个主题都显示，
  *        再点一次即取消，两个都选等价于都显示，永远不会出现空白尴尬态；
- *     6. 来源状态同一时刻只给一行短句；不展示候选/取回/缺元数据/错误等工程计数；
+ *     6. 主 feed 不再渲染来源覆盖 banner/“查看原因”；coverage/partial 只保留在
+ *        数据层与内部 helper，不伪注 complete；加载失败仍给简短可操作提示；
  *     7. PDF 预览/按钮已删除，只保留摘要页与代码仓库外链；删除 KimiChat 第三方预填；
  *     8. 搜索/偏好/统计仍然独立可用；匹配优先排序在各日期分组内生效（不跨日乱序）。
  *   本文件为衍生代码，许可遵循 docs/licenses/daily-arxiv-LICENSE。
@@ -397,16 +398,12 @@
       showMessage(T.feedLoading);
       return;
     }
-    const statusText = PD.render.sourceStatusText(PD.aggregateScopeStatus(
-      days.map(function (day) { return { digest: day.digest, coverage: state.days[day.date].coverage }; })
-    ));
     state.currentPapers = [];
     days.forEach(function (day) {
       day.items.forEach(function (item) { state.currentPapers.push(item.paper); });
     });
     PD.render.renderFeed(refs.paperContainer, {
       days: days,
-      statusText: statusText,
       view: state.view,
       titleTerms: searchTerms(),
       authorTerms: state.authors.slice(),
@@ -419,6 +416,10 @@
     renderDateNav(days);
     renderHeaderLabel();
     renderTopicNav();
+  }
+
+  function isTitleBasis(paper) {
+    return PD.paperIsTitleBasis ? PD.paperIsTitleBasis(paper) : !!(paper && paper.aiBasis === 'title');
   }
 
   /** 页头只显示最新一个报告日（不再是可点的日期选择器）。 */
@@ -456,6 +457,8 @@
   /* ------------------------------ 模态框 ------------------------------ */
 
   function openModal(paper, index) {
+    // 标题级卡片没有可生成的详情：统一由卡片标题/页脚打开来源页。
+    if (isTitleBasis(paper)) return;
     state.currentIndex = index;
     PD.render.renderPaperModal(refs, paper, {
       index: index + 1,
@@ -476,15 +479,22 @@
 
   function navigate(step) {
     if (state.currentPapers.length === 0) return;
-    let index = state.currentIndex + step;
-    if (index < 0) index = state.currentPapers.length - 1;
-    if (index >= state.currentPapers.length) index = 0;
-    openModal(state.currentPapers[index], index);
+    let index = state.currentIndex;
+    for (let guard = 0; guard < state.currentPapers.length; guard += 1) {
+      index += step;
+      if (index < 0) index = state.currentPapers.length - 1;
+      if (index >= state.currentPapers.length) index = 0;
+      if (!isTitleBasis(state.currentPapers[index])) {
+        openModal(state.currentPapers[index], index);
+        return;
+      }
+    }
   }
 
   function showRandomPaper() {
-    if (state.currentPapers.length === 0) return;
-    const index = Math.floor(Math.random() * state.currentPapers.length);
+    const detailPapers = state.currentPapers.filter(function (paper) { return !isTitleBasis(paper); });
+    if (detailPapers.length === 0) return;
+    const index = state.currentPapers.indexOf(detailPapers[Math.floor(Math.random() * detailPapers.length)]);
     openModal(state.currentPapers[index], index);
     const indicator = dom.el('div', { class: 'random-paper-indicator', text: 'Random Paper' });
     document.body.appendChild(indicator);

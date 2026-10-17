@@ -48,7 +48,7 @@
     },
     {
       "path": "css/pd-adapt.css",
-      "sha256": "f330ab65c2da2749fcb7221c013e9aa430cb2fb2cc817e41236fa2dcd4ad3500"
+      "sha256": "2f69bd7c7299e84b448991bd438904500d22882eac812148d76161f1e1ed4dd0"
     },
     {
       "path": "css/screenshot-placeholder.svg",
@@ -72,7 +72,7 @@
     },
     {
       "path": "data/2026-10-08_digest.json",
-      "sha256": "a4d2f0f1b180d70a1e27c38a8a3711a8f80fa820c8c41bac08a38f0b55c9f137"
+      "sha256": "2fbdae88d40f6405887b71029312794ae57a11395dd9b57aa4a6ea12c813f8b3"
     },
     {
       "path": "data/2026-10-09_AI_enhanced_Chinese.jsonl",
@@ -80,7 +80,7 @@
     },
     {
       "path": "data/2026-10-09_digest.json",
-      "sha256": "3ee1d0001514850d0d8f14d6acdc04fe30aa1ad6011fb02e3136a3e875039c0c"
+      "sha256": "f2f2b163d65f7403b0667d4ec728e4d6514eacd499ea3488d1aa07d28acc7898"
     },
     {
       "path": "data/2026-10-10_AI_enhanced_Chinese.jsonl",
@@ -88,7 +88,7 @@
     },
     {
       "path": "data/2026-10-10_digest.json",
-      "sha256": "27b4f00abd112eb88e67c8a87258012a36fb09f1e0bd9e8efe892c08d0f3dd8c"
+      "sha256": "d89c8bf92924a2d4d1cf7081e7be2063334279d7c444cb6a632b7e987a35bf63"
     },
     {
       "path": "data/2026-10-11_AI_enhanced_Chinese.jsonl",
@@ -96,7 +96,7 @@
     },
     {
       "path": "data/2026-10-11_digest.json",
-      "sha256": "e1cfc688da6373f42bd222045747415c277b9a08393183ead4eac10f44692575"
+      "sha256": "4d6d8dee8fb3b47775c4196572890bc930b554e26085adecef5380fbe564623d"
     },
     {
       "path": "data/2026-10-12_AI_enhanced_Chinese.jsonl",
@@ -104,7 +104,7 @@
     },
     {
       "path": "data/2026-10-12_digest.json",
-      "sha256": "7e7d457e98eebd08e9a6d83acc69ac50513e24572f64ea98da7fcb38e52539f1"
+      "sha256": "e46ae456cfee9ac374c95f6e3ee945695c70bec0345f7143fcf8a24a95b5b25d"
     },
     {
       "path": "data/2026-10-13_AI_enhanced_Chinese.jsonl",
@@ -112,7 +112,7 @@
     },
     {
       "path": "data/2026-10-13_digest.json",
-      "sha256": "d482a569568498094325ce523372b326139443775f5ce175f9c7974294b7226b"
+      "sha256": "d42d32865732b218d6e8570e2654791377d535b35259a74159f248355f1d7635"
     },
     {
       "path": "data/2026-10-14_AI_enhanced_Chinese.jsonl",
@@ -120,11 +120,11 @@
     },
     {
       "path": "data/2026-10-14_digest.json",
-      "sha256": "132406596863047491bd4bf798dd620a67b1aa11ab40a96e0f3524009bafe781"
+      "sha256": "322ecf1351e5c7e46e16ff71b19c53e09afa552c38a4e3e94de37ff03f685332"
     },
     {
       "path": "docs/figure-credits.html",
-      "sha256": "57439d2d03503aba3d1e4d58c366fd0fc96632e6807fec788fc89cd6e593646b"
+      "sha256": "5c5702199d7b398f6a145db3606c5181c3a2437200f0b4a5502116b38a96bad7"
     },
     {
       "path": "docs/licenses/daily-arxiv-LICENSE",
@@ -136,7 +136,7 @@
     },
     {
       "path": "js/app.js",
-      "sha256": "f678b704a0b1e0cfe2ded86affe5a8da683be885683817c662e65e28003cf947"
+      "sha256": "fe27eaab8baee93496ad59e98ad973ba51d2acfd3f05ebe658da340540148f67"
     },
     {
       "path": "js/data-config.js",
@@ -144,7 +144,7 @@
     },
     {
       "path": "js/pd-core.js",
-      "sha256": "42d9941e9e37583af7e90cac6d158557e8b5da55976edbe2b5f996ec17bd9f5c"
+      "sha256": "dcd7b050a7177b355a0e2b0bd0a3d7b670e9fd7b1901b096b89047eaaa43eeb1"
     },
     {
       "path": "js/pd-dom.js",
@@ -152,7 +152,7 @@
     },
     {
       "path": "js/pd-i18n.js",
-      "sha256": "a115bee8082724ea58090719a21653de46545ba77a3437792c9274af29d1c3f1"
+      "sha256": "8874f6d41479eac63369a63b6a3f56b5c6714b7a5d225aa7ee444a544ba9f05c"
     },
     {
       "path": "js/pd-prefs.js",
@@ -160,7 +160,7 @@
     },
     {
       "path": "js/pd-render.js",
-      "sha256": "9a09fa50486ee21106303271a9f20014719d973ae90d7e34b586e6c9f298b800"
+      "sha256": "9d9ccf08f1510063f7551a92200a859fa95823bb2e994eaf25747774c1e4f45d"
     },
     {
       "path": "js/pd-settings.js",
@@ -172,7 +172,7 @@
     },
     {
       "path": "js/statistic.js",
-      "sha256": "91e015c3d133f54a88479b9bbb1c793d13ec1199b0862e4f882bc283d872ddb6"
+      "sha256": "6da26fc22c4509546c763b8f379079edf4cee0674a862995347fedfd5cb4ec17"
     },
     {
       "path": "settings.html",
@@ -180,7 +180,7 @@
     },
     {
       "path": "statistic.html",
-      "sha256": "415cb5c20d8e104212376d47309bb68918d5d190fc74e4bbfb021297882f5d73"
+      "sha256": "18f95b8ce0dfed92bc18539c2140f72cb598d333e927574239f0291b5d85736e"
     }
   ],
   "deployment": "not_deployed"
