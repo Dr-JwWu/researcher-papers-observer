@@ -1,6 +1,6 @@
 {
   "date": "2026-10-13",
-  "generated_at": "2026-10-17T04:33:59.561543+00:00",
+  "generated_at": "2026-10-17T05:32:42.850647+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -34,7 +34,7 @@
     "sections": [],
     "note": "按阅读模式不生成每日综合总结。"
   },
-  "pending_count": 4,
+  "pending_count": 1,
   "paper_count": 30,
   "research_scope": {
     "policy": "weekly_capture_partitioned_by_known_date",
@@ -45,7 +45,7 @@
     "out_of_window_count": 1786,
     "undated_count": 3746,
     "pending_count_by_source": {
-      "arxiv": 4
+      "arxiv": 1
     },
     "sources_unavailable": [],
     "sources_incomplete": [
@@ -62,8 +62,8 @@
     "not_fulltext": true,
     "topics": {
       "embodied": {
-        "eligible": 56,
-        "scored": 56,
+        "eligible": 57,
+        "scored": 57,
         "pending": 0,
         "shortage": 0,
         "selected": 20

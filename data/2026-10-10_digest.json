@@ -1,6 +1,6 @@
 {
   "date": "2026-10-10",
-  "generated_at": "2026-10-17T04:33:59.546923+00:00",
+  "generated_at": "2026-10-17T05:32:42.836132+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -45,7 +45,7 @@
     "out_of_window_count": 1786,
     "undated_count": 3746,
     "pending_count_by_source": {
-      "arxiv": 4
+      "arxiv": 1
     },
     "sources_unavailable": [],
     "sources_incomplete": [
