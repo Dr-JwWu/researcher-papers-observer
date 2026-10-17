@@ -142,7 +142,7 @@
     },
     {
       "path": "data/operations.json",
-      "sha256": "84a3217102b873a6dbbf15900e472b0f75868d263d779643c39133f04022b57a"
+      "sha256": "e4b1539b9ce52c63a9a9f3844b03052f299972a535065b9e1da9a8ce71e304f3"
     },
     {
       "path": "docs/figure-credits.html",
@@ -158,7 +158,7 @@
     },
     {
       "path": "js/app.js",
-      "sha256": "9711f1ac15bc5ee6fa18ecb47a4493cdb2a8a0e1813422170d3646e26fec3525"
+      "sha256": "ed417514019376f285627197a5cf4a36e8bf2ef58c0277fc55c07f1128e868b3"
     },
     {
       "path": "js/data-config.js",
@@ -182,7 +182,7 @@
     },
     {
       "path": "js/pd-render.js",
-      "sha256": "9d9ccf08f1510063f7551a92200a859fa95823bb2e994eaf25747774c1e4f45d"
+      "sha256": "f13ae91f7e59347aa31464469346d69f1e7a7011bafa4f330449f77b395dce30"
     },
     {
       "path": "js/pd-settings.js",

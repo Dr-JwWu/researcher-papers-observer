@@ -280,7 +280,7 @@
     }
     heading.appendChild(dom.el('span', {
       class: 'feed-day-count',
-      text: i18n.formatTemplate(T.feedDayCount, { n: day.count })
+      text: day.count === 0 && day.operationPending ? '待补采' : i18n.formatTemplate(T.feedDayCount, { n: day.count })
     }));
     const revision = renderRevision(day.digest);
     if (revision) heading.appendChild(revision);

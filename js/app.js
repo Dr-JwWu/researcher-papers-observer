@@ -318,12 +318,14 @@
       } else if (unreadable) {
         notice = T.feedDayPartial;
       }
+      if (day.papers.length === 0 && state.operations[date]) emptyText = '正在补采，暂不将当前结果记为零篇。';
       days.push({
         date: date,
         count: ranked.length,
         items: ranked,
         digest: day.digest,
         emptyText: emptyText,
+        operationPending: !!state.operations[date],
         notice: state.operations[date] || notice
       });
     });
