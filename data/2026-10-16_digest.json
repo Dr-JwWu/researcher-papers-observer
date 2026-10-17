@@ -35,7 +35,7 @@
     "note": "按阅读模式不生成每日综合总结。"
   },
   "pending_count": 0,
-  "paper_count": 2,
+  "paper_count": 1,
   "research_window": {
     "start": "2026-10-16T11:33:48.495190+00:00",
     "end": "2026-10-17T11:33:48.495190+00:00",
@@ -78,8 +78,8 @@
         "eligible": 2,
         "scored": 2,
         "pending": 0,
-        "shortage": 3,
-        "selected": 2
+        "shortage": 4,
+        "selected": 1
       }
     }
   }
