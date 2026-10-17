@@ -9,7 +9,8 @@
     "2026-10-13",
     "2026-10-14",
     "2026-10-15",
-    "2026-10-16"
+    "2026-10-16",
+    "2026-10-17"
   ],
   "files": [
     {
@@ -18,7 +19,7 @@
     },
     {
       "path": "assets/file-list.txt",
-      "sha256": "01cbc6da447d542a470b69aff5f9f3ca9f2feb2767798471247338218cc09e1b"
+      "sha256": "ea0b842be1e8050f7fce6d2384fe3c3552ab51c4d83bf72ee087d2979157529a"
     },
     {
       "path": "assets/logo2-removebg-preview.png",
@@ -141,8 +142,16 @@
       "sha256": "97044f6243f6e69e9c04e55aaae42a6415a61a26b6598667e358f5d49c5fd382"
     },
     {
+      "path": "data/2026-10-17_AI_enhanced_Chinese.jsonl",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "data/2026-10-17_digest.json",
+      "sha256": "52103d2bc328fc17539177339937755a8115d41a108c75c9c8d0bb5f0ee4761a"
+    },
+    {
       "path": "data/operations.json",
-      "sha256": "120a678b49138a1272254c9738e50a3e23e9476a22d74827b7c87dc34606f4b6"
+      "sha256": "d7c98443c6f98346fef74e69e5de52ef4b802737e9004ebf49919631d7ace92b"
     },
     {
       "path": "docs/figure-credits.html",
