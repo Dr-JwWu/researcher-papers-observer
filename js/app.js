@@ -34,6 +34,7 @@
 
   const state = {
     fileList: null,
+    operations: {},
     availableDates: [],  // 报告日期，倒序（新 → 旧）
     days: {},            // date -> 完整加载完成的 {date, papers, digest, coverage, ...}
     dayLoads: {},        // date -> 正在进行的加载 Promise
@@ -73,7 +74,24 @@
     return fetchRelative(PD.FILE_LIST_PATH).then(function (text) {
       state.fileList = PD.parseFileList(text);
       state.availableDates = state.fileList.dates.slice();
-      return state.fileList;
+      return fetchRelative('data/operations.json').then(function (text) {
+        let raw = null;
+        try { raw = JSON.parse(text); } catch (_) {}
+        const messages = {
+          update_failed: '今日更新暂未完成，已保留已有论文，系统将重试。',
+          permission_required: '今日更新需要处理访问权限，已保留已有论文。',
+          source_wait: '今日部分来源暂不可用，已有论文照常阅读，系统将继续补采。',
+          delivery_pending: '今日内容已生成，发布确认暂未完成，系统将重试。'
+        };
+        if (raw && raw.schema === 'researcher-papers-operations/1' && raw.days && typeof raw.days === 'object') {
+          Object.keys(raw.days).forEach(function (day) {
+            const code = raw.days[day] && raw.days[day].code;
+            if (PD.isIsoDate(day) && Object.prototype.hasOwnProperty.call(messages, code)) state.operations[day] = messages[code];
+          });
+          state.availableDates = Array.from(new Set(state.availableDates.concat(Object.keys(state.operations)))).sort().reverse();
+        }
+        return state.fileList;
+      }, function () { return state.fileList; });
     }, function (error) {
       state.fileList = PD.parseFileList('');
       state.fileList.error = error.status === 404 ? 'missing' : 'failed';
@@ -90,6 +108,13 @@
     if (state.days[date]) return Promise.resolve(state.days[date]);
     if (state.dayLoads[date]) return state.dayLoads[date];
     const entry = (state.fileList && state.fileList.byDate[date]) || null;
+    if (!entry && state.operations[date]) {
+      const digest = PD.normalizeDigest(null, date);
+      const day = {date:date, papers:[], digest:digest, invalidLines:0, dropped:0, totalLines:0,
+                   coverage:PD.computeCoverage(digest, [], {}), dailyMissing:false};
+      state.days[date] = day;
+      return Promise.resolve(day);
+    }
     const languages = entry && entry.languages ? entry.languages : [];
     const dailyPath = PD.dailyFilePath(date, 'Chinese') ||
       (languages.length > 0 ? PD.dailyFilePath(date, languages[0]) : null);
@@ -306,7 +331,7 @@
         items: ranked,
         digest: day.digest,
         emptyText: emptyText,
-        notice: notice
+        notice: state.operations[date] || notice
       });
     });
     return days;
@@ -425,7 +450,8 @@
   /** 页头只显示最新一个报告日（不再是可点的日期选择器）。 */
   function renderHeaderLabel() {
     if (!refs.currentDate) return;
-    const newest = state.availableDates.length > 0 ? state.availableDates[0] : '';
+    const paperDates = state.fileList && state.fileList.dates ? state.fileList.dates : [];
+    const newest = paperDates.length > 0 ? paperDates[0] : '';
     refs.currentDate.textContent = PD.isIsoDate(newest) ? (T.feedLatest + ' ' + newest) : '';
   }
 
