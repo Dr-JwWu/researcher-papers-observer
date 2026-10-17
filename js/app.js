@@ -86,9 +86,9 @@
         if (raw && raw.schema === 'researcher-papers-operations/1' && raw.days && typeof raw.days === 'object') {
           Object.keys(raw.days).forEach(function (day) {
             const code = raw.days[day] && raw.days[day].code;
-            if (PD.isIsoDate(day) && Object.prototype.hasOwnProperty.call(messages, code)) state.operations[day] = messages[code];
+            if (state.availableDates.includes(day) && PD.isIsoDate(day) && Object.prototype.hasOwnProperty.call(messages, code)) state.operations[day] = messages[code];
           });
-          state.availableDates = Array.from(new Set(state.availableDates.concat(Object.keys(state.operations)))).sort().reverse();
+          // Operational status annotates an existing report, never creates a fake date.
         }
         return state.fileList;
       }, function () { return state.fileList; });
@@ -108,13 +108,6 @@
     if (state.days[date]) return Promise.resolve(state.days[date]);
     if (state.dayLoads[date]) return state.dayLoads[date];
     const entry = (state.fileList && state.fileList.byDate[date]) || null;
-    if (!entry && state.operations[date]) {
-      const digest = PD.normalizeDigest(null, date);
-      const day = {date:date, papers:[], digest:digest, invalidLines:0, dropped:0, totalLines:0,
-                   coverage:PD.computeCoverage(digest, [], {}), dailyMissing:false};
-      state.days[date] = day;
-      return Promise.resolve(day);
-    }
     const languages = entry && entry.languages ? entry.languages : [];
     const dailyPath = PD.dailyFilePath(date, 'Chinese') ||
       (languages.length > 0 ? PD.dailyFilePath(date, languages[0]) : null);
@@ -400,7 +393,7 @@
       const button = dom.el('button', {
         class: 'date-nav-button', type: 'button', 'data-date': day.date,
         'aria-controls': 'feed-day-' + day.date,
-        text: day.date + '（' + day.count + '）'
+        text: day.date + (day.count === 0 && state.operations[day.date] ? '（待补采）' : '（' + day.count + '）')
       });
       button.addEventListener('click', function () {
         const section = dateSections[index];
