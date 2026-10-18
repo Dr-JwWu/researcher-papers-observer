@@ -1,6 +1,6 @@
 {
   "date": "2026-10-16",
-  "generated_at": "2026-10-18T03:56:07.854011+00:00",
+  "generated_at": "2026-10-18T04:27:20.557346+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -9,11 +9,11 @@
         "status": "partial",
         "candidate_count": 0,
         "metadata_fetched": 0,
-        "missing_metadata": 3012,
+        "missing_metadata": 2959,
         "date_from": "2026-10-15",
         "date_to": "2026-10-16",
         "error_count": 0,
-        "limit_count": 3
+        "limit_count": 2
       },
       {
         "source": "pubmed",
