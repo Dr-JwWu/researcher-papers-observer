@@ -1,6 +1,6 @@
 {
   "date": "2026-10-15",
-  "generated_at": "2026-10-18T04:13:58.492503+00:00",
+  "generated_at": "2026-10-18T04:42:32.507428+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -9,11 +9,11 @@
         "status": "partial",
         "candidate_count": 0,
         "metadata_fetched": 0,
-        "missing_metadata": 3009,
+        "missing_metadata": 2680,
         "date_from": "2026-10-14",
         "date_to": "2026-10-15",
         "error_count": 0,
-        "limit_count": 3
+        "limit_count": 2
       },
       {
         "source": "pubmed",
@@ -34,7 +34,7 @@
     "sections": [],
     "note": "按阅读模式不生成每日综合总结。"
   },
-  "pending_count": 4,
+  "pending_count": 3,
   "paper_count": 23,
   "research_window": {
     "start": "2026-10-14T19:00:00+00:00",
@@ -52,7 +52,7 @@
     "out_of_window_count": 8516,
     "undated_count": 0,
     "pending_count_by_source": {
-      "arxiv": 4
+      "arxiv": 3
     },
     "sources_unavailable": [],
     "sources_incomplete": [
@@ -69,9 +69,9 @@
     "not_fulltext": true,
     "topics": {
       "embodied": {
-        "eligible": 38,
+        "eligible": 39,
         "scored": 37,
-        "pending": 1,
+        "pending": 2,
         "shortage": 0,
         "selected": 19
       },
