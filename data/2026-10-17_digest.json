@@ -1,6 +1,6 @@
 {
   "date": "2026-10-17",
-  "generated_at": "2026-10-18T09:34:32.676965+00:00",
+  "generated_at": "2026-10-18T11:56:07.891842+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -9,7 +9,7 @@
         "status": "partial",
         "candidate_count": 0,
         "metadata_fetched": 0,
-        "missing_metadata": 2214,
+        "missing_metadata": 1847,
         "date_from": "2026-10-16",
         "date_to": "2026-10-17",
         "error_count": 0,
@@ -20,7 +20,7 @@
         "status": "partial",
         "candidate_count": 0,
         "metadata_fetched": 0,
-        "missing_metadata": 19,
+        "missing_metadata": 21,
         "date_from": "2026-10-16",
         "date_to": "2026-10-17",
         "error_count": 0,
@@ -34,7 +34,7 @@
     "sections": [],
     "note": "按阅读模式不生成每日综合总结。"
   },
-  "pending_count": 0,
+  "pending_count": 1,
   "paper_count": 0,
   "research_window": {
     "start": "2026-10-16T19:00:00+00:00",
@@ -44,14 +44,16 @@
     "date_only_recall": "overlapping_source_days_no_invented_hour"
   },
   "research_scope": {
-    "policy": "weekly_capture_partitioned_by_known_date",
+    "policy": "announcement_or_first_observation",
     "window_start": "2026-10-16",
     "window_end": "2026-10-17",
-    "date_basis": "UTC",
-    "date_basis_policy": "只按来源声明的日粒度日期分配日报：published 在窗口内记 window_match(day_basis=published)；否则使用窗口内的 PubMed 入库日 indexed_at，并公开 discovery_kind=backfill（补录，非当日首发）；日粒度日期可确认在窗口外且无窗口内入库日的记录本轮不公开；日期过粗或缺失者保留为 uncertain_date 待后续显式补录，不补造精确日期。",
-    "out_of_window_count": 9145,
+    "date_basis": "source_announcement_day_or_actual_observation",
+    "date_basis_policy": "arXiv投稿时间保留，不作为公开日期；明确公告日作重叠日期召回，未知公开日用真实首次发现补录；旧已刊位置保留，排期不造公开时间。",
+    "out_of_window_count": 9149,
     "undated_count": 0,
-    "pending_count_by_source": {},
+    "pending_count_by_source": {
+      "pubmed": 1
+    },
     "sources_unavailable": [
       "arxiv"
     ],
