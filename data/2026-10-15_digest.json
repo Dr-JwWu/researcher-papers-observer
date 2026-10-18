@@ -1,6 +1,6 @@
 {
   "date": "2026-10-15",
-  "generated_at": "2026-10-18T04:42:32.507428+00:00",
+  "generated_at": "2026-10-18T04:49:33.417460+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -9,7 +9,7 @@
         "status": "partial",
         "candidate_count": 0,
         "metadata_fetched": 0,
-        "missing_metadata": 2680,
+        "missing_metadata": 2630,
         "date_from": "2026-10-14",
         "date_to": "2026-10-15",
         "error_count": 0,
@@ -34,7 +34,7 @@
     "sections": [],
     "note": "按阅读模式不生成每日综合总结。"
   },
-  "pending_count": 3,
+  "pending_count": 2,
   "paper_count": 23,
   "research_window": {
     "start": "2026-10-14T19:00:00+00:00",
@@ -52,7 +52,7 @@
     "out_of_window_count": 8516,
     "undated_count": 0,
     "pending_count_by_source": {
-      "arxiv": 3
+      "arxiv": 2
     },
     "sources_unavailable": [],
     "sources_incomplete": [
@@ -70,8 +70,8 @@
     "topics": {
       "embodied": {
         "eligible": 39,
-        "scored": 37,
-        "pending": 2,
+        "scored": 38,
+        "pending": 1,
         "shortage": 0,
         "selected": 19
       },
