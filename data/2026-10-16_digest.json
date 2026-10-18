@@ -1,6 +1,6 @@
 {
   "date": "2026-10-16",
-  "generated_at": "2026-10-18T04:27:20.557346+00:00",
+  "generated_at": "2026-10-18T09:03:34.669750+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -9,7 +9,7 @@
         "status": "partial",
         "candidate_count": 0,
         "metadata_fetched": 0,
-        "missing_metadata": 2959,
+        "missing_metadata": 2414,
         "date_from": "2026-10-15",
         "date_to": "2026-10-16",
         "error_count": 0,
@@ -35,7 +35,7 @@
     "note": "按阅读模式不生成每日综合总结。"
   },
   "pending_count": 0,
-  "paper_count": 2,
+  "paper_count": 20,
   "research_window": {
     "start": "2026-10-15T19:00:00+00:00",
     "end": "2026-10-16T19:00:00+00:00",
@@ -49,13 +49,12 @@
     "window_end": "2026-10-16",
     "date_basis": "UTC",
     "date_basis_policy": "只按来源声明的日粒度日期分配日报：published 在窗口内记 window_match(day_basis=published)；否则使用窗口内的 PubMed 入库日 indexed_at，并公开 discovery_kind=backfill（补录，非当日首发）；日粒度日期可确认在窗口外且无窗口内入库日的记录本轮不公开；日期过粗或缺失者保留为 uncertain_date 待后续显式补录，不补造精确日期。",
-    "out_of_window_count": 9093,
+    "out_of_window_count": 8177,
     "undated_count": 0,
     "pending_count_by_source": {},
-    "sources_unavailable": [
-      "arxiv"
-    ],
+    "sources_unavailable": [],
     "sources_incomplete": [
+      "arxiv",
       "pubmed"
     ],
     "note": "计数只描述本轮已配置来源与检索窗口，不代表领域没有新论文；pending 为预算不足或失败的待审条目，不是相关性配额。"
@@ -68,11 +67,11 @@
     "not_fulltext": true,
     "topics": {
       "embodied": {
-        "eligible": 0,
-        "scored": 0,
+        "eligible": 18,
+        "scored": 18,
         "pending": 0,
-        "shortage": 5,
-        "selected": 0
+        "shortage": 0,
+        "selected": 18
       },
       "surgical": {
         "eligible": 7,
