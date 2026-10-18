@@ -1,6 +1,6 @@
 {
   "date": "2026-10-17",
-  "generated_at": "2026-10-17T19:01:35.183244+00:00",
+  "generated_at": "2026-10-18T03:52:07.336901+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -9,11 +9,11 @@
         "status": "partial",
         "candidate_count": 0,
         "metadata_fetched": 0,
-        "missing_metadata": 3746,
+        "missing_metadata": 3168,
         "date_from": "2026-10-16",
         "date_to": "2026-10-17",
-        "error_count": 1,
-        "limit_count": 6
+        "error_count": 0,
+        "limit_count": 3
       },
       {
         "source": "pubmed",
@@ -37,8 +37,8 @@
   "pending_count": 0,
   "paper_count": 0,
   "research_window": {
-    "start": "2026-10-16T19:00:00.699767+00:00",
-    "end": "2026-10-17T19:00:00.699767+00:00",
+    "start": "2026-10-16T19:00:00+00:00",
+    "end": "2026-10-17T19:00:00+00:00",
     "report_day": "2026-10-17",
     "basis": "rolling_24_hours",
     "date_only_recall": "overlapping_source_days_no_invented_hour"
@@ -75,8 +75,8 @@
         "selected": 0
       },
       "surgical": {
-        "eligible": 2,
-        "scored": 2,
+        "eligible": 3,
+        "scored": 3,
         "pending": 0,
         "shortage": 5,
         "selected": 0
