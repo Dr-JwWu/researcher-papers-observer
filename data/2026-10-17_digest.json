@@ -1,6 +1,6 @@
 {
   "date": "2026-10-17",
-  "generated_at": "2026-10-18T03:52:07.336901+00:00",
+  "generated_at": "2026-10-18T04:17:53.783292+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -9,7 +9,7 @@
         "status": "partial",
         "candidate_count": 0,
         "metadata_fetched": 0,
-        "missing_metadata": 3168,
+        "missing_metadata": 3009,
         "date_from": "2026-10-16",
         "date_to": "2026-10-17",
         "error_count": 0,
