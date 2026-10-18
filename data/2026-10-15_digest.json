@@ -1,6 +1,6 @@
 {
   "date": "2026-10-15",
-  "generated_at": "2026-10-18T04:58:09.452355+00:00",
+  "generated_at": "2026-10-18T05:04:12.823904+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -9,7 +9,7 @@
         "status": "partial",
         "candidate_count": 0,
         "metadata_fetched": 0,
-        "missing_metadata": 2580,
+        "missing_metadata": 2530,
         "date_from": "2026-10-14",
         "date_to": "2026-10-15",
         "error_count": 0,
@@ -34,7 +34,7 @@
     "sections": [],
     "note": "按阅读模式不生成每日综合总结。"
   },
-  "pending_count": 1,
+  "pending_count": 0,
   "paper_count": 23,
   "research_window": {
     "start": "2026-10-14T19:00:00+00:00",
@@ -51,9 +51,7 @@
     "date_basis_policy": "只按来源声明的日粒度日期分配日报：published 在窗口内记 window_match(day_basis=published)；否则使用窗口内的 PubMed 入库日 indexed_at，并公开 discovery_kind=backfill（补录，非当日首发）；日粒度日期可确认在窗口外且无窗口内入库日的记录本轮不公开；日期过粗或缺失者保留为 uncertain_date 待后续显式补录，不补造精确日期。",
     "out_of_window_count": 8516,
     "undated_count": 0,
-    "pending_count_by_source": {
-      "arxiv": 1
-    },
+    "pending_count_by_source": {},
     "sources_unavailable": [],
     "sources_incomplete": [
       "arxiv",
@@ -69,9 +67,9 @@
     "not_fulltext": true,
     "topics": {
       "embodied": {
-        "eligible": 40,
-        "scored": 39,
-        "pending": 1,
+        "eligible": 41,
+        "scored": 41,
+        "pending": 0,
         "shortage": 0,
         "selected": 19
       },
