@@ -31,14 +31,6 @@
       "sha256": "020d646fa285af04517ccd421aac13d6d9774053efa2f1a50a7f064db4887350"
     },
     {
-      "path": "assets/papers/1e19763a724261fa3b1842af31dcdbbfde862dd8d6b6524afeb593779815ea37.png",
-      "sha256": "1e19763a724261fa3b1842af31dcdbbfde862dd8d6b6524afeb593779815ea37"
-    },
-    {
-      "path": "assets/papers/43c9edf3118d3cabeb2c805ea487f7cf25e4b66623a818cf5bcc4af3f35830e9.png",
-      "sha256": "43c9edf3118d3cabeb2c805ea487f7cf25e4b66623a818cf5bcc4af3f35830e9"
-    },
-    {
       "path": "assets/papers/43cf5a8ff32f5740f0fe4c25224e791a083d91d7e2ea4f91a6477b49b0d0ca19.webp",
       "sha256": "43cf5a8ff32f5740f0fe4c25224e791a083d91d7e2ea4f91a6477b49b0d0ca19"
     },
@@ -47,12 +39,16 @@
       "sha256": "4b00152451d06af6a525041c02cef047f84c5433aba5a3daa77ee7c9162e94a9"
     },
     {
-      "path": "assets/papers/cac3499844fd8aac96bf9c2b92b3397c5690e413818cf046ef75a74c91226cb8.png",
-      "sha256": "cac3499844fd8aac96bf9c2b92b3397c5690e413818cf046ef75a74c91226cb8"
+      "path": "assets/papers/916359103f7b18c6bfffb989ba167e6ec8db3ebc39d54b83171c033dd2ddadb7.png",
+      "sha256": "916359103f7b18c6bfffb989ba167e6ec8db3ebc39d54b83171c033dd2ddadb7"
     },
     {
       "path": "assets/papers/e3ccaee3ef30371f66bdfdd2b6a8d1488b63acfc97961a3dd55bdf211287787b.webp",
       "sha256": "e3ccaee3ef30371f66bdfdd2b6a8d1488b63acfc97961a3dd55bdf211287787b"
+    },
+    {
+      "path": "assets/papers/e7595822861140d47bb4a1a790e13a5f23d80ae6c8df98098a74984a946caf70.png",
+      "sha256": "e7595822861140d47bb4a1a790e13a5f23d80ae6c8df98098a74984a946caf70"
     },
     {
       "path": "assets/papers/f56969c667bc8be59233b2ae2b29be5cceeaf0184e02dd4b69f146a241b01bdd.webp",
@@ -164,19 +160,19 @@
     },
     {
       "path": "data/2026-10-18_AI_enhanced_Chinese.jsonl",
-      "sha256": "68dd8c4d94712d29d6d6f4eb1eb154f55e0bd050e55eb3643fed75b3119bbccc"
+      "sha256": "ccf9dc403a92b954e235689a6f62d03788cb91a6f7017b70a574b8e4ab18ecc4"
     },
     {
       "path": "data/2026-10-18_digest.json",
-      "sha256": "f97d08026e1c62676a6e3b2c99b2641b0a703b9bea473adeed4486e9c79ffde3"
+      "sha256": "7b29336ff847314b5b0b5f474f01ec43003bd46acd747f35c0e271f5c703700b"
     },
     {
       "path": "data/operations.json",
-      "sha256": "d481eca06b92d407403289c2daeaed52913f2c8340f2a4850bcae9aba413d5b7"
+      "sha256": "72dd26bb1b22344cd8befecd5c40f8d764c608f3427740ee57e0251591e3e984"
     },
     {
       "path": "docs/figure-credits.html",
-      "sha256": "5f18ba93156730146b8b1c12f3e6aff9f1b12d06b96650dc2460253541f68dfc"
+      "sha256": "6b4d092bc27a855a1c5b0c1f5890eb2125b9489e3b80b389984c856c73afb2f6"
     },
     {
       "path": "docs/licenses/daily-arxiv-LICENSE",
