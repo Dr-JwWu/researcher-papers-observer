@@ -173,11 +173,11 @@
     },
     {
       "path": "data/2026-10-19_digest.json",
-      "sha256": "6d9aeaa9f025190fbfa6848c615487ca1f14e6538761f6f1541cde18cfa77e21"
+      "sha256": "a040908e5327cfb66124519b6589055fe83d3fbe27dcafd0ac706fafce4a286a"
     },
     {
       "path": "data/operations.json",
-      "sha256": "cb74c1465b3521d73cf9e4cd15311b00d0f4e8cae62dcaaa9c10a366ef4898b6"
+      "sha256": "c436fa0501386bc53c5cf69288a4977410851788136ecef2ac54b112770bee9b"
     },
     {
       "path": "docs/figure-credits.html",
