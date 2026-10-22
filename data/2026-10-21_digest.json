@@ -1,19 +1,19 @@
 {
   "date": "2026-10-21",
-  "generated_at": "2026-10-22T05:16:26.140036+00:00",
+  "generated_at": "2026-10-22T06:46:46.332329+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
       {
         "source": "arxiv",
-        "status": "complete",
+        "status": "partial",
         "candidate_count": 0,
         "metadata_fetched": 0,
-        "missing_metadata": 0,
+        "missing_metadata": 535,
         "date_from": "2026-10-20",
         "date_to": "2026-10-21",
-        "error_count": 0,
-        "limit_count": 0
+        "error_count": 1,
+        "limit_count": 3
       },
       {
         "source": "pubmed",
@@ -49,9 +49,11 @@
     "window_end": "2026-10-21",
     "date_basis": "source_announcement_day_or_actual_observation",
     "date_basis_policy": "arXiv投稿时间保留，不作为公开日期；明确公告日作重叠日期召回，未知公开日用真实首次发现补录；旧已刊位置保留，排期不造公开时间。",
-    "out_of_window_count": 11040,
+    "out_of_window_count": 11039,
     "undated_count": 0,
-    "pending_count_by_source": {},
+    "pending_count_by_source": {
+      "arxiv": 57
+    },
     "sources_unavailable": [],
     "sources_incomplete": [
       "pubmed"
