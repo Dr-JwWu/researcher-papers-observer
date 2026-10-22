@@ -1,6 +1,6 @@
 {
   "date": "2026-10-21",
-  "generated_at": "2026-10-21T19:01:37.340594+00:00",
+  "generated_at": "2026-10-22T05:16:26.140036+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -20,7 +20,7 @@
         "status": "partial",
         "candidate_count": 0,
         "metadata_fetched": 0,
-        "missing_metadata": 22,
+        "missing_metadata": 24,
         "date_from": "2026-10-20",
         "date_to": "2026-10-21",
         "error_count": 0,
@@ -37,8 +37,8 @@
   "pending_count": 0,
   "paper_count": 20,
   "research_window": {
-    "start": "2026-10-20T19:00:08.135111+00:00",
-    "end": "2026-10-21T19:00:08.135111+00:00",
+    "start": "2026-10-20T19:00:00+00:00",
+    "end": "2026-10-21T19:00:00+00:00",
     "report_day": "2026-10-21",
     "basis": "rolling_24_hours",
     "date_only_recall": "overlapping_source_days_no_invented_hour"
