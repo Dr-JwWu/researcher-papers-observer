@@ -35,7 +35,7 @@
     "note": "按阅读模式不生成每日综合总结。"
   },
   "pending_count": 0,
-  "paper_count": 28,
+  "paper_count": 29,
   "research_window": {
     "start": "2026-10-14T19:00:00+00:00",
     "end": "2026-10-15T19:00:00+00:00",
@@ -49,7 +49,7 @@
     "window_end": "2026-10-15",
     "date_basis": "source_announcement_day_or_actual_observation",
     "date_basis_policy": "arXiv投稿时间保留，不作为公开日期；明确公告日作重叠日期召回，未知公开日用真实首次发现补录；旧已刊位置保留，排期不造公开时间。",
-    "out_of_window_count": 11508,
+    "out_of_window_count": 11510,
     "undated_count": 0,
     "pending_count_by_source": {},
     "sources_unavailable": [],
@@ -77,7 +77,7 @@
         "scored": 14,
         "pending": 0,
         "shortage": 0,
-        "selected": 8
+        "selected": 9
       }
     }
   }

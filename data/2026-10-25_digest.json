@@ -1,0 +1,84 @@
+{
+  "date": "2026-10-25",
+  "generated_at": "2026-10-26T07:02:44.144090+00:00",
+  "coverage": {
+    "status": "partial",
+    "sources": [
+      {
+        "source": "arxiv",
+        "status": "complete",
+        "candidate_count": 0,
+        "metadata_fetched": 0,
+        "missing_metadata": 0,
+        "date_from": "2026-10-25",
+        "date_to": "2026-10-26",
+        "error_count": 0,
+        "limit_count": 0
+      },
+      {
+        "source": "pubmed",
+        "status": "partial",
+        "candidate_count": 0,
+        "metadata_fetched": 0,
+        "missing_metadata": 31,
+        "date_from": "2026-10-25",
+        "date_to": "2026-10-26",
+        "error_count": 0,
+        "limit_count": 1
+      }
+    ],
+    "scope_note": "仅对已配置来源与检索窗口留痕，不代表全网穷尽。"
+  },
+  "digest": {
+    "status": "not_generated",
+    "sections": [],
+    "note": "按阅读模式不生成每日综合总结。"
+  },
+  "pending_count": 1,
+  "paper_count": 30,
+  "research_window": {
+    "start": "2026-10-25T06:30:08.133629+00:00",
+    "end": "2026-10-26T06:30:08.133629+00:00",
+    "report_day": "2026-10-25",
+    "basis": "rolling_24_hours",
+    "date_only_recall": "overlapping_source_days_no_invented_hour"
+  },
+  "research_scope": {
+    "policy": "announcement_or_first_observation",
+    "window_start": "2026-10-25",
+    "window_end": "2026-10-26",
+    "date_basis": "source_announcement_day_or_actual_observation",
+    "date_basis_policy": "arXiv投稿时间保留，不作为公开日期；明确公告日作重叠日期召回，未知公开日用真实首次发现补录；旧已刊位置保留，排期不造公开时间。",
+    "out_of_window_count": 12956,
+    "undated_count": 0,
+    "pending_count_by_source": {},
+    "sources_unavailable": [],
+    "sources_incomplete": [
+      "pubmed"
+    ],
+    "note": "计数只描述本轮已配置来源与检索窗口，不代表领域没有新论文；pending 为预算不足或失败的待审条目，不是相关性配额。"
+  },
+  "selection": {
+    "policy": "daily_topic_importance/1",
+    "min_per_topic": 5,
+    "max_per_topic": 20,
+    "rank_basis": "title_and_abstract",
+    "not_fulltext": true,
+    "topics": {
+      "embodied": {
+        "eligible": 28,
+        "scored": 28,
+        "pending": 0,
+        "shortage": 0,
+        "selected": 20
+      },
+      "surgical": {
+        "eligible": 10,
+        "scored": 10,
+        "pending": 0,
+        "shortage": 0,
+        "selected": 10
+      }
+    }
+  }
+}
