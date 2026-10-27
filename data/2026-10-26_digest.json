@@ -1,6 +1,6 @@
 {
   "date": "2026-10-26",
-  "generated_at": "2026-10-26T19:02:49.662832+00:00",
+  "generated_at": "2026-10-27T02:50:40.756976+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -20,7 +20,7 @@
         "status": "partial",
         "candidate_count": 0,
         "metadata_fetched": 0,
-        "missing_metadata": 31,
+        "missing_metadata": 34,
         "date_from": "2026-10-25",
         "date_to": "2026-10-26",
         "error_count": 0,
@@ -35,10 +35,10 @@
     "note": "按阅读模式不生成每日综合总结。"
   },
   "pending_count": 0,
-  "paper_count": 9,
+  "paper_count": 12,
   "research_window": {
-    "start": "2026-10-25T19:00:08.125744+00:00",
-    "end": "2026-10-26T19:00:08.125744+00:00",
+    "start": "2026-10-25T19:00:00+00:00",
+    "end": "2026-10-26T19:00:00+00:00",
     "report_day": "2026-10-26",
     "basis": "rolling_24_hours",
     "date_only_recall": "overlapping_source_days_no_invented_hour"
@@ -73,11 +73,11 @@
         "selected": 9
       },
       "surgical": {
-        "eligible": 0,
-        "scored": 0,
+        "eligible": 3,
+        "scored": 3,
         "pending": 0,
-        "shortage": 5,
-        "selected": 0
+        "shortage": 2,
+        "selected": 3
       }
     }
   }

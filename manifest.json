@@ -139,7 +139,7 @@
     },
     {
       "path": "data/2026-10-15_digest.json",
-      "sha256": "51f3f3a99c8300d97f4d1663560953adcf15ea492f63a245082c80fc98361de5"
+      "sha256": "73eb4ca5b7155b1640845c2382355334cbeae0d1168c98304a946f205e9ed487"
     },
     {
       "path": "data/2026-10-16_AI_enhanced_Chinese.jsonl",
@@ -147,7 +147,7 @@
     },
     {
       "path": "data/2026-10-16_digest.json",
-      "sha256": "7deecc16a4d759d57a655fbfdbb501507d7bec6bfb0ea1613af121302b9df069"
+      "sha256": "b5fec4cc3b659c953c7eae097443ef80968cb072d8de29086077ac771002e3e2"
     },
     {
       "path": "data/2026-10-17_AI_enhanced_Chinese.jsonl",
@@ -155,7 +155,7 @@
     },
     {
       "path": "data/2026-10-17_digest.json",
-      "sha256": "fb04a77d7319e2234099c047cc8a2729523948848bdf2fe8745030a0cc9fcd81"
+      "sha256": "1e2efb2ea2ca435a55a1f81e67d81633386922644138c43a2cb7ac22f1214016"
     },
     {
       "path": "data/2026-10-18_AI_enhanced_Chinese.jsonl",
@@ -187,7 +187,7 @@
     },
     {
       "path": "data/2026-10-21_digest.json",
-      "sha256": "f3cb18a2e014c4454ec4ad5cde1998606e6c3ad3dd1b49fd37f6476aec7ab3ea"
+      "sha256": "2cf19c4eedc1840e2dcf37d0e631180cd5eafbec5560d51f2b62a46d5f4b5025"
     },
     {
       "path": "data/2026-10-22_AI_enhanced_Chinese.jsonl",
@@ -215,15 +215,15 @@
     },
     {
       "path": "data/2026-10-26_AI_enhanced_Chinese.jsonl",
-      "sha256": "aa5e492ac7244a5015c5dc4897561b8447af6d8c43345fc9c2fdd7f9c4f165db"
+      "sha256": "e6dc13d9da9c01db22208616f07edb0cc119f47c18866dc2374d0942699528ca"
     },
     {
       "path": "data/2026-10-26_digest.json",
-      "sha256": "ba562a7c59c9626a2de42dc844b5fadd0c5ba5ef270a7d8e6ecdf08ade1e4171"
+      "sha256": "c6cb6155c5f42f65305ce822c0cef0a094757d91344b80a4c2d176f1a86980f3"
     },
     {
       "path": "data/operations.json",
-      "sha256": "fd5d31cfe27b8d333e44832c721c43f51bc0cee7c8af51f99e280b0bb5144742"
+      "sha256": "5c22effcd573b652087faba1a90ff410d8ac17314a3d70164b79c2cd07e6e9f6"
     },
     {
       "path": "docs/figure-credits.html",
