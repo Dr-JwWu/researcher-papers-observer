@@ -18,7 +18,8 @@
     "2026-10-22",
     "2026-10-23",
     "2026-10-25",
-    "2026-10-26"
+    "2026-10-26",
+    "2026-10-27"
   ],
   "files": [
     {
@@ -27,7 +28,7 @@
     },
     {
       "path": "assets/file-list.txt",
-      "sha256": "41dd9aa119145b7886278bd810a6e778d47fbf3e667073dd9a980058533b9a92"
+      "sha256": "ce8b71f2139b015b6087a1344941f3d8beef1f07fb9a260a786a437499a1b96f"
     },
     {
       "path": "assets/logo2-removebg-preview.png",
@@ -44,6 +45,10 @@
     {
       "path": "assets/papers/4b00152451d06af6a525041c02cef047f84c5433aba5a3daa77ee7c9162e94a9.png",
       "sha256": "4b00152451d06af6a525041c02cef047f84c5433aba5a3daa77ee7c9162e94a9"
+    },
+    {
+      "path": "assets/papers/4cbd57bdda9b1bffe3cacb6036f8667e39361bbaf4d6bb43e3a43932ae40c68b.png",
+      "sha256": "4cbd57bdda9b1bffe3cacb6036f8667e39361bbaf4d6bb43e3a43932ae40c68b"
     },
     {
       "path": "assets/papers/e3ccaee3ef30371f66bdfdd2b6a8d1488b63acfc97961a3dd55bdf211287787b.webp",
@@ -187,7 +192,7 @@
     },
     {
       "path": "data/2026-10-21_digest.json",
-      "sha256": "0121a801782d87bad3232399e2703292750cdcd0fa7f3cb37abb2da741ef9ecb"
+      "sha256": "a4cf3c5d459a959c1c6b51d04d008f9c45e0389a58ddacdf408e37d9d381d329"
     },
     {
       "path": "data/2026-10-22_AI_enhanced_Chinese.jsonl",
@@ -222,12 +227,20 @@
       "sha256": "493eac1af8885f494583edc574e72fac4b970d23cdb51a538eef0e26132bf22a"
     },
     {
+      "path": "data/2026-10-27_AI_enhanced_Chinese.jsonl",
+      "sha256": "d7b77b9b55c03d06de6d065643889bb3cec9ddafb7c38afafe409364c18431a0"
+    },
+    {
+      "path": "data/2026-10-27_digest.json",
+      "sha256": "403abac020a79e70703fc28cd474c168ac9ae0c2323f63411a16c039f995e675"
+    },
+    {
       "path": "data/operations.json",
-      "sha256": "228594587a6ea8aee638f83913d2c0d0c38b2d3b3f12a9866672c75b647447e0"
+      "sha256": "fd5d31cfe27b8d333e44832c721c43f51bc0cee7c8af51f99e280b0bb5144742"
     },
     {
       "path": "docs/figure-credits.html",
-      "sha256": "f8c9a1b0adb354f10c950445816ec82a4d830d822ce946e69e4de83243c960e8"
+      "sha256": "89a912913a94e641dbd6945f3864590829fd05aac24b8279776ab72e3ba37d43"
     },
     {
       "path": "docs/licenses/daily-arxiv-LICENSE",
