@@ -61,7 +61,7 @@
     },
     {
       "path": "css/pd-adapt.css",
-      "sha256": "2f69bd7c7299e84b448991bd438904500d22882eac812148d76161f1e1ed4dd0"
+      "sha256": "75374a130f4069977ef86076771d297c4113067d2fb661b45a685b90ebe45ae2"
     },
     {
       "path": "css/screenshot-placeholder.svg",
@@ -141,7 +141,7 @@
     },
     {
       "path": "data/2026-10-15_digest.json",
-      "sha256": "af42d6a6c555911e3e462f5f8c3a639c697a833f5b6366249e288331ada47273"
+      "sha256": "79bde6da34a75019b59d5834351429b22310990194da244d58f374d43cd3b592"
     },
     {
       "path": "data/2026-10-16_AI_enhanced_Chinese.jsonl",
@@ -149,7 +149,7 @@
     },
     {
       "path": "data/2026-10-16_digest.json",
-      "sha256": "22092f7ef4bb78047c991ddbf9e7be03d72f3e8727d311103ce4a592de3639c8"
+      "sha256": "44c0aa2a6ab6497829e383aeb023e417eaa58fafd2848dab9dfebca4e52377f6"
     },
     {
       "path": "data/2026-10-17_AI_enhanced_Chinese.jsonl",
@@ -189,7 +189,7 @@
     },
     {
       "path": "data/2026-10-21_digest.json",
-      "sha256": "f5c11f7aa5393b22b3367ce025687cae4c5fa4fe32a84a575d5a1d12ac9e24a2"
+      "sha256": "6bb0e55d421e32f818a64f62d8445be8a7fcfcb571d7475dd4083931820ec6bb"
     },
     {
       "path": "data/2026-10-22_AI_enhanced_Chinese.jsonl",
@@ -213,7 +213,7 @@
     },
     {
       "path": "data/2026-10-24_digest.json",
-      "sha256": "5f82a07e66206790293ede2ed88e47162ea3255d36ec75c34a3f1f02e61baaaa"
+      "sha256": "be948ebe53cb8efdc89e951981d48d3f5668f977953a4376b900d101b5f66dd0"
     },
     {
       "path": "data/2026-10-25_AI_enhanced_Chinese.jsonl",
@@ -221,7 +221,7 @@
     },
     {
       "path": "data/2026-10-25_digest.json",
-      "sha256": "68dc9b4f1cf8efc2616b2017df1b8fdbf7152382934754a767c0f48784d4f1b7"
+      "sha256": "c16844b4dd351576668776ef4d56d71146654f172fb6552e867e6226fce6474c"
     },
     {
       "path": "data/2026-10-26_AI_enhanced_Chinese.jsonl",
@@ -233,11 +233,11 @@
     },
     {
       "path": "data/2026-10-27_AI_enhanced_Chinese.jsonl",
-      "sha256": "db661606d311d9020a2d491bc7d5b25e7184df1b4658d3d6b32af5fd219173ee"
+      "sha256": "700b15f619693c537782760c6f41c78fe0c25ad52d1ea0609a120b92283bb21a"
     },
     {
       "path": "data/2026-10-27_digest.json",
-      "sha256": "3944de5e8dd641063a14a2a9730f820555d6dd8982168be70c566fa35d17ef0b"
+      "sha256": "56ab2fa232ac2b757865c33e5d2cc63cdb6a6730a622d1d3b6999f934261bec8"
     },
     {
       "path": "data/operations.json",
@@ -253,11 +253,11 @@
     },
     {
       "path": "index.html",
-      "sha256": "32c6ac087491e611b770dd6a822ebb8193bf157629f1315d3c728dc7e0725f41"
+      "sha256": "a2ecb26205fce273f842133192cc50289129e478e740bcec903ce9476b8146b4"
     },
     {
       "path": "js/app.js",
-      "sha256": "ed417514019376f285627197a5cf4a36e8bf2ef58c0277fc55c07f1128e868b3"
+      "sha256": "3471a48b90b1f6a96d0da2dedf7f023947b8c77c237f391d434e2ad3172f2686"
     },
     {
       "path": "js/data-config.js",
@@ -273,7 +273,7 @@
     },
     {
       "path": "js/pd-i18n.js",
-      "sha256": "8874f6d41479eac63369a63b6a3f56b5c6714b7a5d225aa7ee444a544ba9f05c"
+      "sha256": "b1a9f78cd57022a99349f80719dc522205f0d1c28d2e23250e15d2df820e6cdf"
     },
     {
       "path": "js/pd-prefs.js",
@@ -281,7 +281,7 @@
     },
     {
       "path": "js/pd-render.js",
-      "sha256": "f13ae91f7e59347aa31464469346d69f1e7a7011bafa4f330449f77b395dce30"
+      "sha256": "c80387175b81a05a82e8f45af5933fd1c439395f60aae184d31b559ccf541e3a"
     },
     {
       "path": "js/pd-settings.js",
@@ -292,12 +292,20 @@
       "sha256": "af48a0cb35a8c686f0f4d4ddfbe9828d3ebde5a7c16d5fe11abec9233d130f39"
     },
     {
+      "path": "js/pd-sync-settings.js",
+      "sha256": "2004057f673325ab935eef39d602beb840f7f9f9ba09b0a87e569c113caee756"
+    },
+    {
+      "path": "js/pd-user-state.js",
+      "sha256": "d5c4f57f3730e42c2ca2dfa1cfe97f0bbd7940b3a4cf71c28fc021862715386b"
+    },
+    {
       "path": "js/statistic.js",
       "sha256": "6da26fc22c4509546c763b8f379079edf4cee0674a862995347fedfd5cb4ec17"
     },
     {
       "path": "settings.html",
-      "sha256": "84fbe844b6f4ec385894d8616e4c13d9fafe35a611341fad09d0b6b62e3d182b"
+      "sha256": "029dfe4f114c4ab5317082cbb83afc9cbb476609a786a037f0a17c9b0731b2ff"
     },
     {
       "path": "statistic.html",

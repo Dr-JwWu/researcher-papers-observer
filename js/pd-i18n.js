@@ -53,6 +53,16 @@
     // 连续日期列表（按报告日期倒序，最新在顶部）
     feedLatest: '最新',
     feedDayCount: '收录 {n} 篇',
+    // 个人阅读状态（只存本机并同步到用户自己的私有仓库）
+    favoritesFilter: '收藏',
+    favoritesFilterHint: '只看我收藏的文献',
+    readActionLabel: '标记已读',
+    readDoneLabel: '已读',
+    readActionHint: '标记为已读（保存到本机并同步到你的私有数据仓库）',
+    favoriteActionLabel: '收藏',
+    favoriteDoneLabel: '已收藏',
+    favoriteActionHint: '收藏这篇，同时标记为已读',
+    favoritesOrphans: '{n} 篇收藏不在当前站点数据中',
     feedDayEmpty: '该筛选下暂无收录。',
     feedDayMissing: '本日暂无日报。',
     // 数据解析不完整：不说“没有论文”，也不外露原始坏行与计数

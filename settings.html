@@ -113,6 +113,40 @@
                             </div>
                         </div>
                     </div>
+
+                    <div class="settings-section" id="syncSection">
+                        <div class="keyword-section-title">
+                            <div class="keyword-section-title-left">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                    <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-9 14l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" fill="currentColor"/>
+                                </svg>
+                                已读与收藏同步（可选）
+                            </div>
+                        </div>
+                        <div class="settings-card">
+                            <p class="settings-help">已读和收藏默认只保存在本机浏览器。填写你自己 GitHub 私有仓库里的一个 JSON 文件和 fine-grained token 后，可在多台设备间同步；token 只存在本机浏览器，不写进仓库、不写进页面。</p>
+                            <div class="settings-item">
+                                <label class="settings-label" for="syncRepo">数据仓库（owner/repo）</label>
+                                <input id="syncRepo" class="settings-input" type="text" autocomplete="off" spellcheck="false">
+                            </div>
+                            <div class="settings-item">
+                                <label class="settings-label" for="syncPath">文件路径</label>
+                                <input id="syncPath" class="settings-input" type="text" autocomplete="off" spellcheck="false">
+                            </div>
+                            <div class="settings-item">
+                                <label class="settings-label" for="syncToken">访问令牌（只存本机）</label>
+                                <input id="syncToken" class="settings-input" type="password" autocomplete="new-password" placeholder="留空表示保留已保存的令牌">
+                            </div>
+                            <div class="settings-item settings-sync-actions">
+                                <button id="syncSave" class="button primary" type="button">保存并同步</button>
+                                <button id="syncClear" class="button" type="button">清除令牌</button>
+                                <button id="syncExport" class="button" type="button">导出收藏</button>
+                                <label class="button settings-import-label" for="syncImport">导入</label>
+                                <input id="syncImport" type="file" accept="application/json" hidden>
+                            </div>
+                            <p id="syncStatus" class="settings-sync-status" role="status"></p>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="settings-actions">
@@ -134,6 +168,8 @@
     <script src="js/pd-i18n.js"></script>
     <script src="js/pd-dom.js"></script>
     <script src="js/pd-prefs.js"></script>
+    <script src="js/pd-user-state.js"></script>
     <script src="js/pd-settings.js"></script>
+    <script src="js/pd-sync-settings.js"></script>
 </body>
 </html>

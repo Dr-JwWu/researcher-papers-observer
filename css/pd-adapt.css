@@ -1299,3 +1299,84 @@ html {
     color: #047857;
     margin: 8px 0 0;
 }
+
+/* ---------------------------------------------------------------
+   个人阅读状态：已读 / 收藏（数据只在用户浏览器与其私有仓库）
+   --------------------------------------------------------------- */
+.paper-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.paper-card-action {
+    font-size: 0.78rem;
+    line-height: 1.4;
+    padding: 3px 10px;
+    border-radius: 999px;
+    border: 1px solid var(--border-color);
+    background: transparent;
+    color: var(--text-secondary, #4a5568);
+    cursor: pointer;
+}
+
+.paper-card-action:hover {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+.paper-card-action.active {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #fff;
+}
+
+.paper-card-action:disabled {
+    opacity: 0.65;
+    cursor: default;
+}
+
+.paper-card-read {
+    opacity: 0.78;
+}
+
+.category-button-favorites {
+    margin-left: 10px;
+}
+
+.settings-help {
+    font-size: 0.85rem;
+    color: var(--text-secondary, #4a5568);
+    margin: 0 0 10px;
+    line-height: 1.6;
+}
+
+.settings-label {
+    display: block;
+    font-size: 0.82rem;
+    color: var(--text-secondary, #4a5568);
+    margin-bottom: 4px;
+}
+
+.settings-sync-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.settings-import-label {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+}
+
+.settings-sync-status {
+    font-size: 0.82rem;
+    color: var(--text-secondary, #4a5568);
+    margin: 10px 0 0;
+}
+
+.settings-sync-status.ok { color: #047857; }
+.settings-sync-status.error { color: #b91c1c; }

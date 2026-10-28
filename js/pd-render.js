@@ -250,7 +250,46 @@
     }
     if (hasBody) card.appendChild(body);
 
+    // 5) 个人阅读状态：已读 / 收藏。收藏隐含已读；状态只存本机并同步到私有仓库。
+    if (opts.userActions) card.appendChild(userActionRow(card, paper, opts.userActions));
+
     return card;
+  }
+
+  /** 卡片底部两个小按钮；点击不触发卡片的详情打开。 */
+  function userActionRow(card, paper, actions) {
+    const row = dom.el('div', { class: 'paper-card-actions' });
+    const read = actions.isRead(paper.id);
+    const favorite = actions.isFavorite(paper.id);
+    if (read) card.classList.add('paper-card-read');
+    const readButton = dom.el('button', {
+      class: 'paper-card-action' + (read ? ' active' : ''),
+      type: 'button',
+      'data-action': 'read',
+      'aria-pressed': read ? 'true' : 'false',
+      title: T.readActionHint,
+      text: read ? T.readDoneLabel : T.readActionLabel
+    });
+    if (favorite) readButton.disabled = true;
+    readButton.addEventListener('click', function (event) {
+      event.stopPropagation();
+      actions.onRead(paper, readButton, card);
+    });
+    const favoriteButton = dom.el('button', {
+      class: 'paper-card-action' + (favorite ? ' active' : ''),
+      type: 'button',
+      'data-action': 'favorite',
+      'aria-pressed': favorite ? 'true' : 'false',
+      title: T.favoriteActionHint,
+      text: favorite ? T.favoriteDoneLabel : T.favoriteActionLabel
+    });
+    favoriteButton.addEventListener('click', function (event) {
+      event.stopPropagation();
+      actions.onFavorite(paper, favoriteButton, readButton, card);
+    });
+    row.appendChild(readButton);
+    row.appendChild(favoriteButton);
+    return row;
   }
 
   /** 同日修订：只展示真实发生的数量与说明（0 不写出来）。 */

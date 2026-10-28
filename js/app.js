@@ -31,6 +31,8 @@
   const dom = PD.dom;
   const i18n = PD.i18n;
   const T = i18n.TEXT;
+  // 已读/收藏：本机存储，可选同步到用户自己的私有数据仓库（见设置页）。
+  const userState = PD.userState ? PD.userState.createUserState() : null;
 
   const state = {
     fileList: null,
@@ -44,6 +46,8 @@
     authors: [],
     text: '',
     view: 'grid',
+    favoritesOnly: false, // 只看收藏
+    paperDay: {},        // paper id -> 报告日期（收藏条目需要日期快照）
     currentPapers: [],   // 当前 feed 顺序内的论文（模态框 ← → 与序号用）
     currentIndex: 0
   };
@@ -216,6 +220,27 @@
       button.addEventListener('click', function () { toggleTopic(topic); });
       refs.categoryScroll.appendChild(button);
     });
+    if (userState) {
+      const counts = userState.counts();
+      const active = state.favoritesOnly;
+      const favorites = dom.el('button', {
+        class: 'category-button category-button-favorites' + (active ? ' active' : ''),
+        'data-filter': 'favorites',
+        type: 'button',
+        'aria-pressed': active ? 'true' : 'false',
+        title: T.favoritesFilterHint,
+        text: T.favoritesFilter + ' ' + counts.favorite
+      });
+      favorites.addEventListener('click', function () { toggleFavoritesOnly(); });
+      refs.categoryScroll.appendChild(favorites);
+    }
+  }
+
+  function toggleFavoritesOnly() {
+    state.favoritesOnly = !state.favoritesOnly;
+    updateUrlParam('fav', state.favoritesOnly ? '1' : null);
+    renderTopicNav();
+    renderFeed();
   }
 
   function toggleTopic(topic) {
@@ -296,7 +321,13 @@
     state.availableDates.forEach(function (date) {
       const day = state.days[date];
       if (!dayReady(day)) return;
-      const papers = PD.topicView(day.papers, state.topics).items.map(function (item) { return item.paper; });
+      let papers = PD.topicView(day.papers, state.topics).items.map(function (item) { return item.paper; });
+      if (state.favoritesOnly) {
+        if (!userState) return;
+        papers = papers.filter(function (paper) { return userState.isFavorite(paper.id); });
+        if (papers.length === 0) return;
+      }
+      papers.forEach(function (paper) { state.paperDay[paper.id] = day.date; });
       const ranked = PD.rankPapers(papers, {
         keywords: state.keywords,
         authors: state.authors,
@@ -411,6 +442,61 @@
     updateActiveDate();
   }
 
+  /* ------------------------- 已读 / 收藏 ------------------------- */
+
+  function paperMeta(paper) {
+    return {
+      title: paper.title || '',
+      date: state.paperDay[paper.id] || '',
+      url: (paper.links && paper.links.abs) || paper.abs || '',
+      source: paper.source || 'arxiv'
+    };
+  }
+
+  function paintRead(button, card, read, favorite) {
+    if (!button) return;
+    button.classList.toggle('active', !!read);
+    button.setAttribute('aria-pressed', read ? 'true' : 'false');
+    button.textContent = read ? T.readDoneLabel : T.readActionLabel;
+    button.disabled = !!favorite;
+    button.title = favorite ? T.readActionHint : T.readActionHint;
+    if (card) card.classList.toggle('paper-card-read', !!read);
+  }
+
+  function paintFavorite(button, favorite) {
+    if (!button) return;
+    button.classList.toggle('active', !!favorite);
+    button.setAttribute('aria-pressed', favorite ? 'true' : 'false');
+    button.textContent = favorite ? T.favoriteDoneLabel : T.favoriteActionLabel;
+  }
+
+  function syncUserState() {
+    if (!userState || !userState.hasToken()) return Promise.resolve(null);
+    return userState.sync();
+  }
+
+  function onReadAction(paper, button, card) {
+    if (!userState || userState.isFavorite(paper.id)) return;
+    userState.toggleRead(paper.id, paperMeta(paper));
+    paintRead(button, card, userState.isRead(paper.id), false);
+    renderTopicNav();
+    syncUserState();
+  }
+
+  function onFavoriteAction(paper, favoriteButton, readButton, card) {
+    if (!userState) return;
+    userState.toggleFavorite(paper.id, paperMeta(paper));
+    const favorite = userState.isFavorite(paper.id);
+    paintFavorite(favoriteButton, favorite);
+    paintRead(readButton, card, userState.isRead(paper.id), favorite);
+    if (state.favoritesOnly && !favorite) {
+      renderFeed();
+      return;
+    }
+    renderTopicNav();
+    syncUserState();
+  }
+
   function renderFeed() {
     if (!refs.paperContainer) return;
     const days = buildFeedDays();
@@ -431,7 +517,13 @@
         const index = state.currentPapers.indexOf(paper);
         state.currentIndex = index < 0 ? 0 : index;
         openModal(paper, state.currentIndex);
-      }
+      },
+      userActions: userState ? {
+        isRead: function (id) { return userState.isRead(id); },
+        isFavorite: function (id) { return userState.isFavorite(id); },
+        onRead: onReadAction,
+        onFavorite: onFavoriteAction
+      } : null
     });
     renderDateNav(days);
     renderHeaderLabel();
@@ -654,6 +746,7 @@
 
     // URL 里的 topic 只接受已知主题（允许逗号分隔的多选）。
     const params = new URLSearchParams(window.location.search);
+    if (params.get('fav') === '1') state.favoritesOnly = true;
     const topicParam = params.get('topic');
     if (topicParam) {
       state.topics = topicParam.split(',').map(function (item) { return item.trim(); })
@@ -680,6 +773,15 @@
       return loadAllDays().then(function () {
         if (!isCurrentLoad(token)) return null;
         renderFeed();
+        // 有令牌时静默拉取一次远端状态：换设备后第一次打开就能看到同一份收藏。
+        if (userState && userState.hasToken()) {
+          userState.sync().then(function (result) {
+            if (!result) return;
+            if (result.status === 'clean' || result.status === 'pushed' || result.status === 'created') {
+              renderFeed();
+            }
+          });
+        }
         return null;
       });
     }).catch(function () {
