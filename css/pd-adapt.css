@@ -1305,20 +1305,52 @@ html {
    --------------------------------------------------------------- */
 .paper-card-actions {
     display: flex;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-top: 10px;
+    flex-wrap: nowrap;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 0 20px 18px;
+    width: 100%;
 }
 
 .paper-card-action {
-    font-size: 0.78rem;
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 0.95rem;
     line-height: 1.4;
-    padding: 3px 10px;
-    border-radius: 999px;
+    padding: 10px 12px;
+    border-radius: 10px;
     border: 1px solid var(--border-color);
     background: transparent;
     color: var(--text-secondary, #4a5568);
     cursor: pointer;
+    text-align: center;
+}
+
+/* 列表视图里卡片是横排，按钮不能再撑满一行。 */
+.list-view .paper-card-actions {
+    width: auto;
+    padding: 0;
+    margin-top: 0;
+    gap: 8px;
+}
+
+.list-view .paper-card-action {
+    flex: 0 0 auto;
+    font-size: 0.8rem;
+    padding: 4px 10px;
+    border-radius: 999px;
+}
+
+@media (max-width: 480px) {
+    .paper-card-actions {
+        padding: 0 14px 14px;
+        gap: 8px;
+    }
+
+    .paper-card-action {
+        font-size: 0.9rem;
+        padding: 9px 10px;
+    }
 }
 
 .paper-card-action:hover {

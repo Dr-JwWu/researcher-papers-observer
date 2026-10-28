@@ -59,6 +59,7 @@
     readActionLabel: '标记已读',
     readDoneLabel: '已读',
     readActionHint: '标记为已读（保存到本机并同步到你的私有数据仓库）',
+    readLockedHint: '已收藏的文献默认已读；先取消收藏，才能取消已读',
     favoriteActionLabel: '收藏',
     favoriteDoneLabel: '已收藏',
     favoriteActionHint: '收藏这篇，同时标记为已读',

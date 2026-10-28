@@ -61,7 +61,7 @@
     },
     {
       "path": "css/pd-adapt.css",
-      "sha256": "75374a130f4069977ef86076771d297c4113067d2fb661b45a685b90ebe45ae2"
+      "sha256": "a74e744090da1e3758fcc4697df6d4fcd71585f07e473fd349c383ac4e2576ba"
     },
     {
       "path": "css/screenshot-placeholder.svg",
@@ -241,7 +241,7 @@
     },
     {
       "path": "data/operations.json",
-      "sha256": "fd5d31cfe27b8d333e44832c721c43f51bc0cee7c8af51f99e280b0bb5144742"
+      "sha256": "d9ef79e716303d19df5cfd8c701b7f44de813fa996aaa4a396692a86e732453b"
     },
     {
       "path": "docs/figure-credits.html",
@@ -273,7 +273,7 @@
     },
     {
       "path": "js/pd-i18n.js",
-      "sha256": "b1a9f78cd57022a99349f80719dc522205f0d1c28d2e23250e15d2df820e6cdf"
+      "sha256": "a901f3cb1084535efa2d994923e407709895bfde2f20645fa42d38aa47919e1f"
     },
     {
       "path": "js/pd-prefs.js",
@@ -281,7 +281,7 @@
     },
     {
       "path": "js/pd-render.js",
-      "sha256": "c80387175b81a05a82e8f45af5933fd1c439395f60aae184d31b559ccf541e3a"
+      "sha256": "85c9dcf7e80f2d72e4d0f32e76656178d673327a46540ccadb5d46a8f033f8f4"
     },
     {
       "path": "js/pd-settings.js",

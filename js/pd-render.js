@@ -270,7 +270,10 @@
       title: T.readActionHint,
       text: read ? T.readDoneLabel : T.readActionLabel
     });
-    if (favorite) readButton.disabled = true;
+    if (favorite) {
+      readButton.disabled = true;
+      readButton.title = T.readLockedHint;
+    }
     readButton.addEventListener('click', function (event) {
       event.stopPropagation();
       actions.onRead(paper, readButton, card);
