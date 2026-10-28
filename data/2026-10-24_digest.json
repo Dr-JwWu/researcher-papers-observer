@@ -1,6 +1,6 @@
 {
   "date": "2026-10-24",
-  "generated_at": "2026-10-28T09:32:38.791390+00:00",
+  "generated_at": "2026-10-28T16:02:43.408086+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -9,10 +9,10 @@
         "status": "partial",
         "candidate_count": 0,
         "metadata_fetched": 0,
-        "missing_metadata": 520,
+        "missing_metadata": 0,
         "date_from": "2026-10-23",
         "date_to": "2026-10-24",
-        "error_count": 0,
+        "error_count": 1,
         "limit_count": 2
       },
       {
@@ -49,7 +49,7 @@
     "window_end": "2026-10-24",
     "date_basis": "source_announcement_day_or_actual_observation",
     "date_basis_policy": "arXiv投稿时间保留，不作为公开日期；明确公告日作重叠日期召回，未知公开日用真实首次发现补录；旧已刊位置保留，排期不造公开时间。",
-    "out_of_window_count": 15093,
+    "out_of_window_count": 15094,
     "undated_count": 0,
     "pending_count_by_source": {},
     "sources_unavailable": [

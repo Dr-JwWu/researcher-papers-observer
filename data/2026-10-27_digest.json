@@ -35,7 +35,7 @@
     "note": "按阅读模式不生成每日综合总结。"
   },
   "pending_count": 1,
-  "paper_count": 32,
+  "paper_count": 33,
   "research_window": {
     "start": "2026-10-26T19:00:00+00:00",
     "end": "2026-10-27T19:00:00+00:00",
@@ -49,10 +49,10 @@
     "window_end": "2026-10-27",
     "date_basis": "source_announcement_day_or_actual_observation",
     "date_basis_policy": "arXiv投稿时间保留，不作为公开日期；明确公告日作重叠日期召回，未知公开日用真实首次发现补录；旧已刊位置保留，排期不造公开时间。",
-    "out_of_window_count": 13455,
+    "out_of_window_count": 13456,
     "undated_count": 0,
     "pending_count_by_source": {
-      "pubmed": 1
+      "arxiv": 44
     },
     "sources_unavailable": [],
     "sources_incomplete": [
@@ -76,11 +76,11 @@
         "selected": 20
       },
       "surgical": {
-        "eligible": 12,
-        "scored": 12,
+        "eligible": 13,
+        "scored": 13,
         "pending": 0,
         "shortage": 0,
-        "selected": 12
+        "selected": 13
       }
     }
   }
