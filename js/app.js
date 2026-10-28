@@ -233,6 +233,16 @@
       });
       favorites.addEventListener('click', function () { toggleFavoritesOnly(); });
       refs.categoryScroll.appendChild(favorites);
+      // 没有同步令牌时，收藏只落在本机：把这件事直接写在导航上，避免误以为已同步。
+      if (!userState.hasToken() && (counts.read > 0 || counts.favorite > 0)) {
+        const note = dom.el('a', {
+          class: 'user-sync-note',
+          href: 'settings.html',
+          title: T.localOnlyHint,
+          text: T.localOnlyBadge
+        });
+        refs.categoryScroll.appendChild(note);
+      }
     }
   }
 
@@ -521,6 +531,7 @@
       userActions: userState ? {
         isRead: function (id) { return userState.isRead(id); },
         isFavorite: function (id) { return userState.isFavorite(id); },
+        localOnly: !userState.hasToken(),
         onRead: onReadAction,
         onFavorite: onFavoriteAction
       } : null

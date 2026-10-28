@@ -1412,3 +1412,18 @@ html {
 
 .settings-sync-status.ok { color: #047857; }
 .settings-sync-status.error { color: #b91c1c; }
+
+/* 未配置同步令牌时的“仅本机”提示 */
+.user-sync-note {
+    display: inline-flex;
+    align-items: center;
+    margin-left: 8px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    color: #b45309;
+    background: #fef3c7;
+    border: 1px solid #fcd34d;
+    white-space: nowrap;
+    cursor: help;
+}

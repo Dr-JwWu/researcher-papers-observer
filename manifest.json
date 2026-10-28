@@ -61,7 +61,7 @@
     },
     {
       "path": "css/pd-adapt.css",
-      "sha256": "a74e744090da1e3758fcc4697df6d4fcd71585f07e473fd349c383ac4e2576ba"
+      "sha256": "873f351086710b17608649bdcf908b73148924e287eca5a62e5f0bd0bba67855"
     },
     {
       "path": "css/screenshot-placeholder.svg",
@@ -241,7 +241,7 @@
     },
     {
       "path": "data/operations.json",
-      "sha256": "d9ef79e716303d19df5cfd8c701b7f44de813fa996aaa4a396692a86e732453b"
+      "sha256": "27f35f32bcb0d8cfec2b6e190af5db2f44ba7c0a3a4be6a15a07bb96205232da"
     },
     {
       "path": "docs/figure-credits.html",
@@ -257,7 +257,7 @@
     },
     {
       "path": "js/app.js",
-      "sha256": "3471a48b90b1f6a96d0da2dedf7f023947b8c77c237f391d434e2ad3172f2686"
+      "sha256": "4c1948eb026dea5851d1b3b91f1ae9793c336d03c1398196c870d2f48bf00f4d"
     },
     {
       "path": "js/data-config.js",
@@ -273,7 +273,7 @@
     },
     {
       "path": "js/pd-i18n.js",
-      "sha256": "a901f3cb1084535efa2d994923e407709895bfde2f20645fa42d38aa47919e1f"
+      "sha256": "a50e273ff6e26b9ee2da3e552863d26393e9006a97b53b9ae0e2c467d0b2d925"
     },
     {
       "path": "js/pd-prefs.js",
@@ -281,7 +281,7 @@
     },
     {
       "path": "js/pd-render.js",
-      "sha256": "85c9dcf7e80f2d72e4d0f32e76656178d673327a46540ccadb5d46a8f033f8f4"
+      "sha256": "84a27d7b0b2958da58fd7ae6b6cd344a0e0c7bab2ebf152f91d5b2611a5200d7"
     },
     {
       "path": "js/pd-settings.js",

@@ -262,12 +262,13 @@
     const read = actions.isRead(paper.id);
     const favorite = actions.isFavorite(paper.id);
     if (read) card.classList.add('paper-card-read');
+    const localOnly = actions.localOnly === true;
     const readButton = dom.el('button', {
       class: 'paper-card-action' + (read ? ' active' : ''),
       type: 'button',
       'data-action': 'read',
       'aria-pressed': read ? 'true' : 'false',
-      title: T.readActionHint,
+      title: localOnly ? T.localOnlyTitle : T.readActionHint,
       text: read ? T.readDoneLabel : T.readActionLabel
     });
     if (favorite) {
@@ -283,7 +284,7 @@
       type: 'button',
       'data-action': 'favorite',
       'aria-pressed': favorite ? 'true' : 'false',
-      title: T.favoriteActionHint,
+      title: localOnly ? T.localOnlyTitle : T.favoriteActionHint,
       text: favorite ? T.favoriteDoneLabel : T.favoriteActionLabel
     });
     favoriteButton.addEventListener('click', function (event) {

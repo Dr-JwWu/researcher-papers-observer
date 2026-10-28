@@ -64,6 +64,9 @@
     favoriteDoneLabel: '已收藏',
     favoriteActionHint: '收藏这篇，同时标记为已读',
     favoritesOrphans: '{n} 篇收藏不在当前站点数据中',
+    localOnlyBadge: '仅本机',
+    localOnlyHint: '未配置同步令牌：已读与收藏只保存在这台浏览器；到设置页填入令牌后会自动同步。',
+    localOnlyTitle: '仅保存在本机（未配置同步）',
     feedDayEmpty: '该筛选下暂无收录。',
     feedDayMissing: '本日暂无日报。',
     // 数据解析不完整：不说“没有论文”，也不外露原始坏行与计数
