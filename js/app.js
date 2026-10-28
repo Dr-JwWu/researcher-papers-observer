@@ -480,9 +480,33 @@
     button.textContent = favorite ? T.favoriteDoneLabel : T.favoriteActionLabel;
   }
 
+  // 同步串行化：连续点收藏不会并发写同一个文件；失败自动重试一次/一分钟。
+  let syncChain = Promise.resolve();
+  let syncRetryTimer = null;
+
+  function scheduleSyncRetry() {
+    if (syncRetryTimer) return;
+    syncRetryTimer = setTimeout(function () {
+      syncRetryTimer = null;
+      syncUserState().then(function (result) {
+        if (result && result.status !== 'error') renderTopicNav();
+      });
+    }, 60000);
+  }
+
   function syncUserState() {
     if (!userState || !userState.hasToken()) return Promise.resolve(null);
-    return userState.sync();
+    syncChain = syncChain.then(function () {
+      return userState.sync().then(function (result) {
+        if (result && result.status === 'error' && result.error !== 'auth') scheduleSyncRetry();
+        return result;
+      });
+    }).catch(function () { return null; });
+    return syncChain;
+  }
+
+  if (typeof window !== 'undefined' && window.addEventListener) {
+    window.addEventListener('online', function () { syncUserState(); });
   }
 
   function onReadAction(paper, button, card) {
@@ -786,7 +810,7 @@
         renderFeed();
         // 有令牌时静默拉取一次远端状态：换设备后第一次打开就能看到同一份收藏。
         if (userState && userState.hasToken()) {
-          userState.sync().then(function (result) {
+          syncUserState().then(function (result) {
             if (!result) return;
             if (result.status === 'clean' || result.status === 'pushed' || result.status === 'created') {
               renderFeed();

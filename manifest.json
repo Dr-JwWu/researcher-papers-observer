@@ -237,11 +237,11 @@
     },
     {
       "path": "data/2026-10-27_digest.json",
-      "sha256": "56ab2fa232ac2b757865c33e5d2cc63cdb6a6730a622d1d3b6999f934261bec8"
+      "sha256": "9560dae4d5a1d957635e7c3e11a3f7f34f99a298164922965bab4659a073180d"
     },
     {
       "path": "data/operations.json",
-      "sha256": "27f35f32bcb0d8cfec2b6e190af5db2f44ba7c0a3a4be6a15a07bb96205232da"
+      "sha256": "fd5d31cfe27b8d333e44832c721c43f51bc0cee7c8af51f99e280b0bb5144742"
     },
     {
       "path": "docs/figure-credits.html",
@@ -257,7 +257,7 @@
     },
     {
       "path": "js/app.js",
-      "sha256": "4c1948eb026dea5851d1b3b91f1ae9793c336d03c1398196c870d2f48bf00f4d"
+      "sha256": "9247f50c8af48b14c58e1a04057444894d38c4ba2ca52c39d1de8bc264489243"
     },
     {
       "path": "js/data-config.js",
