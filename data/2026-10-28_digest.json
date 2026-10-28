@@ -1,19 +1,19 @@
 {
   "date": "2026-10-28",
-  "generated_at": "2026-10-28T19:07:23.481631+00:00",
+  "generated_at": "2026-10-28T22:33:51.384846+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
       {
         "source": "arxiv",
-        "status": "partial",
+        "status": "complete",
         "candidate_count": 0,
         "metadata_fetched": 0,
         "missing_metadata": 0,
         "date_from": "2026-10-27",
         "date_to": "2026-10-28",
-        "error_count": 1,
-        "limit_count": 2
+        "error_count": 0,
+        "limit_count": 0
       },
       {
         "source": "pubmed",
@@ -34,11 +34,11 @@
     "sections": [],
     "note": "按阅读模式不生成每日综合总结。"
   },
-  "pending_count": 6,
+  "pending_count": 2,
   "paper_count": 20,
   "research_window": {
-    "start": "2026-10-27T19:00:08.142674+00:00",
-    "end": "2026-10-28T19:00:08.142674+00:00",
+    "start": "2026-10-27T19:00:00+00:00",
+    "end": "2026-10-28T19:00:00+00:00",
     "report_day": "2026-10-28",
     "basis": "rolling_24_hours",
     "date_only_recall": "overlapping_source_days_no_invented_hour"
@@ -49,14 +49,13 @@
     "window_end": "2026-10-28",
     "date_basis": "source_announcement_day_or_actual_observation",
     "date_basis_policy": "arXiv投稿时间保留，不作为公开日期；明确公告日作重叠日期召回，未知公开日用真实首次发现补录；旧已刊位置保留，排期不造公开时间。",
-    "out_of_window_count": 14543,
+    "out_of_window_count": 14545,
     "undated_count": 0,
     "pending_count_by_source": {
-      "arxiv": 6
+      "arxiv": 2
     },
     "sources_unavailable": [],
     "sources_incomplete": [
-      "arxiv",
       "pubmed"
     ],
     "note": "计数只描述本轮已配置来源与检索窗口，不代表领域没有新论文；pending 为预算不足或失败的待审条目，不是相关性配额。"
@@ -69,8 +68,8 @@
     "not_fulltext": true,
     "topics": {
       "embodied": {
-        "eligible": 33,
-        "scored": 33,
+        "eligible": 34,
+        "scored": 34,
         "pending": 0,
         "shortage": 0,
         "selected": 20
