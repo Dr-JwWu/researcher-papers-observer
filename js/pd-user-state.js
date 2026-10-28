@@ -81,11 +81,14 @@
     const record = raw && typeof raw === 'object' ? raw : {};
     const readAt = iso(record.read_at);
     const favoriteAt = iso(record.favorite_at);
-    if (!readAt && !favoriteAt) return null;
+    // 取消已读/取消收藏会留下一条“空记录”（墓碑），靠 updated_at 传播到其它
+    // 设备；如果这里直接丢掉，下一次合并会拿远端旧记录把状态复活。
+    const updated = iso(record.updated_at) || favoriteAt || readAt;
+    if (!updated) return null;
     return {
       read_at: readAt || '',
       favorite_at: favoriteAt || '',
-      updated_at: iso(record.updated_at) || favoriteAt || readAt,
+      updated_at: updated,
       title: text(record.title, 300),
       date: /^\d{4}-\d{2}-\d{2}$/.test(record.date || '') ? record.date : '',
       url: typeof record.url === 'string' && /^https:\/\//.test(record.url) ? record.url : '',

@@ -213,7 +213,7 @@
     },
     {
       "path": "data/2026-10-24_digest.json",
-      "sha256": "be948ebe53cb8efdc89e951981d48d3f5668f977953a4376b900d101b5f66dd0"
+      "sha256": "d8773f74b493e1c83fd5ae4f480b2a72f47ad6fedeab120588bc2f573c4fe04b"
     },
     {
       "path": "data/2026-10-25_AI_enhanced_Chinese.jsonl",
@@ -241,7 +241,7 @@
     },
     {
       "path": "data/operations.json",
-      "sha256": "fd5d31cfe27b8d333e44832c721c43f51bc0cee7c8af51f99e280b0bb5144742"
+      "sha256": "f9406014f5e613b3163bfa62c9a7ecf27bbcee644cd403d61c8da84655fca95d"
     },
     {
       "path": "docs/figure-credits.html",
@@ -297,7 +297,7 @@
     },
     {
       "path": "js/pd-user-state.js",
-      "sha256": "d5c4f57f3730e42c2ca2dfa1cfe97f0bbd7940b3a4cf71c28fc021862715386b"
+      "sha256": "5dda29a291543b79eda07f9ce72d7d77998b06729df599b968d824586a9f4729"
     },
     {
       "path": "js/statistic.js",
