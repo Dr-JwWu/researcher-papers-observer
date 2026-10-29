@@ -142,7 +142,7 @@
     },
     {
       "path": "data/2026-10-15_digest.json",
-      "sha256": "97c9313b0ad1c1e271bd581ca4eb43061cf2a45e1b5dd52bfe5227d88f954559"
+      "sha256": "005d612351f331b412209b1133fafa27e43c4401061a78ee8746640b89e34aa4"
     },
     {
       "path": "data/2026-10-16_AI_enhanced_Chinese.jsonl",
@@ -150,7 +150,7 @@
     },
     {
       "path": "data/2026-10-16_digest.json",
-      "sha256": "9482a6363ce4943d08264650468fe6e0b1bf976d2f34102aff745fe9fc59535d"
+      "sha256": "ab562c2c9aa7712570e7ab8753f0ad5125f8bb5eee9c0332de4b9b404dbeaafe"
     },
     {
       "path": "data/2026-10-17_AI_enhanced_Chinese.jsonl",
@@ -190,7 +190,7 @@
     },
     {
       "path": "data/2026-10-21_digest.json",
-      "sha256": "90155554e921891cd8d82841d69e11b2baba1cfe30da7b915a3236f088ba2048"
+      "sha256": "e6fd79d16d2853d76f37f82d84a651623a921bfe4375f2bc8ca68d8d01548b90"
     },
     {
       "path": "data/2026-10-22_AI_enhanced_Chinese.jsonl",
@@ -214,7 +214,7 @@
     },
     {
       "path": "data/2026-10-24_digest.json",
-      "sha256": "b23b1c84d4bcd51aaf478f723167546a17f686882314da9066a30944af86cb96"
+      "sha256": "4c365717bf4caa15086059ed379bc2ff1230ac1d6b0109b90e31453d266b479a"
     },
     {
       "path": "data/2026-10-25_AI_enhanced_Chinese.jsonl",
@@ -238,19 +238,19 @@
     },
     {
       "path": "data/2026-10-27_digest.json",
-      "sha256": "94cf73664c40e07b8682428f163ba2a515966c76564ba4a02c90b50371ce308d"
+      "sha256": "bd50f06149f8a1ebaa6dc15ce7230ec6cdd4c4a9a382b5e08840453325350e17"
     },
     {
       "path": "data/2026-10-28_AI_enhanced_Chinese.jsonl",
-      "sha256": "e97ea8cc85db4e59353347d5739d32e131b90a8d2da0b1f55b419a0db7f6a6c4"
+      "sha256": "1bb19b19afe53fcfa9a67d66c9f9385d74e6e106d669205691397e65ec8846b0"
     },
     {
       "path": "data/2026-10-28_digest.json",
-      "sha256": "48c6b5a74e56a0de465b0f9bc25dabe05c3c0d55a724a47e38235f0ce056aed7"
+      "sha256": "4f83f364e48265216176ac902f6e1d448b8cd74e8f11a54cea600d3a5617adc4"
     },
     {
       "path": "data/operations.json",
-      "sha256": "fd5d31cfe27b8d333e44832c721c43f51bc0cee7c8af51f99e280b0bb5144742"
+      "sha256": "82ac76872bb29e2ad08910c0476e315909562ffc3588c3b3fc377cfbbc321da0"
     },
     {
       "path": "docs/figure-credits.html",
