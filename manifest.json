@@ -21,7 +21,8 @@
     "2026-10-25",
     "2026-10-26",
     "2026-10-27",
-    "2026-10-28"
+    "2026-10-28",
+    "2026-10-29"
   ],
   "files": [
     {
@@ -30,7 +31,7 @@
     },
     {
       "path": "assets/file-list.txt",
-      "sha256": "e629abcb1ca72c900e4a5ab0afef0f436de92834c6e2df603cdf8e5768924b7f"
+      "sha256": "ecc1617ae55bbef9d4d9da12a1ce3033d4c6ebee65124868c9a5a66c118f7893"
     },
     {
       "path": "assets/logo2-removebg-preview.png",
@@ -142,7 +143,7 @@
     },
     {
       "path": "data/2026-10-15_digest.json",
-      "sha256": "005d612351f331b412209b1133fafa27e43c4401061a78ee8746640b89e34aa4"
+      "sha256": "98204690357b4558c3726f07bcff4a0e7dec0f0f231c9fc6f3a67033e406a826"
     },
     {
       "path": "data/2026-10-16_AI_enhanced_Chinese.jsonl",
@@ -150,7 +151,7 @@
     },
     {
       "path": "data/2026-10-16_digest.json",
-      "sha256": "ab562c2c9aa7712570e7ab8753f0ad5125f8bb5eee9c0332de4b9b404dbeaafe"
+      "sha256": "914fca1d66e6f11d24398e986732aef081911a2af89220c3ff4e76bd07d5376c"
     },
     {
       "path": "data/2026-10-17_AI_enhanced_Chinese.jsonl",
@@ -166,7 +167,7 @@
     },
     {
       "path": "data/2026-10-18_digest.json",
-      "sha256": "a03d936ada7a1d6ced71126a8e0f18a68c74538164eab9b468729b8ebf572c67"
+      "sha256": "4fd7bbba81e477999aa89fda51014402e6660a9b07ae1c29a5ed5ffb4ad2f805"
     },
     {
       "path": "data/2026-10-19_AI_enhanced_Chinese.jsonl",
@@ -190,7 +191,7 @@
     },
     {
       "path": "data/2026-10-21_digest.json",
-      "sha256": "e6fd79d16d2853d76f37f82d84a651623a921bfe4375f2bc8ca68d8d01548b90"
+      "sha256": "623fa9b34fb4de09c4ff91631be183d253919f866f793e6218374be4c8220280"
     },
     {
       "path": "data/2026-10-22_AI_enhanced_Chinese.jsonl",
@@ -214,7 +215,7 @@
     },
     {
       "path": "data/2026-10-24_digest.json",
-      "sha256": "a43a2aaf44e22e0bcedab3879c1d006a6fcc71bf4bf1c4d508439d63bfbb8855"
+      "sha256": "44cdbf26eb03a4225facacc2f0d382c28c8c6eee3232cfb492a97c7861feed9e"
     },
     {
       "path": "data/2026-10-25_AI_enhanced_Chinese.jsonl",
@@ -222,7 +223,7 @@
     },
     {
       "path": "data/2026-10-25_digest.json",
-      "sha256": "62bf57a0d010a2abdff7cfb8d74f46aef33fc5b82fbe0b7587bf769d90fa3f41"
+      "sha256": "b77b59067b1005e042313433d9f25b65c45555d69b9b94380cb8f2dc93ac4226"
     },
     {
       "path": "data/2026-10-26_AI_enhanced_Chinese.jsonl",
@@ -238,7 +239,7 @@
     },
     {
       "path": "data/2026-10-27_digest.json",
-      "sha256": "bd50f06149f8a1ebaa6dc15ce7230ec6cdd4c4a9a382b5e08840453325350e17"
+      "sha256": "cc5d9e9403f5ede5975e742dbcbbebb53b331808bdcc54e6ebd80905c411cc68"
     },
     {
       "path": "data/2026-10-28_AI_enhanced_Chinese.jsonl",
@@ -249,8 +250,16 @@
       "sha256": "6665a7a6a5de48d6cbd2d9df26a0d384885a8ecffdd260b2c4d16c11284a5504"
     },
     {
+      "path": "data/2026-10-29_AI_enhanced_Chinese.jsonl",
+      "sha256": "da68b08f7662e4756e961cffa393fd1b743ee44f15e989721f21f86e89b0e2d8"
+    },
+    {
+      "path": "data/2026-10-29_digest.json",
+      "sha256": "ebb783736fe46d1f93cef5ee6eda7b771adeabb14e38da75da8a6436f38e103c"
+    },
+    {
       "path": "data/operations.json",
-      "sha256": "49bb231190bdef0a3cf2ff3d0303ba62a1bcf99649f38a18324713cdca30c87b"
+      "sha256": "fd5d31cfe27b8d333e44832c721c43f51bc0cee7c8af51f99e280b0bb5144742"
     },
     {
       "path": "docs/figure-credits.html",
