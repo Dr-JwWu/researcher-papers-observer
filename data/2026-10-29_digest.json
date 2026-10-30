@@ -1,6 +1,6 @@
 {
   "date": "2026-10-29",
-  "generated_at": "2026-10-30T00:54:34.707875+00:00",
+  "generated_at": "2026-10-30T08:02:12.913299+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -10,8 +10,8 @@
         "candidate_count": 0,
         "metadata_fetched": 0,
         "missing_metadata": 0,
-        "date_from": "2026-10-29",
-        "date_to": "2026-10-30",
+        "date_from": "2026-10-28",
+        "date_to": "2026-10-29",
         "error_count": 0,
         "limit_count": 0
       },
@@ -20,9 +20,9 @@
         "status": "partial",
         "candidate_count": 0,
         "metadata_fetched": 0,
-        "missing_metadata": 39,
-        "date_from": "2026-10-29",
-        "date_to": "2026-10-30",
+        "missing_metadata": 40,
+        "date_from": "2026-10-28",
+        "date_to": "2026-10-29",
         "error_count": 0,
         "limit_count": 1
       }
@@ -34,24 +34,27 @@
     "sections": [],
     "note": "按阅读模式不生成每日综合总结。"
   },
-  "pending_count": 0,
-  "paper_count": 4,
+  "pending_count": 168,
+  "paper_count": 12,
   "research_window": {
-    "start": "2026-10-29T00:45:04.128965+00:00",
-    "end": "2026-10-30T00:45:04.128965+00:00",
+    "start": "2026-10-28T19:00:00+00:00",
+    "end": "2026-10-29T19:00:00+00:00",
     "report_day": "2026-10-29",
     "basis": "rolling_24_hours",
     "date_only_recall": "overlapping_source_days_no_invented_hour"
   },
   "research_scope": {
     "policy": "announcement_or_first_observation",
-    "window_start": "2026-10-29",
-    "window_end": "2026-10-30",
+    "window_start": "2026-10-28",
+    "window_end": "2026-10-29",
     "date_basis": "source_announcement_day_or_actual_observation",
     "date_basis_policy": "arXiv投稿时间保留，不作为公开日期；明确公告日作重叠日期召回，未知公开日用真实首次发现补录；旧已刊位置保留，排期不造公开时间。",
-    "out_of_window_count": 15263,
+    "out_of_window_count": 15226,
     "undated_count": 0,
-    "pending_count_by_source": {},
+    "pending_count_by_source": {
+      "arxiv": 166,
+      "pubmed": 2
+    },
     "sources_unavailable": [],
     "sources_incomplete": [
       "pubmed"
@@ -66,18 +69,18 @@
     "not_fulltext": true,
     "topics": {
       "embodied": {
-        "eligible": 2,
-        "scored": 2,
+        "eligible": 9,
+        "scored": 9,
         "pending": 0,
-        "shortage": 3,
-        "selected": 2
+        "shortage": 0,
+        "selected": 9
       },
       "surgical": {
-        "eligible": 2,
-        "scored": 2,
+        "eligible": 3,
+        "scored": 3,
         "pending": 0,
-        "shortage": 3,
-        "selected": 2
+        "shortage": 2,
+        "selected": 3
       }
     }
   }
