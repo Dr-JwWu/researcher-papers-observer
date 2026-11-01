@@ -165,7 +165,7 @@
     },
     {
       "path": "data/2026-10-17_digest.json",
-      "sha256": "b86b48874c02fccd45ca2258f18228ba4a04f59d4b3ad8a715f0cc9a959b21c9"
+      "sha256": "d76a27646ba7be9cd66810aa587f3207255dcf1fa5db289b124a7d5f8ef05bbc"
     },
     {
       "path": "data/2026-10-18_AI_enhanced_Chinese.jsonl",
@@ -173,7 +173,7 @@
     },
     {
       "path": "data/2026-10-18_digest.json",
-      "sha256": "f4dd03446e7b3fbb36e9d8750773836a47e0c683cae2d7317c8bb333ff0b2388"
+      "sha256": "86061fd4e02886597305c8a6ae9c18544b1e8d21e975bbccf66ec94b38b1b0fa"
     },
     {
       "path": "data/2026-10-19_AI_enhanced_Chinese.jsonl",
@@ -221,15 +221,15 @@
     },
     {
       "path": "data/2026-10-24_digest.json",
-      "sha256": "8f3e421b3ec328c65e78aec637152916b0e887991156b3c9ae4be05e1b768465"
+      "sha256": "aedeaf2520f0c1fe4ab81967e1173125fe578f1312c40c75f16d73ba3e44ea61"
     },
     {
       "path": "data/2026-10-25_AI_enhanced_Chinese.jsonl",
-      "sha256": "e1f0e6c5ded74c8af03e48e05f468103e6608a968428501372d31957257b9aa1"
+      "sha256": "671150358cf47f4023a085f1bc53189187340f1ac2d6af88f3892c98fb66a610"
     },
     {
       "path": "data/2026-10-25_digest.json",
-      "sha256": "f48f541020c0c93c7148b44c4cd3b3451a4fd5bd4e4b1e1901b5678ef2989ddd"
+      "sha256": "5efc7ef60199bfa23704a15b2951434ace69c66c734b88453d9616eb3899c622"
     },
     {
       "path": "data/2026-10-26_AI_enhanced_Chinese.jsonl",
@@ -237,7 +237,7 @@
     },
     {
       "path": "data/2026-10-26_digest.json",
-      "sha256": "af14e1e45248cec769948f20781794992c69d1d431b92b993a29acf29f6b8839"
+      "sha256": "655081825c329910f11eda340caa2f828aed1e5066a379ac9d3186670a11dd68"
     },
     {
       "path": "data/2026-10-27_AI_enhanced_Chinese.jsonl",
@@ -245,7 +245,7 @@
     },
     {
       "path": "data/2026-10-27_digest.json",
-      "sha256": "332a0fdbbc8817170668f8f501568df567b51b66ebfb5b21fdb503c3ac150c9a"
+      "sha256": "01d5000f9b54d20e1c9d5fa3c2e94661cab460d1742902056e7aa3cf08df8841"
     },
     {
       "path": "data/2026-10-28_AI_enhanced_Chinese.jsonl",
