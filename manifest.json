@@ -27,7 +27,8 @@
     "2026-10-31",
     "2026-11-01",
     "2026-11-02",
-    "2026-11-03"
+    "2026-11-03",
+    "2026-11-04"
   ],
   "files": [
     {
@@ -36,7 +37,7 @@
     },
     {
       "path": "assets/file-list.txt",
-      "sha256": "1f18b08c969ae9a567da915503c6cb133981eec617925b97d752171ea19201b7"
+      "sha256": "ba3c8cc016369193c02f997d965b1d35862d7d27d1c6e74aff9575919856c580"
     },
     {
       "path": "assets/logo2-removebg-preview.png",
@@ -160,7 +161,7 @@
     },
     {
       "path": "data/2026-10-16_digest.json",
-      "sha256": "4839cda5917225fba6530c65da270d511bb090d491f04f0763df20d1144351e4"
+      "sha256": "c3625a4cec35cc83ca8652784a93d11098f073cb80da8c70d709222c4699e14c"
     },
     {
       "path": "data/2026-10-17_AI_enhanced_Chinese.jsonl",
@@ -240,7 +241,7 @@
     },
     {
       "path": "data/2026-10-26_digest.json",
-      "sha256": "3d798f01ee23e2ea076446f2d1da131e018b5b615b336041fa04964efdd0b0f5"
+      "sha256": "32b1d0bcda46f59183729905b62f6fc52c73ae52a2fc8e31777cc36b19b27361"
     },
     {
       "path": "data/2026-10-27_AI_enhanced_Chinese.jsonl",
@@ -305,6 +306,14 @@
     {
       "path": "data/2026-11-03_digest.json",
       "sha256": "839da5ac5c2a8739c37046215375a1b973036544d80f05b94cbfef38dc4c0caf"
+    },
+    {
+      "path": "data/2026-11-04_AI_enhanced_Chinese.jsonl",
+      "sha256": "9763d3e01550a81595b011d3e94731b39e81df384ac856ac64c386e316db838f"
+    },
+    {
+      "path": "data/2026-11-04_digest.json",
+      "sha256": "f1a9f13eab291fbd5b617d27871fc250d2f8f280b14e01648822e0efb3904017"
     },
     {
       "path": "data/operations.json",
