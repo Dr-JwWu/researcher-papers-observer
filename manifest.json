@@ -160,7 +160,7 @@
     },
     {
       "path": "data/2026-10-16_digest.json",
-      "sha256": "8c639c0307408135abab4989213bf56331bca388b85a99c06b83ccad776cafc7"
+      "sha256": "4839cda5917225fba6530c65da270d511bb090d491f04f0763df20d1144351e4"
     },
     {
       "path": "data/2026-10-17_AI_enhanced_Chinese.jsonl",
@@ -168,7 +168,7 @@
     },
     {
       "path": "data/2026-10-17_digest.json",
-      "sha256": "0eb88e4939cd21bd2f4043bcb10ae584b5b8bf8ec0a16d09fb6f7e9d092f2573"
+      "sha256": "1a274b137450eb3da196916b07f443b1753043ba652242b5e619207ce1c391cb"
     },
     {
       "path": "data/2026-10-18_AI_enhanced_Chinese.jsonl",
@@ -224,7 +224,7 @@
     },
     {
       "path": "data/2026-10-24_digest.json",
-      "sha256": "43bf2378aa6d8b570b7506ff2b1bd95de033138f5b38b16ee4853203b7aeaf4f"
+      "sha256": "473a14934e7ab2078d11038abfa3613b78a7df233c334b410eaf0786099da093"
     },
     {
       "path": "data/2026-10-25_AI_enhanced_Chinese.jsonl",
@@ -240,7 +240,7 @@
     },
     {
       "path": "data/2026-10-26_digest.json",
-      "sha256": "6db3cdb6c4eb2691a0d8486d8a71989aee3a5d7f0a61ae164b9dc40428fe3440"
+      "sha256": "3d798f01ee23e2ea076446f2d1da131e018b5b615b336041fa04964efdd0b0f5"
     },
     {
       "path": "data/2026-10-27_AI_enhanced_Chinese.jsonl",
@@ -248,7 +248,7 @@
     },
     {
       "path": "data/2026-10-27_digest.json",
-      "sha256": "d37ea39e8debd77802e9b11a840c15a811e42539d39a9afd944f6801c941c6a6"
+      "sha256": "10cb08a48ae1dc318704614201d8b894b00517335e043e07b8b0b597347c477a"
     },
     {
       "path": "data/2026-10-28_AI_enhanced_Chinese.jsonl",
@@ -304,11 +304,11 @@
     },
     {
       "path": "data/2026-11-03_digest.json",
-      "sha256": "69b3006d629b74eb8c110363bc27b61b9e91fc36e3f0e24318b65542933869c5"
+      "sha256": "839da5ac5c2a8739c37046215375a1b973036544d80f05b94cbfef38dc4c0caf"
     },
     {
       "path": "data/operations.json",
-      "sha256": "da7946380a47f0e7c3666cfc58b98c1a049d890047e1aedf83daad55730fd66c"
+      "sha256": "fd5d31cfe27b8d333e44832c721c43f51bc0cee7c8af51f99e280b0bb5144742"
     },
     {
       "path": "docs/figure-credits.html",
