@@ -29,7 +29,8 @@
     "2026-11-02",
     "2026-11-03",
     "2026-11-04",
-    "2026-11-05"
+    "2026-11-05",
+    "2026-11-06"
   ],
   "files": [
     {
@@ -38,7 +39,7 @@
     },
     {
       "path": "assets/file-list.txt",
-      "sha256": "1740d429500c032330a507f48bb5138a6674d043437aaee9d0488ccbce49a42c"
+      "sha256": "d0d1fa7e55f9c6097060489021e8a29cd5aed26b48a7dd333c4ae483cf9e8f5a"
     },
     {
       "path": "assets/logo2-removebg-preview.png",
@@ -55,6 +56,14 @@
     {
       "path": "assets/papers/4b00152451d06af6a525041c02cef047f84c5433aba5a3daa77ee7c9162e94a9.png",
       "sha256": "4b00152451d06af6a525041c02cef047f84c5433aba5a3daa77ee7c9162e94a9"
+    },
+    {
+      "path": "assets/papers/d94493cbb0041679338d737f56f16eb48ddf0a788e762e278cabb9d05f9d9016.png",
+      "sha256": "d94493cbb0041679338d737f56f16eb48ddf0a788e762e278cabb9d05f9d9016"
+    },
+    {
+      "path": "assets/papers/ddf153b4de88daa88edf309b5bdd5f867294ab7d245180bfd3ccc23193c62a5d.png",
+      "sha256": "ddf153b4de88daa88edf309b5bdd5f867294ab7d245180bfd3ccc23193c62a5d"
     },
     {
       "path": "assets/papers/e3ccaee3ef30371f66bdfdd2b6a8d1488b63acfc97961a3dd55bdf211287787b.webp",
@@ -325,12 +334,20 @@
       "sha256": "909d93dd48eaf0b127380fd84205a575aea0c82dda9e7028eee8ec773c9f4a26"
     },
     {
+      "path": "data/2026-11-06_AI_enhanced_Chinese.jsonl",
+      "sha256": "cd9fea1b38c286de787012e92ca3083d0e1ed749a46bb512012077b8132ce4e0"
+    },
+    {
+      "path": "data/2026-11-06_digest.json",
+      "sha256": "8535d29523fc45f771f6c7503f0f153b5122b150b7a7253eab23007419760d4f"
+    },
+    {
       "path": "data/operations.json",
       "sha256": "fd5d31cfe27b8d333e44832c721c43f51bc0cee7c8af51f99e280b0bb5144742"
     },
     {
       "path": "docs/figure-credits.html",
-      "sha256": "d2262309fea5517164af40d081d7e1887f0cbb8d33912e67bfbfd40e8a7320b0"
+      "sha256": "da8b81aec6147e16dea65f9ea6ae39a1f9a8383c8112eb9c149311c5ab052c95"
     },
     {
       "path": "docs/licenses/daily-arxiv-LICENSE",
