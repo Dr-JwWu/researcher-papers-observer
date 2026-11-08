@@ -1,11 +1,4 @@
 {
   "schema": "researcher-papers-operations/1",
-  "days": {
-    "2026-11-05": {
-      "date": "2026-11-05",
-      "code": "update_failed",
-      "message": "今日更新暂未完成，已保留已有论文，系统将重试。",
-      "updated_at": "2026-11-08T06:17:22.103814+00:00"
-    }
-  }
+  "days": {}
 }
