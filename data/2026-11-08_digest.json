@@ -1,6 +1,6 @@
 {
   "date": "2026-11-08",
-  "generated_at": "2026-11-09T08:47:29.748030+00:00",
+  "generated_at": "2026-11-09T16:25:03.483848+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -34,8 +34,8 @@
     "sections": [],
     "note": "按阅读模式不生成每日综合总结。"
   },
-  "pending_count": 0,
-  "paper_count": 2,
+  "pending_count": 64,
+  "paper_count": 12,
   "research_window": {
     "start": "2026-11-07T19:00:00+00:00",
     "end": "2026-11-08T19:00:00+00:00",
@@ -49,9 +49,11 @@
     "window_end": "2026-11-08",
     "date_basis": "source_announcement_day_or_actual_observation",
     "date_basis_policy": "arXiv投稿时间保留，不作为公开日期；明确公告日作重叠日期召回，未知公开日用真实首次发现补录；旧已刊位置保留，排期不造公开时间。",
-    "out_of_window_count": 20421,
+    "out_of_window_count": 20419,
     "undated_count": 0,
-    "pending_count_by_source": {},
+    "pending_count_by_source": {
+      "arxiv": 64
+    },
     "sources_unavailable": [],
     "sources_incomplete": [
       "pubmed"
@@ -66,11 +68,11 @@
     "not_fulltext": true,
     "topics": {
       "embodied": {
-        "eligible": 1,
-        "scored": 1,
-        "pending": 0,
-        "shortage": 4,
-        "selected": 1
+        "eligible": 12,
+        "scored": 11,
+        "pending": 1,
+        "shortage": 0,
+        "selected": 11
       },
       "surgical": {
         "eligible": 1,
