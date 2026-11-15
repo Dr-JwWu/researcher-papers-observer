@@ -31,4 +31,8 @@
 2026-11-07_AI_enhanced_Chinese.jsonl
 2026-11-08_AI_enhanced_Chinese.jsonl
 2026-11-09_AI_enhanced_Chinese.jsonl
+2026-11-10_AI_enhanced_Chinese.jsonl
+2026-11-11_AI_enhanced_Chinese.jsonl
+2026-11-12_AI_enhanced_Chinese.jsonl
+2026-11-13_AI_enhanced_Chinese.jsonl
 2026-11-14_AI_enhanced_Chinese.jsonl
