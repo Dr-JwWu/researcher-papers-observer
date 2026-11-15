@@ -1,28 +1,28 @@
 {
   "date": "2026-11-14",
-  "generated_at": "2026-11-15T15:19:32.315049+00:00",
+  "generated_at": "2026-11-15T23:03:29.985312+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
       {
         "source": "arxiv",
-        "status": "partial",
+        "status": "complete",
         "candidate_count": 0,
         "metadata_fetched": 0,
-        "missing_metadata": 14,
-        "date_from": "2026-11-14",
-        "date_to": "2026-11-15",
+        "missing_metadata": 0,
+        "date_from": "2026-11-13",
+        "date_to": "2026-11-14",
         "error_count": 0,
-        "limit_count": 2
+        "limit_count": 0
       },
       {
         "source": "pubmed",
         "status": "partial",
         "candidate_count": 0,
         "metadata_fetched": 0,
-        "missing_metadata": 89,
-        "date_from": "2026-11-14",
-        "date_to": "2026-11-15",
+        "missing_metadata": 97,
+        "date_from": "2026-11-13",
+        "date_to": "2026-11-14",
         "error_count": 0,
         "limit_count": 1
       }
@@ -34,29 +34,26 @@
     "sections": [],
     "note": "按阅读模式不生成每日综合总结。"
   },
-  "pending_count": 2,
+  "pending_count": 0,
   "paper_count": 27,
   "research_window": {
-    "start": "2026-11-14T15:00:19.060104+00:00",
-    "end": "2026-11-15T15:00:19.060104+00:00",
+    "start": "2026-11-13T19:00:00+00:00",
+    "end": "2026-11-14T19:00:00+00:00",
     "report_day": "2026-11-14",
     "basis": "rolling_24_hours",
     "date_only_recall": "overlapping_source_days_no_invented_hour"
   },
   "research_scope": {
     "policy": "announcement_or_first_observation",
-    "window_start": "2026-11-14",
-    "window_end": "2026-11-15",
+    "window_start": "2026-11-13",
+    "window_end": "2026-11-14",
     "date_basis": "source_announcement_day_or_actual_observation",
     "date_basis_policy": "arXiv投稿时间保留，不作为公开日期；明确公告日作重叠日期召回，未知公开日用真实首次发现补录；旧已刊位置保留，排期不造公开时间。",
-    "out_of_window_count": 21276,
+    "out_of_window_count": 23735,
     "undated_count": 0,
-    "pending_count_by_source": {
-      "arxiv": 2
-    },
+    "pending_count_by_source": {},
     "sources_unavailable": [],
     "sources_incomplete": [
-      "arxiv",
       "pubmed"
     ],
     "note": "计数只描述本轮已配置来源与检索窗口，不代表领域没有新论文；pending 为预算不足或失败的待审条目，不是相关性配额。"
@@ -69,9 +66,9 @@
     "not_fulltext": true,
     "topics": {
       "embodied": {
-        "eligible": 52,
-        "scored": 51,
-        "pending": 1,
+        "eligible": 20,
+        "scored": 20,
+        "pending": 0,
         "shortage": 0,
         "selected": 20
       },
