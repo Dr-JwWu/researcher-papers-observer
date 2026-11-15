@@ -33,7 +33,8 @@
     "2026-11-06",
     "2026-11-07",
     "2026-11-08",
-    "2026-11-09"
+    "2026-11-09",
+    "2026-11-14"
   ],
   "files": [
     {
@@ -42,7 +43,7 @@
     },
     {
       "path": "assets/file-list.txt",
-      "sha256": "7a25d9da7b2468f0e691eb3197e579b8dfc83d369e6c5ab08446baeda091c91d"
+      "sha256": "51abf22a4c5901665cd5b3962b5de5ffc5cab736d02631a84ab6b56654c77842"
     },
     {
       "path": "assets/logo2-removebg-preview.png",
@@ -367,6 +368,14 @@
     {
       "path": "data/2026-11-09_digest.json",
       "sha256": "3180c95a8d32eaf023bd5535f80e8c2cfb86af274c999d60e720b831ad12088e"
+    },
+    {
+      "path": "data/2026-11-14_AI_enhanced_Chinese.jsonl",
+      "sha256": "5f6c3eed248438a0da0d390bc1d7e3e7b059129c85b7834d7f933f8bc2bb00ed"
+    },
+    {
+      "path": "data/2026-11-14_digest.json",
+      "sha256": "8e86df6060d5fced07c9968a54b3443905b5aa3bd1ca3a728124e3f4b7fe2752"
     },
     {
       "path": "data/operations.json",
