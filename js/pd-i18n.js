@@ -45,7 +45,7 @@
     loadingPapers: '正在加载论文…',
     feedLoading: '正在加载日报…',
     loadingFiles: '正在读取数据文件列表…',
-    noPapersForDate: '本日暂无收录论文。',
+    noPapersForDate: '本日无新增收录论文。',
     noMatchingPapers: '当前筛选条件下没有论文。',
     loadFailedTitle: '数据暂时无法读取，请稍后重试。',
     fileListMissing: '暂无日报数据。',
