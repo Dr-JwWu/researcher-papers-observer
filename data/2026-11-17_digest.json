@@ -52,11 +52,10 @@
     "out_of_window_count": 24235,
     "undated_count": 0,
     "pending_count_by_source": {
-      "arxiv": 3
+      "arxiv": 80
     },
     "sources_unavailable": [],
     "sources_incomplete": [
-      "arxiv",
       "pubmed"
     ],
     "note": "计数只描述本轮已配置来源与检索窗口，不代表领域没有新论文；pending 为预算不足或失败的待审条目，不是相关性配额。"
