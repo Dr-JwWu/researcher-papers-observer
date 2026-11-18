@@ -1,6 +1,6 @@
 {
   "date": "2026-11-15",
-  "generated_at": "2026-11-17T22:50:13.259447+00:00",
+  "generated_at": "2026-11-18T23:20:41.593008+00:00",
   "coverage": {
     "status": "partial",
     "sources": [
@@ -20,7 +20,7 @@
         "status": "partial",
         "candidate_count": 0,
         "metadata_fetched": 0,
-        "missing_metadata": 101,
+        "missing_metadata": 102,
         "date_from": "2026-11-14",
         "date_to": "2026-11-15",
         "error_count": 0,
@@ -35,7 +35,7 @@
     "note": "按阅读模式不生成每日综合总结。"
   },
   "pending_count": 0,
-  "paper_count": 21,
+  "paper_count": 22,
   "research_window": {
     "start": "2026-11-14T19:00:00+00:00",
     "end": "2026-11-15T19:00:00+00:00",
@@ -49,7 +49,7 @@
     "window_end": "2026-11-15",
     "date_basis": "source_announcement_day_or_actual_observation",
     "date_basis_policy": "arXiv投稿时间保留，不作为公开日期；明确公告日作重叠日期召回，未知公开日用真实首次发现补录；旧已刊位置保留，排期不造公开时间。",
-    "out_of_window_count": 24895,
+    "out_of_window_count": 25550,
     "undated_count": 0,
     "pending_count_by_source": {},
     "sources_unavailable": [],
@@ -73,11 +73,11 @@
         "selected": 20
       },
       "surgical": {
-        "eligible": 1,
-        "scored": 1,
+        "eligible": 2,
+        "scored": 2,
         "pending": 0,
-        "shortage": 4,
-        "selected": 1
+        "shortage": 3,
+        "selected": 2
       }
     }
   }
