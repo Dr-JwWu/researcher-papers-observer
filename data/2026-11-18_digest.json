@@ -35,7 +35,7 @@
     "note": "按阅读模式不生成每日综合总结。"
   },
   "pending_count": 3,
-  "paper_count": 23,
+  "paper_count": 24,
   "research_window": {
     "start": "2026-11-17T19:00:00.191826+00:00",
     "end": "2026-11-18T19:00:00.191826+00:00",
@@ -52,6 +52,7 @@
     "out_of_window_count": 25361,
     "undated_count": 0,
     "pending_count_by_source": {
+      "arxiv": 115,
       "pubmed": 1
     },
     "sources_unavailable": [],
@@ -75,11 +76,11 @@
         "selected": 20
       },
       "surgical": {
-        "eligible": 3,
-        "scored": 3,
+        "eligible": 4,
+        "scored": 4,
         "pending": 0,
-        "shortage": 2,
-        "selected": 3
+        "shortage": 1,
+        "selected": 4
       }
     }
   }
