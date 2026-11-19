@@ -42,7 +42,8 @@
     "2026-11-15",
     "2026-11-16",
     "2026-11-17",
-    "2026-11-18"
+    "2026-11-18",
+    "2026-11-19"
   ],
   "files": [
     {
@@ -51,7 +52,7 @@
     },
     {
       "path": "assets/file-list.txt",
-      "sha256": "e51ac913babac515c007c249774ab9c3e334f8bbf752d84cc112663ec9a6b9f2"
+      "sha256": "ae49c65795d3800a46a3dc21fd34f90d8eceeded759416e6856696661987a6f4"
     },
     {
       "path": "assets/logo2-removebg-preview.png",
@@ -458,8 +459,16 @@
       "sha256": "e9ae6f383e7be7e8e4e4ee9fef4f8eabb13cc7429678855be4182ea2799a6378"
     },
     {
+      "path": "data/2026-11-19_AI_enhanced_Chinese.jsonl",
+      "sha256": "c28e5579039621c5fbeab87b9afe0878875e89ee0317fdfe35a6bf462f83c61a"
+    },
+    {
+      "path": "data/2026-11-19_digest.json",
+      "sha256": "2a936cd5abffa94c891fcd8b70c6c2b5881c5a37f44a47defcbb1fef50816d18"
+    },
+    {
       "path": "data/operations.json",
-      "sha256": "e7aca296c821d0484f1fbe68b71735fd071382a6a8a6940b266608322e24323b"
+      "sha256": "fd5d31cfe27b8d333e44832c721c43f51bc0cee7c8af51f99e280b0bb5144742"
     },
     {
       "path": "docs/figure-credits.html",
