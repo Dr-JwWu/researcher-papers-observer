@@ -446,7 +446,7 @@
     },
     {
       "path": "data/2026-11-16_digest.json",
-      "sha256": "b445ddd7103f49a2a3dfb9130e594a531a7b071be363dc61a8a816a4651a4db7"
+      "sha256": "5917573fba8f6ec183e68abebde593b8bb2ae1b1fd286f62c550b57b26842365"
     },
     {
       "path": "data/2026-11-17_AI_enhanced_Chinese.jsonl",
@@ -490,7 +490,7 @@
     },
     {
       "path": "data/operations.json",
-      "sha256": "fea49c534c2feb72a3116e2509c94fb08680aa9e964558dfe0fffe6eb1a66d89"
+      "sha256": "1ac0c6071b2c3ec9426017c2d57d9f1509af0fa8b5960af28a595b19aa7435d0"
     },
     {
       "path": "docs/figure-credits.html",
