@@ -1,0 +1,40 @@
+{
+  "date": "2026-11-22",
+  "generated_at": "2026-11-22T20:03:23.702618+00:00",
+  "coverage": {
+    "status": "partial",
+    "sources": [
+      {
+        "source": "arxiv",
+        "status": "complete",
+        "candidate_count": 24614,
+        "metadata_fetched": 0,
+        "missing_metadata": 0,
+        "date_from": null,
+        "date_to": null,
+        "error_count": 0,
+        "limit_count": 0
+      },
+      {
+        "source": "pubmed",
+        "status": "partial",
+        "candidate_count": 2864,
+        "metadata_fetched": 0,
+        "missing_metadata": 0,
+        "date_from": null,
+        "date_to": null,
+        "error_count": 0,
+        "limit_count": 0
+      }
+    ],
+    "scope_note": "仅对已配置来源与检索窗口留痕，不代表全网穷尽。"
+  },
+  "digest": {
+    "status": "no_included_papers",
+    "sections": []
+  },
+  "pending_count": 0,
+  "paper_count": 0,
+  "no_new_content": true,
+  "closed_reason": "all_candidates_cross_day_duplicates"
+}
